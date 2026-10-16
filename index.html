@@ -1,984 +1,1423 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link2Go Admin Panel</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --panel-bg: #1e293b;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --purple: #7c3aed;
-            --cyan: #0284c7;
-            --gold: #f59e0b;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
-        
-        .hidden { display: none !important; }
-        .show { display: flex !important; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link2Go — لوحة التحكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#08070d;
+  --bg-2:#0d0c15;
+  --surface:rgba(22,20,35,.72);
+  --surface-2:rgba(30,27,48,.85);
+  --border:rgba(168,132,255,.14);
+  --border-2:rgba(168,132,255,.28);
+  --text:#f5f3ff;
+  --muted:#a09db8;
+  --muted-2:#6b6885;
+  --accent:#a855f7;
+  --accent-2:#7c3aed;
+  --accent-3:#c084fc;
+  --success:#10b981;
+  --danger:#ef4444;
+  --warning:#f59e0b;
+  --info:#3b82f6;
+  --glow:0 0 40px rgba(168,85,247,.3);
+}
+html,body{min-height:100%;}
+body{
+  font-family:'Cairo',system-ui,-apple-system,sans-serif;
+  background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(168,85,247,.18),transparent),
+             radial-gradient(ellipse 60% 40% at 80% 100%,rgba(124,58,237,.12),transparent),
+             linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+  background-attachment:fixed;
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
 
-        /* رسائل التنبيه العلوية */
-        .msg {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: var(--panel-bg); border: 1px solid var(--border-color); padding: 12px 24px;
-            border-radius: 8px; z-index: 1000; transition: transform 0.3s ease; font-weight: bold;
-        }
-        .msg.show { transform: translateX(-50%) translateY(0); }
-        .msg.ok { border-color: var(--success); color: var(--success); }
-        .msg.err { border-color: var(--danger); color: var(--danger); }
+/* ============ رسائل ============ */
+.toast{
+  position:fixed;top:24px;left:50%;transform:translate(-50%,-120%);
+  padding:14px 26px;border-radius:14px;
+  background:rgba(22,20,35,.95);
+  border:1px solid var(--border-2);
+  backdrop-filter:blur(20px);
+  font-size:13.5px;font-weight:700;
+  z-index:9999;
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:10px;
+  max-width:90vw;
+}
+.toast.show{transform:translate(-50%,0);}
+.toast.ok{border-color:rgba(16,185,129,.4);color:#6ee7b7;}
+.toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5;}
 
-        /* شاشة تسجيل الدخول */
-        #loginScreen {
-            flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
-        .login-card {
-            background: var(--panel-bg); border: 1px solid var(--border-color); padding: 30px;
-            border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .login-card h2 { margin-bottom: 20px; font-size: 24px; text-align: center; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; color: var(--text-muted); font-size: 14px; }
-        .form-control {
-            width: 100%; background: var(--bg-color); border: 1px solid var(--border-color);
-            color: var(--text-main); padding: 12px; border-radius: 8px; font-size: 16px; outline: none;
-        }
-        .form-control:focus { border-color: var(--primary); }
-        .btn {
-            width: 100%; background: var(--primary); color: white; border: none; padding: 12px;
-            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s;
-        }
-        .btn:hover { background: var(--primary-hover); }
-        .login-msg { margin-top: 12px; text-align: center; font-size: 14px; display: none; }
-        .login-msg.err { color: var(--danger); display: block; }
+/* ============ شاشة الدخول ============ */
+#loginScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;position:relative;z-index:1;
+}
+.login-card{
+  width:100%;max-width:400px;
+  background:linear-gradient(145deg,rgba(30,27,48,.9),rgba(20,18,32,.95));
+  border:1px solid var(--border-2);
+  border-radius:24px;padding:42px 32px;
+  position:relative;overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.7),var(--glow);
+  animation:cardIn .6s cubic-bezier(.16,1,.3,1);
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.login-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
+  background-size:200% 100%;
+  animation:shine 3s linear infinite;
+}
+@keyframes shine{to{background-position:200% center;}}
 
-        /* لوحة التحكم الرئيسية */
-        #mainPanel { flex: 1; display: none; flex-direction: column; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-        header h1 { font-size: 20px; }
-        .user-info { display: flex; align-items: center; gap: 15px; }
+.login-logo{
+  width:72px;height:72px;border-radius:20px;margin:0 auto 20px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 15px 40px rgba(168,85,247,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  font-size:32px;
+}
+.login-card h2{
+  font-size:24px;font-weight:800;text-align:center;margin-bottom:6px;
+  background:linear-gradient(135deg,#fff,var(--accent-3));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.login-card p{text-align:center;color:var(--muted);font-size:13px;margin-bottom:28px;}
 
-        /* التابات */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-wrap: wrap; }
-        .tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; }
-        .tab.active { background: var(--primary); color: white; }
+.input-group{margin-bottom:16px;text-align:right;}
+.input-group label{
+  display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;
+}
+.input-group input{
+  width:100%;padding:14px 16px;border-radius:12px;
+  background:rgba(10,9,16,.6);
+  border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:14px;
+  outline:none;transition:all .25s;
+}
+.input-group input:focus{
+  border-color:var(--accent);
+  background:rgba(10,9,16,.9);
+  box-shadow:0 0 0 4px rgba(168,85,247,.12);
+}
 
-        .sub-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
-        .sub-tab { background: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-        .sub-tab.active { border-color: var(--primary); color: var(--text-main); }
+.btn-primary{
+  width:100%;padding:14px;border-radius:13px;border:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;font-family:inherit;font-size:15px;font-weight:800;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 12px 35px rgba(168,85,247,.35);
+  margin-top:8px;
+}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 17px 45px rgba(168,85,247,.5);}
+.btn-primary:active{transform:scale(.98);}
+.btn-primary:disabled{opacity:.6;cursor:wait;}
 
-        .panel { display: none; }
-        .panel.active { display: block; }
+.login-msg{
+  display:none;margin-top:14px;padding:11px 14px;border-radius:11px;
+  font-size:12.5px;text-align:center;font-weight:600;
+}
+.login-msg.show{display:block;}
+.login-msg.err{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
 
-        /* الإحصائيات */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; text-align: center; }
-        .stat-card h3 { font-size: 14px; color: var(--text-muted); margin-bottom: 5px; }
-        .stat-card p { font-size: 22px; font-weight: bold; }
+/* ============ اللوحة الرئيسية ============ */
+#mainPanel{display:none;position:relative;z-index:1;}
+#mainPanel.show{display:block;}
 
-        /* الكروت والقوائم */
-        .search-box { width: 100%; margin-bottom: 15px; }
-        .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .card-head { display: flex; justify-content: space-between; align-items: flex-start; }
-        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
-        .card-phone { color: var(--text-muted); font-size: 13px; direction: ltr; text-align: right; }
-        .meta-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 8px; flex-wrap: wrap; gap: 6px; }
-        
-        .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; }
-        .badge.free { background: #334155; color: #cbd5e1; }
-        .badge.weekly { background: var(--cyan); color: white; }
-        .badge.monthly { background: var(--purple); color: white; }
-        .badge.success { background: rgba(34,197,94,0.2); color: var(--success); }
-        .badge.failed { background: rgba(239,68,68,0.2); color: var(--danger); }
-        .badge.quota { background: rgba(245,158,11,0.2); color: var(--warning); }
-        .badge.cancelled { background: rgba(239,68,68,0.2); color: var(--danger); }
-        .badge.pending { background: rgba(245,158,11,0.2); color: var(--warning); }
+.wrap{width:min(1240px,94%);margin:0 auto;padding:28px 0 80px;}
 
-        .card-btn { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-        .card-btn.primary { border-color: var(--primary); color: var(--primary); }
-        .card-btn.primary:hover { background: var(--primary); color: white; }
-        .card-btn.danger { border-color: var(--danger); color: var(--danger); }
-        .card-btn.danger:hover { background: var(--danger); color: white; }
+/* الهيدر */
+.app-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 0 24px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:28px;
+  flex-wrap:wrap;gap:14px;
+}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;}
+.brand-icon{
+  width:44px;height:44px;border-radius:13px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:grid;place-items:center;
+  box-shadow:0 10px 30px rgba(168,85,247,.4);
+  font-size:22px;
+}
+.brand-text strong{display:block;font-size:17px;font-weight:900;letter-spacing:-.3px;}
+.brand-text span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;font-weight:500;}
 
-        .empty { text-align: center; color: var(--text-muted); padding: 40px; grid-column: 1 / -1; }
-        .loading { text-align: center; color: var(--text-muted); padding: 40px; grid-column: 1 / -1; }
+.header-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.icon-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:11px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;
+  cursor:pointer;transition:all .25s;text-decoration:none;
+  backdrop-filter:blur(10px);
+}
+.icon-btn:hover{
+  background:var(--surface-2);
+  border-color:var(--border-2);
+  transform:translateY(-1px);
+}
+.icon-btn.danger:hover{
+  border-color:rgba(239,68,68,.5);
+  color:#fca5a5;
+}
+.icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
 
-        /* ==========================================
-           قسم الباقات - تصميم شيك
-           ========================================== */
-        .plans-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 18px;
-        }
+/* التابات */
+.tabs{
+  display:flex;gap:6px;margin-bottom:24px;
+  background:var(--surface);
+  padding:6px;border-radius:16px;
+  border:1px solid var(--border);
+  width:fit-content;max-width:100%;
+  backdrop-filter:blur(20px);
+  overflow-x:auto;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  padding:11px 20px;border-radius:11px;border:0;
+  background:transparent;color:var(--muted);
+  font-family:inherit;font-size:13.5px;font-weight:700;
+  cursor:pointer;transition:all .25s;
+  display:inline-flex;align-items:center;gap:8px;
+  white-space:nowrap;
+}
+.tab:hover{color:var(--text);}
+.tab.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;
+  box-shadow:0 10px 30px rgba(168,85,247,.4);
+}
+.tab svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
 
-        .plan-card {
-            background: linear-gradient(145deg, #1e293b, #182133);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px 20px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
-            overflow: hidden;
-        }
-        .plan-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            opacity: 0.5;
-        }
-        .plan-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-        }
+.panel{display:none;}
+.panel.active{display:block;animation:panelIn .4s cubic-bezier(.16,1,.3,1);}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
-        /* ألوان الباقات */
-        .plan-card.free::before { background: linear-gradient(90deg, transparent, #94a3b8, transparent); }
-        .plan-card.free { border-color: #475569; }
-        .plan-card.free:hover { border-color: #94a3b8; }
+/* الإحصائيات */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;margin-bottom:24px;
+}
+.stat{
+  background:linear-gradient(145deg,rgba(30,27,48,.7),rgba(20,18,32,.85));
+  border:1px solid var(--border);
+  border-radius:16px;padding:20px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.stat:hover{
+  border-color:var(--border-2);
+  transform:translateY(-3px);
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+.stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-3));
+  opacity:.6;
+}
+.stat.blue::before{background:linear-gradient(90deg,#3b82f6,#60a5fa);}
+.stat.green::before{background:linear-gradient(90deg,#10b981,#34d399);}
+.stat.gold::before{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
 
-        .plan-card.weekly::before { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
-        .plan-card.weekly { border-color: rgba(2,132,199,0.4); }
-        .plan-card.weekly:hover { border-color: var(--cyan); box-shadow: 0 20px 40px rgba(2,132,199,0.2); }
+.stat-icon{
+  width:38px;height:38px;border-radius:11px;
+  background:rgba(168,85,247,.15);
+  display:grid;place-items:center;
+  margin-bottom:12px;font-size:18px;
+}
+.stat.blue .stat-icon{background:rgba(59,130,246,.15);}
+.stat.green .stat-icon{background:rgba(16,185,129,.15);}
+.stat.gold .stat-icon{background:rgba(245,158,11,.15);}
 
-        .plan-card.monthly::before { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
-        .plan-card.monthly { border-color: rgba(124,58,237,0.4); }
-        .plan-card.monthly:hover { border-color: var(--purple); box-shadow: 0 20px 40px rgba(124,58,237,0.25); }
+.stat-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.stat-value{font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1;}
+.stat.blue .stat-value{color:#60a5fa;}
+.stat.green .stat-value{color:#34d399;}
+.stat.gold .stat-value{color:#fbbf24;}
 
-        .plan-card.guest::before { background: linear-gradient(90deg, transparent, #64748b, transparent); }
-        .plan-card.guest { border-color: #334155; opacity: 0.85; }
+/* شريط البحث */
+.search-bar{
+  display:flex;gap:10px;margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.search-bar input{
+  flex:1;min-width:220px;
+  padding:13px 18px;border-radius:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:13.5px;
+  outline:none;transition:all .25s;
+  backdrop-filter:blur(10px);
+}
+.search-bar input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(168,85,247,.12);
+}
+.search-bar button{
+  padding:13px 22px;border-radius:12px;border:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;font-family:inherit;font-size:13px;font-weight:800;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 10px 30px rgba(168,85,247,.3);
+  display:inline-flex;align-items:center;gap:7px;
+}
+.search-bar button:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(168,85,247,.5);}
 
-        .plan-badge-premium {
-            position: absolute;
-            top: 12px; left: 12px;
-            background: linear-gradient(135deg, var(--gold), #d97706);
-            color: #000;
-            padding: 3px 10px;
-            border-radius: 100px;
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: 0.3px;
-        }
+/* الكروت */
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
 
-        .plan-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            border-bottom: 1px dashed rgba(255,255,255,0.08);
-        }
-        .plan-name {
-            font-size: 17px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-        .plan-card.free .plan-name { color: #cbd5e1; }
-        .plan-card.weekly .plan-name { color: #38bdf8; }
-        .plan-card.monthly .plan-name { color: #a78bfa; }
-        .plan-card.guest .plan-name { color: #94a3b8; }
+.card{
+  background:linear-gradient(145deg,rgba(30,27,48,.65),rgba(20,18,32,.85));
+  border:1px solid var(--border);
+  border-radius:16px;padding:18px;
+  transition:all .3s;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(10px);
+}
+.card:hover{
+  border-color:var(--border-2);
+  transform:translateY(-3px);
+  box-shadow:0 25px 60px rgba(0,0,0,.5);
+}
 
-        .plan-price {
-            font-size: 26px;
-            font-weight: 900;
-            color: #fff;
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-        .plan-price small {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.card-title{font-size:15px;font-weight:800;margin-bottom:4px;letter-spacing:-.2px;}
+.card-phone{font-size:12.5px;color:var(--accent-3);direction:ltr;text-align:right;font-weight:600;}
 
-        .plan-features {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-            font-size: 13px;
-        }
-        .plan-features li {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #cbd5e1;
-        }
-        .plan-features li.ok::before {
-            content: '✓';
-            color: var(--success);
-            font-weight: 900;
-            font-size: 14px;
-            width: 16px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .plan-features li.no {
-            color: #64748b;
-        }
-        .plan-features li.no::before {
-            content: '✕';
-            color: #475569;
-            font-weight: 900;
-            font-size: 13px;
-            width: 16px;
-            text-align: center;
-            flex-shrink: 0;
-        }
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:100px;
+  font-size:10.5px;font-weight:800;letter-spacing:.2px;
+}
+.badge.free{background:rgba(148,163,184,.15);color:#cbd5e1;}
+.badge.weekly{background:rgba(59,130,246,.2);color:#93c5fd;}
+.badge.monthly{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;}
+.badge.success{background:rgba(16,185,129,.18);color:#6ee7b7;}
+.badge.failed{background:rgba(239,68,68,.18);color:#fca5a5;}
+.badge.quota{background:rgba(245,158,11,.18);color:#fcd34d;}
+.badge.cancelled{background:rgba(239,68,68,.15);color:#fca5a5;}
+.badge.pending{background:rgba(245,158,11,.15);color:#fcd34d;}
+.badge.stream{background:rgba(168,85,247,.2);color:#d8b4fe;}
+.badge.download{background:rgba(59,130,246,.2);color:#93c5fd;}
+.badge.video{background:rgba(59,130,246,.15);color:#93c5fd;}
+.badge.cache{background:rgba(16,185,129,.2);color:#6ee7b7;}
 
-        .plan-platforms-title {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .plan-platforms {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .platform-chip {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 4px 9px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #cbd5e1;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 600;
-        }
-        .platform-chip.unlimited {
-            background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(168,85,247,0.15));
-            border-color: rgba(168,85,247,0.4);
-            color: #ddd6fe;
-        }
+.meta-row{
+  display:flex;gap:14px;flex-wrap:wrap;
+  margin-top:10px;padding-top:12px;
+  border-top:1px dashed rgba(168,132,255,.12);
+  font-size:11.5px;color:var(--muted);font-weight:600;
+}
+.meta-row span{display:inline-flex;align-items:center;gap:5px;}
 
-        .plan-footer {
-            margin-top: auto;
-            padding-top: 12px;
-            border-top: 1px dashed rgba(255,255,255,0.08);
-            font-size: 11px;
-            color: var(--text-muted);
-            text-align: center;
-            font-weight: 600;
-        }
+.card-actions{display:flex;gap:6px;flex-wrap:wrap;}
 
-        /* المودال (النوافذ المنبثقة) */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal.active { display: flex; }
-        .modal-content { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 500px; padding: 25px; display: flex; flex-direction: column; gap: 15px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { font-size: 18px; }
-        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; }
-    </style>
+.card-btn{
+  padding:8px 14px;border-radius:9px;
+  background:rgba(168,85,247,.1);
+  border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+}
+.card-btn:hover{
+  background:var(--surface-2);
+  border-color:var(--border-2);
+  transform:translateY(-1px);
+}
+.card-btn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  border-color:transparent;color:#fff;
+  box-shadow:0 8px 25px rgba(168,85,247,.35);
+}
+.card-btn.primary:hover{box-shadow:0 12px 35px rgba(168,85,247,.5);}
+.card-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+.card-btn.danger:hover{background:rgba(239,68,68,.25);color:#fff;}
+.card-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+
+.empty,.loading{
+  grid-column:1/-1;
+  padding:60px 20px;text-align:center;
+  color:var(--muted);font-size:13.5px;font-weight:600;
+}
+.loading::before{
+  content:'';display:block;
+  width:36px;height:36px;margin:0 auto 16px;
+  border:3px solid rgba(168,85,247,.2);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ============ الباقات ============ */
+.plans-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
+}
+.plan-card{
+  background:linear-gradient(145deg,rgba(30,27,48,.75),rgba(20,18,32,.9));
+  border:1px solid var(--border);
+  border-radius:20px;padding:24px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+  display:flex;flex-direction:column;
+}
+.plan-card:hover{
+  transform:translateY(-5px);
+  border-color:var(--border-2);
+  box-shadow:0 30px 70px rgba(0,0,0,.5);
+}
+.plan-card.featured{
+  border-color:rgba(168,85,247,.4);
+  background:linear-gradient(145deg,rgba(45,25,75,.85),rgba(30,20,50,.95));
+  box-shadow:0 20px 60px rgba(168,85,247,.2);
+}
+.plan-card.featured::before{
+  content:'⭐ الأكثر طلباً';
+  position:absolute;top:14px;left:14px;
+  padding:5px 12px;border-radius:100px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;font-size:10.5px;font-weight:800;
+  box-shadow:0 6px 20px rgba(168,85,247,.5);
+}
+.plan-head{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:16px;
+}
+.plan-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:grid;place-items:center;font-size:24px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 10px 30px rgba(168,85,247,.35);
+}
+.plan-icon.free{background:linear-gradient(135deg,#64748b,#94a3b8);box-shadow:0 10px 30px rgba(100,116,139,.3);}
+.plan-icon.weekly{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:0 10px 30px rgba(59,130,246,.35);}
+.plan-icon.monthly{background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 10px 30px rgba(245,158,11,.4);color:#000;}
+
+.plan-price{text-align:left;}
+.plan-price .amount{
+  font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1;
+  display:block;
+}
+.plan-price .label{font-size:11.5px;color:var(--muted);margin-top:4px;display:block;font-weight:600;}
+
+.plan-name{
+  font-size:17px;font-weight:900;margin-bottom:6px;
+  letter-spacing:-.3px;
+}
+.plan-desc{font-size:12.5px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;flex:1;}
+.plan-features li{
+  display:flex;align-items:flex-start;gap:9px;
+  font-size:12.5px;color:#d5d2e8;line-height:1.5;font-weight:500;
+}
+.plan-features li::before{
+  content:'✓';
+  flex-shrink:0;width:18px;height:18px;
+  border-radius:50%;
+  background:rgba(16,185,129,.15);
+  color:#6ee7b7;
+  display:grid;place-items:center;
+  font-size:11px;font-weight:900;
+  margin-top:1px;
+}
+.plan-features li.x-feature{color:var(--muted-2);}
+.plan-features li.x-feature::before{
+  content:'✕';
+  background:rgba(239,68,68,.1);
+  color:#f87171;
+}
+
+.plan-platforms{
+  margin-top:16px;padding-top:16px;
+  border-top:1px dashed rgba(168,132,255,.15);
+}
+.plan-platforms-label{
+  font-size:10.5px;color:var(--muted);font-weight:700;
+  margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;
+}
+.plan-platforms-list{
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+.platform-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:100px;
+  background:rgba(168,85,247,.1);
+  border:1px solid rgba(168,132,255,.18);
+  font-size:10.5px;font-weight:700;
+  color:#d8b4fe;
+}
+.platform-chip.all{
+  background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(251,191,36,.15));
+  border-color:rgba(245,158,11,.4);
+  color:#fbbf24;
+}
+
+/* ============ Sub tabs ============ */
+.sub-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.sub-tab{
+  padding:8px 14px;border-radius:10px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.sub-tab:hover{color:var(--text);border-color:var(--border-2);}
+.sub-tab.active{
+  background:rgba(168,85,247,.15);
+  border-color:rgba(168,132,255,.4);
+  color:var(--accent-3);
+}
+.sub-tab.danger{margin-inline-start:auto;color:#fca5a5;border-color:rgba(239,68,68,.3);}
+.sub-tab.danger:hover{background:rgba(239,68,68,.15);color:#fff;}
+
+/* ============ Modal ============ */
+.modal{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(5,4,10,.85);
+  backdrop-filter:blur(15px);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal.active{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.modal-content{
+  width:100%;max-width:540px;
+  background:linear-gradient(145deg,rgba(30,27,48,.98),rgba(20,18,32,.99));
+  border:1px solid var(--border-2);
+  border-radius:22px;padding:28px;
+  max-height:92vh;overflow-y:auto;
+  position:relative;overflow-x:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.8),var(--glow);
+  animation:modalIn .45s cubic-bezier(.16,1,.3,1);
+}
+.modal-content.wide{max-width:720px;}
+@keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-content::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
+  background-size:200% 100%;animation:shine 3s linear infinite;
+}
+
+.modal-header{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:20px;gap:12px;
+}
+.modal-header h3{
+  font-size:18px;font-weight:900;letter-spacing:-.3px;
+  background:linear-gradient(135deg,#fff,var(--accent-3));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.close-btn{
+  width:34px;height:34px;border-radius:10px;
+  background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.25);
+  color:#fca5a5;
+  cursor:pointer;transition:all .2s;
+  display:grid;place-items:center;flex-shrink:0;
+  font-size:18px;font-family:inherit;
+}
+.close-btn:hover{background:rgba(239,68,68,.25);color:#fff;transform:rotate(90deg);}
+
+.modal-phone{
+  color:var(--accent-3);font-size:13px;font-weight:700;
+  direction:ltr;text-align:right;margin-bottom:10px;
+}
+.modal-meta{
+  display:flex;gap:12px;flex-wrap:wrap;
+  padding:10px 0 18px;
+  border-bottom:1px dashed rgba(168,132,255,.15);
+  margin-bottom:16px;
+  font-size:11.5px;color:var(--muted);font-weight:600;
+}
+
+/* Form fields */
+.field{margin-bottom:14px;text-align:right;}
+.field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.field input,.field select{
+  width:100%;padding:12px 14px;border-radius:11px;
+  background:rgba(10,9,16,.7);
+  border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:13.5px;
+  outline:none;transition:all .25s;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(168,85,247,.12);
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+
+.btn{
+  padding:12px 20px;border-radius:12px;border:0;
+  font-family:inherit;font-size:13.5px;font-weight:800;
+  cursor:pointer;transition:all .25s;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+}
+.btn.primary{
+  flex:1;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.35);
+}
+.btn.primary:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(168,85,247,.5);}
+.btn.danger{
+  background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.3);
+  color:#fca5a5;
+}
+.btn.danger:hover{background:rgba(239,68,68,.25);color:#fff;}
+
+/* Video player */
+.video-slot{
+  width:100%;background:#000;
+  border-radius:14px;overflow:hidden;
+  display:flex;justify-content:center;align-items:center;
+  min-height:240px;
+}
+.video-slot video{width:100%;display:block;border-radius:14px;max-height:60vh;}
+.video-slot audio{width:100%;padding:20px;}
+
+/* Responsive */
+@media(max-width:700px){
+  .wrap{padding:20px 0 60px;}
+  .app-header{padding:14px 0 18px;}
+  .brand-text strong{font-size:15px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .stat{padding:16px;}
+  .stat-value{font-size:20px;}
+  .list{grid-template-columns:1fr;}
+  .plans-grid{grid-template-columns:1fr;}
+  .tab{padding:9px 14px;font-size:12.5px;}
+  .modal-content{padding:22px;}
+  .field-row{grid-template-columns:1fr;}
+  .plan-card{padding:20px;}
+  .icon-btn{padding:9px 12px;font-size:11.5px;}
+  .icon-btn span{display:none;}
+}
+</style>
 </head>
 <body>
 
-    <div id="msg" class="msg"></div>
+<div id="toast" class="toast"></div>
 
-    <!-- شاشة الدخول -->
-    <div id="loginScreen">
-        <div class="login-card">
-            <h2>تسجيل دخول الأدمن</h2>
-            <div class="form-group">
-                <label>اسم المستخدم</label>
-                <input type="text" id="usernameInput" class="form-control" autocomplete="username">
-            </div>
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="passwordInput" class="form-control" autocomplete="current-password">
-            </div>
-            <button id="loginBtn" class="btn">تسجيل الدخول</button>
-            <div id="loginMsg" class="login-msg"></div>
+<!-- شاشة الدخول -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">🔐</div>
+    <h2>لوحة التحكم</h2>
+    <p>سجّل دخولك للوصول إلى لوحة الأدمن</p>
+
+    <div class="input-group">
+      <label>اسم المستخدم</label>
+      <input id="usernameInput" type="text" placeholder="Username" autocomplete="username">
+    </div>
+    <div class="input-group">
+      <label>كلمة المرور</label>
+      <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password">
+    </div>
+    <button id="loginBtn" class="btn-primary">تسجيل الدخول</button>
+    <div id="loginMsg" class="login-msg"></div>
+  </div>
+</div>
+
+<!-- اللوحة الرئيسية -->
+<div id="mainPanel">
+  <div class="wrap">
+
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <strong>Link2Go Admin</strong>
+          <span id="welcomeText">مرحباً</span>
         </div>
+      </div>
+      <div class="header-actions">
+        <button id="refreshBtn" class="icon-btn">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <span>تحديث</span>
+        </button>
+        <button id="logoutBtn" class="icon-btn danger">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>خروج</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="users">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        المستخدمون
+      </button>
+      <button class="tab" data-tab="plans">
+        <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        الباقات
+      </button>
+      <button class="tab" data-tab="history">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        السجلات
+      </button>
     </div>
 
-    <!-- لوحة التحكم الرئيسية -->
-    <div id="mainPanel">
-        <header>
-            <h1 id="welcomeText">مرحباً الأدمن</h1>
-            <div class="user-info">
-                <button id="refreshUsersBtn" class="card-btn">🔄 تحديث</button>
-                <button id="logoutBtn" class="card-btn danger">تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="tabs">
-            <button class="tab active" data-tab="users">👥 المستخدمون</button>
-            <button class="tab" data-tab="plans">💎 الباقات</button>
-            <button class="tab" data-tab="history">📋 السجلات</button>
+    <!-- ============ المستخدمون ============ -->
+    <div class="panel active" id="panel-users">
+      <div class="stats">
+        <div class="stat green">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">إجمالي المستخدمين</div>
+          <div class="stat-value" id="statTotal">0</div>
         </div>
-
-        <!-- تبويب المستخدمين -->
-        <div id="panel-users" class="panel active">
-            <div class="stats-grid">
-                <div class="stat-card"><h3>إجمالي المستخدمين</h3><p id="statTotal">0</p></div>
-                <div class="stat-card"><h3>الباقة المجانية</h3><p id="statFree">0</p></div>
-                <div class="stat-card"><h3>الباقة الأسبوعية</h3><p id="statWeekly">0</p></div>
-                <div class="stat-card"><h3>الباقة الشهرية</h3><p id="statMonthly">0</p></div>
-            </div>
-            <input type="text" id="userSearch" class="form-control search-box" placeholder="بحث بالاسم أو رقم الهاتف...">
-            <div id="usersList" class="grid-list"></div>
+        <div class="stat blue">
+          <div class="stat-icon">💙</div>
+          <div class="stat-label">الباقة المجانية</div>
+          <div class="stat-value" id="statFree">0</div>
         </div>
-
-        <!-- 🆕 تبويب الباقات -->
-        <div id="panel-plans" class="panel">
-            <div id="plansList" class="plans-grid"></div>
+        <div class="stat">
+          <div class="stat-icon">💜</div>
+          <div class="stat-label">الباقة الأسبوعية</div>
+          <div class="stat-value" id="statWeekly">0</div>
         </div>
-
-        <!-- تبويب السجلات -->
-        <div id="panel-history" class="panel">
-            <div class="sub-tabs">
-                <button class="sub-tab active" data-htype="links">الروابط والتحميلات</button>
-                <button class="sub-tab" data-htype="otp">رموز التحقق (OTP)</button>
-                <button class="sub-tab" data-htype="login">تسجيل الدخول</button>
-            </div>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <input type="text" id="historySearch" class="form-control" style="flex:1;" placeholder="بحث في السجل...">
-                <button id="refreshHistoryBtn" class="card-btn">🔄 تحديث</button>
-            </div>
-            <div id="historyList" class="grid-list"></div>
+        <div class="stat gold">
+          <div class="stat-icon">👑</div>
+          <div class="stat-label">الباقة الشهرية VIP</div>
+          <div class="stat-value" id="statMonthly">0</div>
         </div>
+      </div>
+
+      <div class="search-bar">
+        <input id="userSearch" type="text" placeholder="🔍 ابحث بالاسم أو رقم الهاتف...">
+        <button id="refreshUsersBtn">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          تحديث
+        </button>
+      </div>
+
+      <div id="usersList" class="list">
+        <div class="loading">جاري التحميل...</div>
+      </div>
     </div>
 
-    <!-- نافذة تعديل المستخدم -->
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="userModalTitle">تعديل المستخدم</h3>
-                <button class="close-btn" onclick="closeUserModal()">&times;</button>
-            </div>
-            <div id="userModalPhone" style="color:var(--text-muted); direction:ltr; text-align:right;"></div>
-            <div id="userModalMeta" class="meta-row" style="flex-wrap:wrap; gap:10px;"></div>
-            
-            <div class="form-group">
-                <label>الباقة</label>
-                <select id="newPlanSelect" class="form-control"></select>
-            </div>
-            <div class="form-group">
-                <label>التحميلات اليومية المستخدمة</label>
-                <input type="number" id="downloadsInput" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>الاستماعات الشهرية المستخدمة</label>
-                <input type="number" id="listensInput" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>تاريخ انتهاء الباقة (YYYY-MM-DD)</label>
-                <input type="text" id="renewalDateInput" class="form-control" placeholder="مثال: 2026-12-31">
-            </div>
-            <div class="form-group">
-                <label>حد الاستماع المخصص (-1 = بلا حدود، فارغ = الافتراضي)</label>
-                <input type="number" id="customListenInput" class="form-control">
-            </div>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button id="saveUserBtn" class="btn" style="flex:1;">حفظ التغييرات</button>
-                <button id="deleteUserBtn" class="card-btn danger" style="padding:12px;">🗑️ حذف المستخدم</button>
-            </div>
-        </div>
+    <!-- ============ الباقات ============ -->
+    <div class="panel" id="panel-plans">
+      <div id="plansList" class="plans-grid">
+        <div class="loading">جاري التحميل...</div>
+      </div>
     </div>
 
-    <!-- نافذة عرض الفيديو/الصوت -->
-    <div id="videoModal" class="modal">
-        <div class="modal-content" style="max-width:700px;">
-            <div class="modal-header">
-                <h3 id="videoTitle">معاينة الملف</h3>
-                <button class="close-btn" onclick="closeVideoModal()">&times;</button>
-            </div>
-            <div id="videoPlayerSlot" style="width:100%; background:black; border-radius:8px; overflow:hidden; display:flex; justify-content:center; align-items:center; min-height:250px;"></div>
-            <div id="videoInfo" class="meta-row"></div>
-        </div>
+    <!-- ============ السجلات ============ -->
+    <div class="panel" id="panel-history">
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-htype="links">📥 الروابط</button>
+        <button class="sub-tab" data-htype="otp">🔐 OTP</button>
+        <button class="sub-tab" data-htype="login">🔑 تسجيل الدخول</button>
+      </div>
+      <div class="search-bar">
+        <input id="historySearch" type="text" placeholder="🔍 ابحث في السجل...">
+        <button id="refreshHistoryBtn">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          تحديث
+        </button>
+      </div>
+      <div id="historyList" class="list">
+        <div class="loading">جاري التحميل...</div>
+      </div>
     </div>
 
-    <script>
-        const SERVER_URL = "https://link2go-proxy.vercel.app";
-        const TOKEN_KEY = "link2go_admin_token";
-        const USERNAME_KEY = "link2go_admin_username";
+  </div>
+</div>
 
-        localStorage.removeItem(TOKEN_KEY); 
-        localStorage.removeItem(USERNAME_KEY);
-        
-        let adminToken = sessionStorage.getItem(TOKEN_KEY) || "";
-        let adminUsername = sessionStorage.getItem(USERNAME_KEY) || "";
-        let allUsers = [], allPlans = {}, currentEditingUser = null;
-        let currentHistoryType = "links";
-        let allHistory = { links: [], otp: [], login: [] };
-        let refreshTimer = null;
+<!-- مودال تعديل المستخدم -->
+<div id="userModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="userModalTitle">تعديل المستخدم</h3>
+      <button class="close-btn" onclick="closeUserModal()">✕</button>
+    </div>
+    <div class="modal-phone" id="userModalPhone"></div>
+    <div class="modal-meta" id="userModalMeta"></div>
 
-        const $ = id => document.getElementById(id);
-        const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-        const todayStr = () => new Date().toLocaleDateString("en-CA");
+    <div class="field">
+      <label>الباقة</label>
+      <select id="newPlanSelect"></select>
+    </div>
 
-        // أسماء المنصات بالعربي مع أيقونات
-        const PLATFORM_INFO = {
-            tiktok: { name: 'تيك توك', icon: '🎵' },
-            soundcloud: { name: 'ساوند كلاود', icon: '🎧' },
-            facebook: { name: 'فيسبوك', icon: '📘' },
-            instagram: { name: 'إنستجرام', icon: '📷' },
-            youtube: { name: 'يوتيوب', icon: '▶️' },
-            x: { name: 'تويتر (X)', icon: '𝕏' },
-            shahid: { name: 'شاهد', icon: '🎬' },
-            anghami: { name: 'أنغامي', icon: '🎼' }
-        };
+    <div class="field-row">
+      <div class="field">
+        <label>التحميلات (اليوم)</label>
+        <input type="number" id="downloadsInput" min="0">
+      </div>
+      <div class="field">
+        <label>الاستماعات (الشهر)</label>
+        <input type="number" id="listensInput" min="0">
+      </div>
+    </div>
 
-        function showMsg(text, type = "ok") {
-            const m = $("msg");
-            m.textContent = text;
-            m.className = "msg show " + type;
-            setTimeout(() => { m.className = "msg"; }, 4000);
-        }
+    <div class="field">
+      <label>ميعاد التجديد (YYYY-MM-DD)</label>
+      <input type="text" id="renewalDateInput" placeholder="2026-12-31">
+    </div>
 
-        function clearSession() {
-            sessionStorage.removeItem(TOKEN_KEY);
-            sessionStorage.removeItem(USERNAME_KEY);
-            adminToken = ""; adminUsername = "";
-        }
-        function showLoginScreen() {
-            $("loginScreen").classList.remove("hidden");
-            $("mainPanel").classList.remove("show");
-        }
-        function forceLogout() { stopRefresh(); clearSession(); showLoginScreen(); }
+    <div class="field">
+      <label>حد استماع مخصص (-1 = بلا حدود)</label>
+      <input type="number" id="customListenInput" placeholder="اتركه فاضي للافتراضي">
+    </div>
 
-        async function apiFetch(path, options = {}) {
-            const r = await fetch(SERVER_URL + path, {
-                ...options,
-                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + adminToken, ...(options.headers || {}) }
-            });
-            let d = {};
-            try { d = await r.json(); } catch (_) {}
-            if (r.status === 401) { forceLogout(); throw new Error(d.error || "انتهت الجلسة"); }
-            if (r.status === 429) throw new Error(d.error || "طلبات كتير، استنى شوية");
-            if (!r.ok || !d.success) throw new Error(d.error || `فشل الطلب (${r.status})`);
-            return d;
-        }
+    <div class="modal-actions">
+      <button id="saveUserBtn" class="btn primary">💾 حفظ التغييرات</button>
+      <button id="deleteUserBtn" class="btn danger">🗑️ حذف</button>
+    </div>
+  </div>
+</div>
 
-        $("loginBtn").addEventListener("click", doLogin);
-        $("passwordInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-        $("usernameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("passwordInput").focus(); });
+<!-- مودال المشغل -->
+<div id="videoModal" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">
+      <h3 id="videoTitle">معاينة الملف</h3>
+      <button class="close-btn" onclick="closeVideoModal()">✕</button>
+    </div>
+    <div class="video-slot" id="videoPlayerSlot"></div>
+    <div class="meta-row" id="videoInfo"></div>
+  </div>
+</div>
 
-        async function doLogin() {
-            const username = $("usernameInput").value.trim();
-            const password = $("passwordInput").value;
-            const loginMsg = $("loginMsg");
-            loginMsg.className = "login-msg";
-            if (!username || !password) {
-                loginMsg.textContent = "من فضلك اكتب البيانات";
-                loginMsg.className = "login-msg show err";
-                return;
-            }
-            const btn = $("loginBtn");
-            btn.textContent = "جاري التحقق...";
-            btn.disabled = true;
-            try {
-                const r = await fetch(SERVER_URL + "/admin-login", {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password })
-                });
-                let d = {};
-                try { d = await r.json(); } catch (_) {}
-                if (!r.ok || !d.success) throw new Error(d.error || "فشل تسجيل الدخول");
+<script>
+// ==========================================
+// الإعدادات
+// ==========================================
+const SERVER_URL = "https://link2go-proxy.vercel.app";
+const TOKEN_KEY = "link2go_admin_token";
+const USERNAME_KEY = "link2go_admin_username";
 
-                adminToken = d.token; adminUsername = d.username;
-                sessionStorage.setItem(TOKEN_KEY, adminToken);
-                sessionStorage.setItem(USERNAME_KEY, adminUsername);
-                $("passwordInput").value = "";
-                $("loginScreen").classList.add("hidden");
-                $("mainPanel").classList.add("show");
-                $("welcomeText").textContent = "مرحباً " + adminUsername;
-                startDashboard();
-            } catch (e) {
-                loginMsg.textContent = e.message;
-                loginMsg.className = "login-msg show err";
-            } finally {
-                btn.textContent = "تسجيل الدخول";
-                btn.disabled = false;
-            }
-        }
+let adminToken = sessionStorage.getItem(TOKEN_KEY) || "";
+let adminUsername = sessionStorage.getItem(USERNAME_KEY) || "";
+let allUsers = [], allPlans = {}, currentEditingUser = null;
+let currentHistoryType = "links";
+let allHistory = { links: [], otp: [], login: [] };
+let refreshTimer = null;
 
-        $("logoutBtn").addEventListener("click", async () => {
-            if (!confirm("هل أنت متأكد من تسجيل الخروج؟")) return;
-            try { await fetch(SERVER_URL + "/admin-logout", { method: "POST", headers: { "Authorization": "Bearer " + adminToken } }); } catch (_) {}
-            stopRefresh(); clearSession();
-            location.reload();
-        });
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+const todayStr = () => new Date().toLocaleDateString("en-CA");
 
-        async function checkAuth() {
-            if (!adminToken) return false;
-            try {
-                const r = await fetch(SERVER_URL + "/admin-verify", { method: "POST", headers: { "Authorization": "Bearer " + adminToken } });
-                if (!r.ok) { clearSession(); return false; }
-                const d = await r.json();
-                if (!d.success) { clearSession(); return false; }
-                adminUsername = d.username || adminUsername;
-                return true;
-            } catch (_) { return false; }
-        }
+// ==========================================
+// Toast
+// ==========================================
+function showToast(text, type = "ok") {
+  const t = $("toast");
+  t.textContent = text;
+  t.className = "toast show " + type;
+  setTimeout(() => { t.className = "toast"; }, 3500);
+}
 
-        document.querySelectorAll(".tab").forEach(tab => {
-            tab.addEventListener("click", () => {
-                document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-                document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-                tab.classList.add("active");
-                $("panel-" + tab.dataset.tab).classList.add("active");
-                if (tab.dataset.tab === "users") loadUsers();
-                if (tab.dataset.tab === "plans") renderPlans();
-                if (tab.dataset.tab === "history") loadHistory();
-            });
-        });
+// ==========================================
+// Session
+// ==========================================
+function clearSession() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USERNAME_KEY);
+  adminToken = ""; adminUsername = "";
+}
+function showLoginScreen() {
+  $("loginScreen").style.display = "flex";
+  $("mainPanel").classList.remove("show");
+}
+function hideLoginScreen() {
+  $("loginScreen").style.display = "none";
+  $("mainPanel").classList.add("show");
+}
+function forceLogout() { stopRefresh(); clearSession(); showLoginScreen(); }
 
-        document.querySelectorAll(".sub-tab").forEach(st => {
-            st.addEventListener("click", () => {
-                document.querySelectorAll(".sub-tab").forEach(x => x.classList.remove("active"));
-                st.classList.add("active");
-                currentHistoryType = st.dataset.htype;
-                $("historySearch").value = "";
-                renderHistory();
-            });
-        });
+// ==========================================
+// API
+// ==========================================
+async function apiFetch(path, options = {}) {
+  const r = await fetch(SERVER_URL + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + adminToken,
+      ...(options.headers || {})
+    }
+  });
+  let d = {};
+  try { d = await r.json(); } catch (_) {}
+  if (r.status === 401) { forceLogout(); throw new Error(d.error || "انتهت الجلسة"); }
+  if (r.status === 429) throw new Error(d.error || "طلبات كتير، استنى شوية");
+  if (!r.ok || !d.success) throw new Error(d.error || `فشل الطلب (${r.status})`);
+  return d;
+}
 
-        const isExpired = u => u.plan_id !== "free" && u.renewal_date && u.renewal_date < todayStr();
-        const effPlan = u => isExpired(u) ? "free" : u.plan_id;
+// ==========================================
+// Login
+// ==========================================
+$("loginBtn").addEventListener("click", doLogin);
+$("passwordInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+$("usernameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("passwordInput").focus(); });
 
-        async function loadUsers() {
-            try {
-                const d = await apiFetch("/users-list");
-                allUsers = d.users || [];
-                renderUsers(filterUsers());
-                updateStats();
-            } catch (e) {
-                $("usersList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-            }
-        }
+async function doLogin() {
+  const username = $("usernameInput").value.trim();
+  const password = $("passwordInput").value;
+  const loginMsg = $("loginMsg");
+  loginMsg.className = "login-msg";
 
-        function updateStats() {
-            $("statTotal").textContent = allUsers.length;
-            ["free", "weekly", "monthly"].forEach(p => {
-                const id = "stat" + p[0].toUpperCase() + p.slice(1);
-                $(id).textContent = allUsers.filter(u => effPlan(u) === p).length;
-            });
-        }
+  if (!username || !password) {
+    loginMsg.textContent = "من فضلك اكتب البيانات";
+    loginMsg.className = "login-msg show err";
+    return;
+  }
 
-        function filterUsers() {
-            const q = $("userSearch").value.trim().toLowerCase();
-            if (!q) return allUsers;
-            return allUsers.filter(u => (u.username || "").toLowerCase().includes(q) || (u.phone || "").includes(q));
-        }
+  const btn = $("loginBtn");
+  btn.textContent = "جاري التحقق...";
+  btn.disabled = true;
 
-        function renderUsers(users) {
-            const container = $("usersList");
-            if (!users.length) { container.innerHTML = `<div class="empty">مفيش مستخدمين</div>`; return; }
-            container.innerHTML = "";
-            users.forEach(u => {
-                const el = document.createElement("div");
-                el.className = "card";
-                const plan = effPlan(u);
-                const lim = u.limit ?? u.plan_limit ?? 0;
-                const lis = u.listens_limit ?? u.plan_listens_limit ?? 0;
-                const cls = plan === "monthly" ? "monthly" : plan === "weekly" ? "weekly" : "free";
-                el.innerHTML = `
-                    <div class="card-head">
-                        <div style="flex:1;min-width:0;">
-                            <div class="card-title">${esc(u.username || "بدون اسم")}</div>
-                            <div class="card-phone">📱 ${esc(u.phone)}</div>
-                            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;">
-                                <span class="badge ${cls}">${esc(u.plan_name)}</span>
-                                ${isExpired(u) ? `<span class="badge cancelled">منتهية</span>` : ""}
-                                ${u.is_cancelled ? `<span class="badge cancelled">ملغي</span>` : ""}
-                                ${u.upgrade_requested ? `<span class="badge pending">طلب ترقية</span>` : ""}
-                            </div>
-                        </div>
-                        <div class="card-actions"><button class="card-btn primary" data-action="edit">تعديل</button></div>
-                    </div>
-                    <div class="meta-row">
-                        <span>📥 ${u.daily_downloads} / ${lim === -1 ? "∞" : lim}</span>
-                        <span>🎧 ${u.monthly_listens} / ${lis === -1 ? "∞" : lis}</span>
-                        ${u.renewal_date ? `<span>📅 ${esc(u.renewal_date)}</span>` : ""}
-                    </div>`;
-                el.querySelector('[data-action="edit"]').addEventListener("click", () => openUserModal(u.phone));
-                container.appendChild(el);
-            });
-        }
+  try {
+    const r = await fetch(SERVER_URL + "/admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    let d = {};
+    try { d = await r.json(); } catch (_) {}
+    if (!r.ok || !d.success) throw new Error(d.error || "فشل تسجيل الدخول");
 
-        $("userSearch").addEventListener("input", () => renderUsers(filterUsers()));
-        $("refreshUsersBtn").addEventListener("click", loadUsers);
+    adminToken = d.token;
+    adminUsername = d.username;
+    sessionStorage.setItem(TOKEN_KEY, adminToken);
+    sessionStorage.setItem(USERNAME_KEY, adminUsername);
 
-        // ==========================================
-        // 🆕 الباقات
-        // ==========================================
-        const PLAN_DISPLAY = {
-            guest: {
-                order: 0,
-                color: 'guest',
-                title: 'زائر (غير مسجل)',
-                price: 'مجاناً',
-                priceLabel: '',
-                features: [
-                    { ok: true, text: '2 تحميلات يومياً' },
-                    { ok: false, text: 'بدون استماع' },
-                    { ok: false, text: 'بدون تسجيل دخول دائم' },
-                    { ok: true, text: 'جودة عادية' }
-                ]
-            },
-            free: {
-                order: 1,
-                color: 'free',
-                title: 'الباقة المجانية',
-                price: '0',
-                priceLabel: 'جنيه / مجاناً',
-                features: [
-                    { ok: true, text: '10 تحميلات يومياً' },
-                    { ok: true, text: '50 استماع شهرياً' },
-                    { ok: true, text: 'حفظ الحساب والإحصائيات' },
-                    { ok: false, text: 'بدون فيسبوك / انستجرام / يوتيوب' }
-                ]
-            },
-            weekly: {
-                order: 2,
-                color: 'weekly',
-                title: 'الباقة الأسبوعية',
-                price: '10',
-                priceLabel: 'جنيه / أسبوع',
-                features: [
-                    { ok: true, text: '20 تحميل يومياً' },
-                    { ok: true, text: 'استماع غير محدود' },
-                    { ok: true, text: 'فيسبوك + انستجرام' },
-                    { ok: true, text: 'سرعة سيرفر عالية' }
-                ]
-            },
-            monthly: {
-                order: 3,
-                color: 'monthly',
-                title: 'الباقة الشهرية VIP',
-                price: '50',
-                priceLabel: 'جنيه / شهر',
-                isPremium: true,
-                features: [
-                    { ok: true, text: 'تحميلات غير محدودة ♾️' },
-                    { ok: true, text: 'استماع غير محدود ♾️' },
-                    { ok: true, text: 'تحميل من أي موقع في العالم 🌍' },
-                    { ok: true, text: 'أولوية قصوى في السرعة' }
-                ]
-            }
-        };
+    $("passwordInput").value = "";
+    hideLoginScreen();
+    $("welcomeText").textContent = "مرحباً " + adminUsername;
+    startDashboard();
+  } catch (e) {
+    loginMsg.textContent = e.message;
+    loginMsg.className = "login-msg show err";
+  } finally {
+    btn.textContent = "تسجيل الدخول";
+    btn.disabled = false;
+  }
+}
 
-        function renderPlans() {
-            const container = $("plansList");
-            const plans = allPlans || {};
+// ==========================================
+// Logout
+// ==========================================
+$("logoutBtn").addEventListener("click", async () => {
+  if (!confirm("هل أنت متأكد من تسجيل الخروج؟")) return;
+  try {
+    await fetch(SERVER_URL + "/admin-logout", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + adminToken }
+    });
+  } catch (_) {}
+  stopRefresh();
+  clearSession();
+  location.reload();
+});
 
-            // لو مفيش باقات من السيرفر → نستخدم البيانات الثابتة
-            const planKeys = Object.keys(plans).length
-                ? Object.keys(plans).sort((a,b) => (PLAN_DISPLAY[a]?.order || 99) - (PLAN_DISPLAY[b]?.order || 99))
-                : ['guest', 'free', 'weekly', 'monthly'];
+// ==========================================
+// Check Auth
+// ==========================================
+async function checkAuth() {
+  if (!adminToken) return false;
+  try {
+    const r = await fetch(SERVER_URL + "/admin-verify", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + adminToken }
+    });
+    if (!r.ok) { clearSession(); return false; }
+    const d = await r.json();
+    if (!d.success) { clearSession(); return false; }
+    adminUsername = d.username || adminUsername;
+    return true;
+  } catch (_) { return false; }
+}
 
-            if (!planKeys.length) {
-                container.innerHTML = `<div class="empty">مفيش باقات متاحة</div>`;
-                return;
-            }
+// ==========================================
+// Tabs
+// ==========================================
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    $("panel-" + tab.dataset.tab).classList.add("active");
 
-            container.innerHTML = '';
-            planKeys.forEach(pid => {
-                const fromServer = plans[pid] || {};
-                const display = PLAN_DISPLAY[pid] || {};
-                const plan = { ...display, ...fromServer };
-                const colorClass = plan.color || 'free';
-                const isUnlimited = plan.all_platforms || (fromServer.platforms && fromServer.platforms.length >= 8);
+    if (tab.dataset.tab === "users") loadUsers();
+    if (tab.dataset.tab === "plans") loadPlans();
+    if (tab.dataset.tab === "history") loadHistory();
+  });
+});
 
-                const platforms = (fromServer.platforms || []).map(p => {
-                    const info = PLATFORM_INFO[p] || { name: p, icon: '🔗' };
-                    return `<span class="platform-chip">${info.icon} ${info.name}</span>`;
-                }).join('');
+document.querySelectorAll(".sub-tab").forEach(st => {
+  st.addEventListener("click", () => {
+    if (st.classList.contains("danger")) return;
+    document.querySelectorAll(".sub-tab").forEach(x => x.classList.remove("active"));
+    st.classList.add("active");
+    currentHistoryType = st.dataset.htype;
+    $("historySearch").value = "";
+    renderHistory();
+  });
+});
 
-                const platformsHTML = isUnlimited
-                    ? `<div class="plan-platforms-title">🌍 كل المواقع مدعومة</div>
-                       <div class="plan-platforms">
-                           ${platforms}
-                           <span class="platform-chip unlimited">✨ وأي موقع تاني</span>
-                       </div>`
-                    : `<div class="plan-platforms-title">📱 المواقع المدعومة</div>
-                       <div class="plan-platforms">${platforms || '<span style="color:var(--text-muted);font-size:11px;">—</span>'}</div>`;
+// ==========================================
+// Users
+// ==========================================
+const isExpired = u => u.plan_id !== "free" && u.renewal_date && u.renewal_date < todayStr();
+const effPlan = u => isExpired(u) ? "free" : u.plan_id;
 
-                const featuresHTML = (plan.features || []).map(f =>
-                    `<li class="${f.ok ? 'ok' : 'no'}">${esc(f.text)}</li>`
-                ).join('');
+async function loadUsers() {
+  try {
+    const d = await apiFetch("/users-list");
+    allUsers = d.users || [];
+    renderUsers(filterUsers());
+    updateStats();
+  } catch (e) {
+    $("usersList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
 
-                const priceDisplay = fromServer.price !== undefined
-                    ? `${fromServer.price}`
-                    : plan.price;
-                const priceLabel = fromServer.duration_label || plan.priceLabel || '';
+function updateStats() {
+  $("statTotal").textContent = allUsers.length;
+  ["free", "weekly", "monthly"].forEach(p => {
+    const id = "stat" + p[0].toUpperCase() + p.slice(1);
+    $(id).textContent = allUsers.filter(u => effPlan(u) === p).length;
+  });
+}
 
-                const card = document.createElement('div');
-                card.className = `plan-card ${colorClass}`;
-                card.innerHTML = `
-                    ${plan.isPremium ? '<div class="plan-badge-premium">🔥 الأكثر طلباً</div>' : ''}
-                    <div class="plan-head">
-                        <div>
-                            <div class="plan-name">${esc(fromServer.name || plan.title)}</div>
-                            <div style="font-size:11px;color:var(--text-muted);font-weight:600;">ID: ${esc(pid)}</div>
-                        </div>
-                        <div class="plan-price">
-                            ${esc(priceDisplay)}
-                            <small>${esc(priceLabel)}</small>
-                        </div>
-                    </div>
+function filterUsers() {
+  const q = $("userSearch").value.trim().toLowerCase();
+  if (!q) return allUsers;
+  return allUsers.filter(u =>
+    (u.username || "").toLowerCase().includes(q) ||
+    (u.phone || "").includes(q)
+  );
+}
 
-                    <ul class="plan-features">${featuresHTML}</ul>
+function renderUsers(users) {
+  const container = $("usersList");
+  if (!users.length) {
+    container.innerHTML = `<div class="empty">📭 مفيش مستخدمين</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  users.forEach(u => {
+    const el = document.createElement("div");
+    el.className = "card";
+    const plan = effPlan(u);
+    const lim = u.limit ?? u.plan_limit ?? 0;
+    const lis = u.listens_limit ?? u.plan_listens_limit ?? 0;
+    const cls = plan === "monthly" ? "monthly" : plan === "weekly" ? "weekly" : "free";
 
-                    <div>${platformsHTML}</div>
+    el.innerHTML = `
+      <div class="card-head">
+        <div style="flex:1;min-width:0;">
+          <div class="card-title">${esc(u.username || "بدون اسم")}</div>
+          <div class="card-phone">📱 ${esc(u.phone)}</div>
+          <div class="badges">
+            <span class="badge ${cls}">${esc(u.plan_name)}</span>
+            ${isExpired(u) ? `<span class="badge cancelled">منتهية</span>` : ""}
+            ${u.is_cancelled ? `<span class="badge cancelled">ملغي</span>` : ""}
+            ${u.upgrade_requested ? `<span class="badge pending">طلب ترقية</span>` : ""}
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="card-btn primary" data-action="edit">✏️ تعديل</button>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>📥 ${u.daily_downloads} / ${lim === -1 ? "∞" : lim}</span>
+        <span>🎧 ${u.monthly_listens} / ${lis === -1 ? "∞" : lis}</span>
+        ${u.renewal_date ? `<span>📅 ${esc(u.renewal_date)}</span>` : ""}
+      </div>`;
 
-                    <div class="plan-footer">
-                        ${fromServer.limit === -1 ? 'تحميلات: ♾️ غير محدود' : `حد التحميل اليومي: ${fromServer.limit || plan.features?.[0]?.text || '—'}`}
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+    el.querySelector('[data-action="edit"]').addEventListener("click", () => openUserModal(u.phone));
+    container.appendChild(el);
+  });
+}
 
-        async function loadPlans() {
-            try {
-                const r = await fetch(SERVER_URL + "/get-plans");
-                const d = await r.json();
-                if (r.ok && d.success) {
-                    allPlans = d.plans || {};
-                    // لو احنا على تاب الباقات → نحدث العرض
-                    if (document.querySelector('.tab[data-tab="plans"].active')) {
-                        renderPlans();
-                    }
-                }
-            } catch (e) { console.error(e); }
-        }
+$("userSearch").addEventListener("input", () => renderUsers(filterUsers()));
+$("refreshUsersBtn").addEventListener("click", loadUsers);
+$("refreshBtn").addEventListener("click", () => {
+  const activeTab = document.querySelector(".tab.active").dataset.tab;
+  if (activeTab === "users") loadUsers();
+  else if (activeTab === "plans") loadPlans();
+  else if (activeTab === "history") loadHistory();
+});
 
-        // ==========================================
-        // السجلات
-        // ==========================================
-        async function loadHistory() {
-            $("historyList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
-            try {
-                const d = await apiFetch("/history?type=all&limit=500");
-                allHistory = Object.assign({ links: [], otp: [], login: [] }, d.data || {});
-                renderHistory();
-            } catch (e) {
-                $("historyList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-            }
-        }
+// ==========================================
+// Plans
+// ==========================================
+const PLAN_ICONS = { free: "🆓", weekly: "⚡", monthly: "👑" };
+const PLATFORM_ICONS = {
+  tiktok: "🎵", soundcloud: "☁️", facebook: "📘",
+  instagram: "📷", youtube: "▶️", x: "𝕏",
+  shahid: "🎬", anghami: "🎧"
+};
 
-        const LOGIN_ACTIONS = { admin_login: "🔑 دخول أدمن", otp_login: "📱 دخول مستخدم", signup: "🆕 تسجيل جديد", logout: "🚪 خروج" };
-        const ADMIN_ACTIONS = {
-            set_plan: "تغيير باقة", delete_user: "حذف مستخدم", set_counters: "تعديل عدادات",
-            set_listen_limit: "تعديل حد الاستماع", clear_history: "مسح السجل", delete_file: "حذف ملف"
-        };
+async function loadPlans() {
+  $("plansList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
+  try {
+    const r = await fetch(SERVER_URL + "/get-plans");
+    const d = await r.json();
+    if (!r.ok || !d.success) throw new Error(d.error || "فشل");
+    allPlans = d.plans || {};
+    renderPlans(allPlans);
+  } catch (e) {
+    $("plansList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
 
-        function renderHistory(list = allHistory[currentHistoryType] || []) {
-            const container = $("historyList");
-            if (!list.length) { container.innerHTML = `<div class="empty">مفيش سجل</div>`; return; }
-            container.innerHTML = "";
-            const t = currentHistoryType;
+function renderPlans(plans) {
+  const container = $("plansList");
+  const order = ["free", "weekly", "monthly"];
+  const list = order.filter(p => plans[p]).map(p => ({ id: p, ...plans[p] }));
 
-            list.forEach(item => {
-                const ok = item.status === "success";
-                const st = ok ? ["success", "نجح"] : item.status === "quota" ? ["quota", "حد أقصى"] : ["failed", "فشل"];
-                let title = "", phone = "", badges = "", lines = "";
+  if (!list.length) {
+    container.innerHTML = `<div class="empty">📭 مفيش باقات</div>`;
+    return;
+  }
 
-                if (t === "links") {
-                    title = esc(item.username || "مجهول");
-                    phone = item.phone || "—";
-                    badges = `<span class="badge ${item.action === "stream" ? "stream" : "download"}">${item.action === "stream" ? "🎧 استماع" : "⬇️ تحميل"}</span>`;
-                    lines += `<span style="word-break:break-all;direction:ltr;text-align:right;color:#9fc4ff;font-size:10.5px;">${esc((item.url || "").slice(0, 80))}</span>`;
-                    if (item.error === "cache") badges += `<span class="badge success">⚡ من الكاش</span>`;
-                    else if (item.error) lines += `<span style="color:#ff9ca5;">⚠️ ${esc(item.error)}</span>`;
-                } else if (t === "otp") {
-                    title = "📱 " + esc(item.phone || "—");
-                    badges = `<span class="badge video">${item.action === "send" ? "📤 إرسال" : "✅ تحقق"}</span>`;
-                    if (item.error) lines += `<span style="color:#ff9ca5;">⚠️ ${esc(item.error)}</span>`;
-                } else {
-                    const raw = String(item.action || "");
-                    const base = raw.split(":")[0];
-                    const isAdminAction = raw.includes(":") && ADMIN_ACTIONS[base];
-                    title = esc(item.username || "—");
-                    phone = item.phone || "—";
-                    badges = `<span class="badge free">${isAdminAction ? "🛠️ " + ADMIN_ACTIONS[base] : (LOGIN_ACTIONS[raw] || esc(raw))}</span>`;
-                    if (isAdminAction) lines += `<span style="direction:ltr;text-align:right;color:#9fc4ff;font-size:10.5px;">${esc(raw.slice(base.length + 1))}</span>`;
-                    if (item.error) lines += `<span style="color:#ff9ca5;">⚠️ ${esc(item.error)}</span>`;
-                }
+  container.innerHTML = "";
+  list.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "plan-card" + (p.id === "monthly" ? " featured" : "");
 
-                const el = document.createElement("div");
-                el.className = "card";
-                el.innerHTML = `
-                    <div class="card-head"><div style="flex:1;min-width:0;">
-                        <div class="card-title">${title}</div>
-                        ${phone ? `<div class="card-phone">📱 ${esc(phone)}</div>` : ""}
-                        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;">${badges}<span class="badge ${st[0]}">${st[1]}</span></div>
-                    </div></div>
-                    <div class="meta-row" style="flex-direction:column;gap:4px;">
-                        ${lines}
-                        <span>🕐 ${esc(item.timestamp || "—")}${item.ip ? " · 🌐 " + esc(item.ip) : ""}</span>
-                    </div>`;
-                container.appendChild(el);
-            });
-        }
+    const price = p.price === 0 ? "مجاناً" : p.price + " ج";
+    const duration = p.duration_label || "";
+    const icon = PLAN_ICONS[p.id] || "💎";
 
-        $("refreshHistoryBtn").addEventListener("click", loadHistory);
-        $("historySearch").addEventListener("input", e => {
-            const q = e.target.value.trim().toLowerCase();
-            const list = allHistory[currentHistoryType] || [];
-            renderHistory(q ? list.filter(i => JSON.stringify(i).toLowerCase().includes(q)) : list);
-        });
+    const platformsList = p.all_platforms
+      ? `<span class="platform-chip all">🌍 جميع المنصات</span>`
+      : (p.platforms || []).map(pl =>
+          `<span class="platform-chip">${PLATFORM_ICONS[pl] || "🌐"} ${esc(pl)}</span>`
+        ).join("");
 
-        (function addClearBtn() {
-            const b = document.createElement("button");
-            b.className = "sub-tab";
-            b.style.cssText = "margin-inline-start:auto;color:#ff9ca5;";
-            b.textContent = "🗑️ مسح";
-            b.addEventListener("click", async () => {
-                if (!confirm("مسح سجل هذا القسم نهائياً؟")) return;
-                try {
-                    await apiFetch("/history/clear", { method: "POST", body: JSON.stringify({ type: currentHistoryType }) });
-                    showMsg("✅ تم مسح السجل");
-                    loadHistory();
-                } catch (e) { showMsg("❌ " + e.message, "err"); }
-            });
-            document.querySelector(".sub-tabs").appendChild(b);
-        })();
+    el.innerHTML = `
+      <div class="plan-head">
+        <div class="plan-icon ${p.id}">${icon}</div>
+        <div class="plan-price">
+          <span class="amount">${price}</span>
+          <span class="label">${duration}</span>
+        </div>
+      </div>
+      <div class="plan-name">${esc(p.name)}</div>
+      <div class="plan-desc">
+        ${p.limit === -1 ? "تحميلات غير محدودة" : `${p.limit} تحميل يومياً`} •
+        ${p.listens_limit === -1 ? "استماع غير محدود" : `${p.listens_limit} استماع شهرياً`}
+      </div>
+      <ul class="plan-features">
+        <li>${p.limit === -1 ? "تحميلات غير محدودة (Unlimited)" : `${p.limit} تحميل يومياً`}</li>
+        <li>${p.listens_limit === -1 ? "استماع غير محدود" : `${p.listens_limit} استماع شهرياً`}</li>
+        <li>${p.all_platforms ? "التحميل من أي موقع في العالم" : "منصات محددة"}</li>
+        <li>${p.duration_days > 0 ? `${p.duration_days} يوم صلاحية` : "بدون تاريخ انتهاء"}</li>
+      </ul>
+      <div class="plan-platforms">
+        <div class="plan-platforms-label">المنصات المدعومة</div>
+        <div class="plan-platforms-list">${platformsList}</div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
 
-        async function openUserModal(phone) {
-            $("userModal").classList.add("active");
-            $("userModalTitle").textContent = "جاري التحميل...";
-            $("userModalPhone").textContent = "";
-            $("userModalMeta").innerHTML = "";
-            try {
-                const d = await apiFetch("/user/" + encodeURIComponent(phone));
-                currentEditingUser = d.user;
-                if (!Object.keys(allPlans).length) await loadPlans();
-                renderUserModal(d.user);
-            } catch (e) {
-                $("userModalTitle").textContent = "خطأ";
-                $("userModalPhone").textContent = e.message;
-            }
-        }
+// ==========================================
+// History
+// ==========================================
+async function loadHistory() {
+  $("historyList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
+  try {
+    const d = await apiFetch("/history?type=all&limit=500");
+    allHistory = Object.assign({ links: [], otp: [], login: [] }, d.data || {});
+    renderHistory();
+  } catch (e) {
+    $("historyList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
 
-        function renderUserModal(u) {
-            $("userModalTitle").textContent = u.username || "مستخدم";
-            $("userModalPhone").textContent = "📱 " + u.phone;
-            const meta = [];
-            if (u.created_at) meta.push(`🗓️ ${esc(u.created_at)}`);
-            if (u.last_login) meta.push(`🔐 ${esc(u.last_login)}`);
-            $("userModalMeta").innerHTML = meta.map(p => `<span>${p}</span>`).join("");
-            $("newPlanSelect").innerHTML = Object.keys(allPlans).map(pid =>
-                `<option value="${esc(pid)}" ${pid === u.plan_id ? "selected" : ""}>${esc(allPlans[pid].name)}</option>`).join("");
-            $("downloadsInput").value = u.daily_downloads || 0;
-            $("listensInput").value = u.monthly_listens || 0;
-            $("renewalDateInput").value = u.renewal_date || "";
-            $("customListenInput").value = "";
-        }
+const LOGIN_ACTIONS = {
+  admin_login: "🔑 دخول أدمن",
+  otp_login: "📱 دخول مستخدم",
+  signup: "🆕 تسجيل جديد",
+  logout: "🚪 خروج"
+};
+const ADMIN_ACTIONS = {
+  set_plan: "تغيير باقة",
+  delete_user: "حذف مستخدم",
+  set_counters: "تعديل عدادات",
+  set_listen_limit: "تعديل حد الاستماع",
+  clear_history: "مسح السجل",
+  delete_file: "حذف ملف"
+};
 
-        $("saveUserBtn").addEventListener("click", async () => {
-            if (!currentEditingUser) return;
-            const btn = $("saveUserBtn");
-            btn.textContent = "جاري الحفظ...";
-            btn.disabled = true;
-            try {
-                const phone = encodeURIComponent(currentEditingUser.phone);
-                const newPlan = $("newPlanSelect").value;
-                const planChanged = newPlan !== currentEditingUser.plan_id;
-                if (planChanged) {
-                    await apiFetch(`/user/${phone}/set-plan`, { method: "POST", body: JSON.stringify({ plan: newPlan }) });
-                }
+function renderHistory(list = allHistory[currentHistoryType] || []) {
+  const container = $("historyList");
+  if (!list.length) {
+    container.innerHTML = `<div class="empty">📭 مفيش سجل</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  const t = currentHistoryType;
 
-                const body = {
-                    daily_downloads: parseInt($("downloadsInput").value) || 0,
-                    monthly_listens: parseInt($("listensInput").value) || 0
-                };
-                const dateVal = $("renewalDateInput").value || "";
-                const dateEdited = dateVal !== (currentEditingUser.renewal_date || "");
-                if (!planChanged || dateEdited) body.renewal_date = dateVal;
+  list.forEach(item => {
+    const ok = item.status === "success";
+    const st = ok ? ["success", "نجح"]
+             : item.status === "quota" ? ["quota", "حد أقصى"]
+             : ["failed", "فشل"];
+    let title = "", phone = "", badges = "", lines = "";
 
-                const custom = parseInt($("customListenInput").value);
-                if (!Number.isNaN(custom)) body.listens_limit = custom;
+    if (t === "links") {
+      title = esc(item.username || "مجهول");
+      phone = item.phone || "—";
+      badges = `<span class="badge ${item.action === "stream" ? "stream" : "download"}">${item.action === "stream" ? "🎧 استماع" : "⬇️ تحميل"}</span>`;
+      lines += `<span style="word-break:break-all;direction:ltr;text-align:right;color:#c4b5fd;font-size:10.5px;">${esc((item.url || "").slice(0, 80))}</span>`;
+      if (item.error === "cache") badges += `<span class="badge cache">⚡ من الكاش</span>`;
+      else if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
+    } else if (t === "otp") {
+      title = "📱 " + esc(item.phone || "—");
+      badges = `<span class="badge video">${item.action === "send" ? "📤 إرسال" : "✅ تحقق"}</span>`;
+      if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
+    } else {
+      const raw = String(item.action || "");
+      const base = raw.split(":")[0];
+      const isAdminAction = raw.includes(":") && ADMIN_ACTIONS[base];
+      title = esc(item.username || "—");
+      phone = item.phone || "—";
+      badges = `<span class="badge free">${isAdminAction ? "🛠️ " + ADMIN_ACTIONS[base] : (LOGIN_ACTIONS[raw] || esc(raw))}</span>`;
+      if (isAdminAction) lines += `<span style="direction:ltr;text-align:right;color:#c4b5fd;font-size:10.5px;">${esc(raw.slice(base.length + 1))}</span>`;
+      if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
+    }
 
-                await apiFetch(`/user/${phone}/set-counters`, { method: "POST", body: JSON.stringify(body) });
-                showMsg("✅ تم حفظ التغييرات");
-                closeUserModal();
-                loadUsers();
-            } catch (e) {
-                showMsg("❌ " + e.message, "err");
-            } finally {
-                btn.textContent = "حفظ التغييرات";
-                btn.disabled = false;
-            }
-        });
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `
+      <div class="card-head">
+        <div style="flex:1;min-width:0;">
+          <div class="card-title">${title}</div>
+          ${phone ? `<div class="card-phone">📱 ${esc(phone)}</div>` : ""}
+          <div class="badges">
+            ${badges}
+            <span class="badge ${st[0]}">${st[1]}</span>
+          </div>
+        </div>
+      </div>
+      <div class="meta-row" style="flex-direction:column;gap:5px;">
+        ${lines}
+        <span>🕐 ${esc(item.timestamp || "—")}${item.ip ? " · 🌐 " + esc(item.ip) : ""}</span>
+      </div>`;
+    container.appendChild(el);
+  });
+}
 
-        $("deleteUserBtn").addEventListener("click", async () => {
-            if (!currentEditingUser) return;
-            const u = currentEditingUser;
-            if (!confirm(`هل أنت متأكد من حذف المستخدم "${u.username || u.phone}"؟`)) return;
-            const btn = $("deleteUserBtn");
-            btn.textContent = "جاري الحذف...";
-            btn.disabled = true;
-            try {
-                await apiFetch(`/user/${encodeURIComponent(u.phone)}`, { method: "DELETE" });
-                showMsg("✅ تم حذف المستخدم");
-                closeUserModal();
-                loadUsers();
-            } catch (e) {
-                showMsg("❌ " + e.message, "err");
-            } finally {
-                btn.textContent = "🗑️ حذف المستخدم";
-                btn.disabled = false;
-            }
-        });
+$("refreshHistoryBtn").addEventListener("click", loadHistory);
+$("historySearch").addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  const list = allHistory[currentHistoryType] || [];
+  renderHistory(q ? list.filter(i => JSON.stringify(i).toLowerCase().includes(q)) : list);
+});
 
-        function closeUserModal() {
-            $("userModal").classList.remove("active");
-            currentEditingUser = null;
-        }
-        $("userModal").addEventListener("click", e => { if (e.target.id === "userModal") closeUserModal(); });
+// زر مسح السجل
+(function addClearBtn() {
+  const b = document.createElement("button");
+  b.className = "sub-tab danger";
+  b.textContent = "🗑️ مسح السجل";
+  b.addEventListener("click", async () => {
+    if (!confirm("مسح سجل هذا القسم نهائياً؟")) return;
+    try {
+      await apiFetch("/history/clear", {
+        method: "POST",
+        body: JSON.stringify({ type: currentHistoryType })
+      });
+      showToast("✅ تم مسح السجل");
+      loadHistory();
+    } catch (e) {
+      showToast("❌ " + e.message, "err");
+    }
+  });
+  document.querySelector(".sub-tabs").appendChild(b);
+})();
 
-        function startRefresh() {
-            stopRefresh();
-            refreshTimer = setInterval(() => {
-                if (document.hidden || !adminToken) return;
-                if (document.querySelector('.tab[data-tab="users"].active')) loadUsers();
-            }, 30000);
-        }
-        function stopRefresh() { if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; } }
+// ==========================================
+// User Modal
+// ==========================================
+async function openUserModal(phone) {
+  $("userModal").classList.add("active");
+  $("userModalTitle").textContent = "جاري التحميل...";
+  $("userModalPhone").textContent = "";
+  $("userModalMeta").innerHTML = "";
+  try {
+    const d = await apiFetch("/user/" + encodeURIComponent(phone));
+    currentEditingUser = d.user;
+    if (!Object.keys(allPlans).length) await loadPlans();
+    renderUserModal(d.user);
+  } catch (e) {
+    $("userModalTitle").textContent = "خطأ";
+    $("userModalPhone").textContent = e.message;
+  }
+}
 
-        function startDashboard() {
-            loadPlans().then(() => {
-                // بعد ما نجيب الباقات → نحدث عرضها
-                if (document.querySelector('.tab[data-tab="plans"].active')) renderPlans();
-            });
-            loadUsers();
-            startRefresh();
-        }
+function renderUserModal(u) {
+  $("userModalTitle").textContent = u.username || "مستخدم";
+  $("userModalPhone").textContent = "📱 " + u.phone;
+  const meta = [];
+  if (u.created_at) meta.push(`🗓️ ${esc(u.created_at)}`);
+  if (u.last_login) meta.push(`🔐 ${esc(u.last_login)}`);
+  $("userModalMeta").innerHTML = meta.map(p => `<span>${p}</span>`).join("");
 
-        (async function init() {
-            if (await checkAuth()) {
-                $("loginScreen").classList.add("hidden");
-                $("mainPanel").classList.add("show");
-                $("welcomeText").textContent = "مرحباً " + adminUsername;
-                startDashboard();
-            } else {
-                showLoginScreen();
-            }
-        })();
-    </script>
+  $("newPlanSelect").innerHTML = Object.keys(allPlans).map(pid =>
+    `<option value="${esc(pid)}" ${pid === u.plan_id ? "selected" : ""}>${esc(allPlans[pid].name)}</option>`
+  ).join("");
+
+  $("downloadsInput").value = u.daily_downloads || 0;
+  $("listensInput").value = u.monthly_listens || 0;
+  $("renewalDateInput").value = u.renewal_date || "";
+  $("customListenInput").value = "";
+}
+
+$("saveUserBtn").addEventListener("click", async () => {
+  if (!currentEditingUser) return;
+  const btn = $("saveUserBtn");
+  btn.textContent = "جاري الحفظ...";
+  btn.disabled = true;
+  try {
+    const phone = encodeURIComponent(currentEditingUser.phone);
+    const newPlan = $("newPlanSelect").value;
+    const planChanged = newPlan !== currentEditingUser.plan_id;
+
+    if (planChanged) {
+      await apiFetch(`/user/${phone}/set-plan`, {
+        method: "POST",
+        body: JSON.stringify({ plan: newPlan })
+      });
+    }
+
+    const body = {
+      daily_downloads: parseInt($("downloadsInput").value) || 0,
+      monthly_listens: parseInt($("listensInput").value) || 0
+    };
+    const dateVal = $("renewalDateInput").value || "";
+    const dateEdited = dateVal !== (currentEditingUser.renewal_date || "");
+    if (!planChanged || dateEdited) body.renewal_date = dateVal;
+
+    const custom = parseInt($("customListenInput").value);
+    if (!Number.isNaN(custom)) body.listens_limit = custom;
+
+    await apiFetch(`/user/${phone}/set-counters`, {
+      method: "POST",
+      body: JSON.stringify(body)
+    });
+
+    showToast("✅ تم حفظ التغييرات");
+    closeUserModal();
+    loadUsers();
+  } catch (e) {
+    showToast("❌ " + e.message, "err");
+  } finally {
+    btn.textContent = "💾 حفظ التغييرات";
+    btn.disabled = false;
+  }
+});
+
+$("deleteUserBtn").addEventListener("click", async () => {
+  if (!currentEditingUser) return;
+  const u = currentEditingUser;
+  if (!confirm(`هل أنت متأكد من حذف المستخدم "${u.username || u.phone}"؟`)) return;
+  const btn = $("deleteUserBtn");
+  btn.textContent = "جاري الحذف...";
+  btn.disabled = true;
+  try {
+    await apiFetch(`/user/${encodeURIComponent(u.phone)}`, { method: "DELETE" });
+    showToast("✅ تم حذف المستخدم");
+    closeUserModal();
+    loadUsers();
+  } catch (e) {
+    showToast("❌ " + e.message, "err");
+  } finally {
+    btn.textContent = "🗑️ حذف";
+    btn.disabled = false;
+  }
+});
+
+function closeUserModal() {
+  $("userModal").classList.remove("active");
+  currentEditingUser = null;
+}
+$("userModal").addEventListener("click", e => {
+  if (e.target.id === "userModal") closeUserModal();
+});
+
+// ==========================================
+// Video Modal
+// ==========================================
+function closeVideoModal() {
+  $("videoModal").classList.remove("active");
+  $("videoPlayerSlot").innerHTML = "";
+}
+$("videoModal").addEventListener("click", e => {
+  if (e.target.id === "videoModal") closeVideoModal();
+});
+
+// ==========================================
+// Auto refresh
+// ==========================================
+function startRefresh() {
+  stopRefresh();
+  refreshTimer = setInterval(() => {
+    if (document.hidden || !adminToken) return;
+    if (document.querySelector('.tab[data-tab="users"].active')) loadUsers();
+  }, 30000);
+}
+function stopRefresh() {
+  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+}
+
+// ==========================================
+// Dashboard Start
+// ==========================================
+function startDashboard() {
+  loadPlans();
+  loadUsers();
+  startRefresh();
+}
+
+// ==========================================
+// Init
+// ==========================================
+(async function init() {
+  if (await checkAuth()) {
+    hideLoginScreen();
+    $("welcomeText").textContent = "مرحباً " + adminUsername;
+    startDashboard();
+  } else {
+    showLoginScreen();
+  }
+})();
+</script>
+
 </body>
 </html>
