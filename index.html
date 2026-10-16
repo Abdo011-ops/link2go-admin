@@ -16,6 +16,9 @@
             --danger: #ef4444;
             --success: #22c55e;
             --warning: #f59e0b;
+            --purple: #7c3aed;
+            --cyan: #0284c7;
+            --gold: #f59e0b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
@@ -64,7 +67,7 @@
         .user-info { display: flex; align-items: center; gap: 15px; }
 
         /* التابات */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-wrap: wrap; }
         .tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; }
         .tab.active { background: var(--primary); color: white; }
 
@@ -88,12 +91,12 @@
         .card-head { display: flex; justify-content: space-between; align-items: flex-start; }
         .card-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
         .card-phone { color: var(--text-muted); font-size: 13px; direction: ltr; text-align: right; }
-        .meta-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 8px; }
+        .meta-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 8px; flex-wrap: wrap; gap: 6px; }
         
         .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; }
         .badge.free { background: #334155; color: #cbd5e1; }
-        .badge.weekly { background: #0284c7; color: white; }
-        .badge.monthly { background: #7c3aed; color: white; }
+        .badge.weekly { background: var(--cyan); color: white; }
+        .badge.monthly { background: var(--purple); color: white; }
         .badge.success { background: rgba(34,197,94,0.2); color: var(--success); }
         .badge.failed { background: rgba(239,68,68,0.2); color: var(--danger); }
         .badge.quota { background: rgba(245,158,11,0.2); color: var(--warning); }
@@ -108,6 +111,176 @@
 
         .empty { text-align: center; color: var(--text-muted); padding: 40px; grid-column: 1 / -1; }
         .loading { text-align: center; color: var(--text-muted); padding: 40px; grid-column: 1 / -1; }
+
+        /* ==========================================
+           قسم الباقات - تصميم شيك
+           ========================================== */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
+        }
+
+        .plan-card {
+            background: linear-gradient(145deg, #1e293b, #182133);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
+        }
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.5;
+        }
+        .plan-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+        }
+
+        /* ألوان الباقات */
+        .plan-card.free::before { background: linear-gradient(90deg, transparent, #94a3b8, transparent); }
+        .plan-card.free { border-color: #475569; }
+        .plan-card.free:hover { border-color: #94a3b8; }
+
+        .plan-card.weekly::before { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+        .plan-card.weekly { border-color: rgba(2,132,199,0.4); }
+        .plan-card.weekly:hover { border-color: var(--cyan); box-shadow: 0 20px 40px rgba(2,132,199,0.2); }
+
+        .plan-card.monthly::before { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+        .plan-card.monthly { border-color: rgba(124,58,237,0.4); }
+        .plan-card.monthly:hover { border-color: var(--purple); box-shadow: 0 20px 40px rgba(124,58,237,0.25); }
+
+        .plan-card.guest::before { background: linear-gradient(90deg, transparent, #64748b, transparent); }
+        .plan-card.guest { border-color: #334155; opacity: 0.85; }
+
+        .plan-badge-premium {
+            position: absolute;
+            top: 12px; left: 12px;
+            background: linear-gradient(135deg, var(--gold), #d97706);
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.3px;
+        }
+
+        .plan-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed rgba(255,255,255,0.08);
+        }
+        .plan-name {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .plan-card.free .plan-name { color: #cbd5e1; }
+        .plan-card.weekly .plan-name { color: #38bdf8; }
+        .plan-card.monthly .plan-name { color: #a78bfa; }
+        .plan-card.guest .plan-name { color: #94a3b8; }
+
+        .plan-price {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .plan-price small {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .plan-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            font-size: 13px;
+        }
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cbd5e1;
+        }
+        .plan-features li.ok::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 900;
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .plan-features li.no {
+            color: #64748b;
+        }
+        .plan-features li.no::before {
+            content: '✕';
+            color: #475569;
+            font-weight: 900;
+            font-size: 13px;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .plan-platforms-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .plan-platforms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .platform-chip {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+        .platform-chip.unlimited {
+            background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(168,85,247,0.15));
+            border-color: rgba(168,85,247,0.4);
+            color: #ddd6fe;
+        }
+
+        .plan-footer {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(255,255,255,0.08);
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            font-weight: 600;
+        }
 
         /* المودال (النوافذ المنبثقة) */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
@@ -151,6 +324,7 @@
 
         <div class="tabs">
             <button class="tab active" data-tab="users">👥 المستخدمون</button>
+            <button class="tab" data-tab="plans">💎 الباقات</button>
             <button class="tab" data-tab="history">📋 السجلات</button>
         </div>
 
@@ -164,6 +338,11 @@
             </div>
             <input type="text" id="userSearch" class="form-control search-box" placeholder="بحث بالاسم أو رقم الهاتف...">
             <div id="usersList" class="grid-list"></div>
+        </div>
+
+        <!-- 🆕 تبويب الباقات -->
+        <div id="panel-plans" class="panel">
+            <div id="plansList" class="plans-grid"></div>
         </div>
 
         <!-- تبويب السجلات -->
@@ -248,6 +427,18 @@
         const $ = id => document.getElementById(id);
         const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
         const todayStr = () => new Date().toLocaleDateString("en-CA");
+
+        // أسماء المنصات بالعربي مع أيقونات
+        const PLATFORM_INFO = {
+            tiktok: { name: 'تيك توك', icon: '🎵' },
+            soundcloud: { name: 'ساوند كلاود', icon: '🎧' },
+            facebook: { name: 'فيسبوك', icon: '📘' },
+            instagram: { name: 'إنستجرام', icon: '📷' },
+            youtube: { name: 'يوتيوب', icon: '▶️' },
+            x: { name: 'تويتر (X)', icon: '𝕏' },
+            shahid: { name: 'شاهد', icon: '🎬' },
+            anghami: { name: 'أنغامي', icon: '🎼' }
+        };
 
         function showMsg(text, type = "ok") {
             const m = $("msg");
@@ -349,6 +540,7 @@
                 tab.classList.add("active");
                 $("panel-" + tab.dataset.tab).classList.add("active");
                 if (tab.dataset.tab === "users") loadUsers();
+                if (tab.dataset.tab === "plans") renderPlans();
                 if (tab.dataset.tab === "history") loadHistory();
             });
         });
@@ -429,14 +621,154 @@
         $("userSearch").addEventListener("input", () => renderUsers(filterUsers()));
         $("refreshUsersBtn").addEventListener("click", loadUsers);
 
+        // ==========================================
+        // 🆕 الباقات
+        // ==========================================
+        const PLAN_DISPLAY = {
+            guest: {
+                order: 0,
+                color: 'guest',
+                title: 'زائر (غير مسجل)',
+                price: 'مجاناً',
+                priceLabel: '',
+                features: [
+                    { ok: true, text: '2 تحميلات يومياً' },
+                    { ok: false, text: 'بدون استماع' },
+                    { ok: false, text: 'بدون تسجيل دخول دائم' },
+                    { ok: true, text: 'جودة عادية' }
+                ]
+            },
+            free: {
+                order: 1,
+                color: 'free',
+                title: 'الباقة المجانية',
+                price: '0',
+                priceLabel: 'جنيه / مجاناً',
+                features: [
+                    { ok: true, text: '10 تحميلات يومياً' },
+                    { ok: true, text: '50 استماع شهرياً' },
+                    { ok: true, text: 'حفظ الحساب والإحصائيات' },
+                    { ok: false, text: 'بدون فيسبوك / انستجرام / يوتيوب' }
+                ]
+            },
+            weekly: {
+                order: 2,
+                color: 'weekly',
+                title: 'الباقة الأسبوعية',
+                price: '10',
+                priceLabel: 'جنيه / أسبوع',
+                features: [
+                    { ok: true, text: '20 تحميل يومياً' },
+                    { ok: true, text: 'استماع غير محدود' },
+                    { ok: true, text: 'فيسبوك + انستجرام' },
+                    { ok: true, text: 'سرعة سيرفر عالية' }
+                ]
+            },
+            monthly: {
+                order: 3,
+                color: 'monthly',
+                title: 'الباقة الشهرية VIP',
+                price: '50',
+                priceLabel: 'جنيه / شهر',
+                isPremium: true,
+                features: [
+                    { ok: true, text: 'تحميلات غير محدودة ♾️' },
+                    { ok: true, text: 'استماع غير محدود ♾️' },
+                    { ok: true, text: 'تحميل من أي موقع في العالم 🌍' },
+                    { ok: true, text: 'أولوية قصوى في السرعة' }
+                ]
+            }
+        };
+
+        function renderPlans() {
+            const container = $("plansList");
+            const plans = allPlans || {};
+
+            // لو مفيش باقات من السيرفر → نستخدم البيانات الثابتة
+            const planKeys = Object.keys(plans).length
+                ? Object.keys(plans).sort((a,b) => (PLAN_DISPLAY[a]?.order || 99) - (PLAN_DISPLAY[b]?.order || 99))
+                : ['guest', 'free', 'weekly', 'monthly'];
+
+            if (!planKeys.length) {
+                container.innerHTML = `<div class="empty">مفيش باقات متاحة</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            planKeys.forEach(pid => {
+                const fromServer = plans[pid] || {};
+                const display = PLAN_DISPLAY[pid] || {};
+                const plan = { ...display, ...fromServer };
+                const colorClass = plan.color || 'free';
+                const isUnlimited = plan.all_platforms || (fromServer.platforms && fromServer.platforms.length >= 8);
+
+                const platforms = (fromServer.platforms || []).map(p => {
+                    const info = PLATFORM_INFO[p] || { name: p, icon: '🔗' };
+                    return `<span class="platform-chip">${info.icon} ${info.name}</span>`;
+                }).join('');
+
+                const platformsHTML = isUnlimited
+                    ? `<div class="plan-platforms-title">🌍 كل المواقع مدعومة</div>
+                       <div class="plan-platforms">
+                           ${platforms}
+                           <span class="platform-chip unlimited">✨ وأي موقع تاني</span>
+                       </div>`
+                    : `<div class="plan-platforms-title">📱 المواقع المدعومة</div>
+                       <div class="plan-platforms">${platforms || '<span style="color:var(--text-muted);font-size:11px;">—</span>'}</div>`;
+
+                const featuresHTML = (plan.features || []).map(f =>
+                    `<li class="${f.ok ? 'ok' : 'no'}">${esc(f.text)}</li>`
+                ).join('');
+
+                const priceDisplay = fromServer.price !== undefined
+                    ? `${fromServer.price}`
+                    : plan.price;
+                const priceLabel = fromServer.duration_label || plan.priceLabel || '';
+
+                const card = document.createElement('div');
+                card.className = `plan-card ${colorClass}`;
+                card.innerHTML = `
+                    ${plan.isPremium ? '<div class="plan-badge-premium">🔥 الأكثر طلباً</div>' : ''}
+                    <div class="plan-head">
+                        <div>
+                            <div class="plan-name">${esc(fromServer.name || plan.title)}</div>
+                            <div style="font-size:11px;color:var(--text-muted);font-weight:600;">ID: ${esc(pid)}</div>
+                        </div>
+                        <div class="plan-price">
+                            ${esc(priceDisplay)}
+                            <small>${esc(priceLabel)}</small>
+                        </div>
+                    </div>
+
+                    <ul class="plan-features">${featuresHTML}</ul>
+
+                    <div>${platformsHTML}</div>
+
+                    <div class="plan-footer">
+                        ${fromServer.limit === -1 ? 'تحميلات: ♾️ غير محدود' : `حد التحميل اليومي: ${fromServer.limit || plan.features?.[0]?.text || '—'}`}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         async function loadPlans() {
             try {
                 const r = await fetch(SERVER_URL + "/get-plans");
                 const d = await r.json();
-                if (r.ok && d.success) allPlans = d.plans || {};
+                if (r.ok && d.success) {
+                    allPlans = d.plans || {};
+                    // لو احنا على تاب الباقات → نحدث العرض
+                    if (document.querySelector('.tab[data-tab="plans"].active')) {
+                        renderPlans();
+                    }
+                }
             } catch (e) { console.error(e); }
         }
 
+        // ==========================================
+        // السجلات
+        // ==========================================
         async function loadHistory() {
             $("historyList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
             try {
@@ -628,7 +960,14 @@
         }
         function stopRefresh() { if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; } }
 
-        function startDashboard() { loadPlans(); loadUsers(); startRefresh(); }
+        function startDashboard() {
+            loadPlans().then(() => {
+                // بعد ما نجيب الباقات → نحدث عرضها
+                if (document.querySelector('.tab[data-tab="plans"].active')) renderPlans();
+            });
+            loadUsers();
+            startRefresh();
+        }
 
         (async function init() {
             if (await checkAuth()) {
