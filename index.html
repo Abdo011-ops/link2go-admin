@@ -8,70 +8,47 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#08070d;
-  --bg-2:#0d0c15;
+  --bg:#08070d;--bg-2:#0d0c15;
   --surface:rgba(22,20,35,.72);
   --surface-2:rgba(30,27,48,.85);
   --border:rgba(168,132,255,.14);
   --border-2:rgba(168,132,255,.28);
-  --text:#f5f3ff;
-  --muted:#a09db8;
-  --muted-2:#6b6885;
-  --accent:#a855f7;
-  --accent-2:#7c3aed;
-  --accent-3:#c084fc;
-  --success:#10b981;
-  --danger:#ef4444;
-  --warning:#f59e0b;
-  --info:#3b82f6;
+  --text:#f5f3ff;--muted:#a09db8;--muted-2:#6b6885;
+  --accent:#a855f7;--accent-2:#7c3aed;--accent-3:#c084fc;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;
   --glow:0 0 40px rgba(168,85,247,.3);
 }
-html,body{min-height:100%;}
 body{
-  font-family:'Cairo',system-ui,-apple-system,sans-serif;
-  background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(168,85,247,.18),transparent),
-             radial-gradient(ellipse 60% 40% at 80% 100%,rgba(124,58,237,.12),transparent),
-             linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
-  background-attachment:fixed;
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:0;
+  font-family:'Cairo',system-ui,sans-serif;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(168,85,247,.18),transparent),
+    radial-gradient(ellipse 60% 40% at 80% 100%,rgba(124,58,237,.12),transparent),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+  background-attachment:fixed;color:var(--text);
+  min-height:100vh;overflow-x:hidden;
 }
 
-/* ============ رسائل ============ */
+/* Toast */
 .toast{
   position:fixed;top:24px;left:50%;transform:translate(-50%,-120%);
-  padding:14px 26px;border-radius:14px;
-  background:rgba(22,20,35,.95);
-  border:1px solid var(--border-2);
-  backdrop-filter:blur(20px);
-  font-size:13.5px;font-weight:700;
-  z-index:9999;
-  transition:transform .4s cubic-bezier(.16,1,.3,1);
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  padding:13px 24px;border-radius:13px;
+  background:rgba(22,20,35,.97);border:1px solid var(--border-2);
+  backdrop-filter:blur(20px);font-size:13px;font-weight:700;
+  z-index:9999;transition:transform .4s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 20px 60px rgba(0,0,0,.5);max-width:90vw;
   display:flex;align-items:center;gap:10px;
-  max-width:90vw;
 }
 .toast.show{transform:translate(-50%,0);}
 .toast.ok{border-color:rgba(16,185,129,.4);color:#6ee7b7;}
 .toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5;}
 
-/* ============ شاشة الدخول ============ */
-#loginScreen{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:20px;position:relative;z-index:1;
-}
+/* Login */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1;}
+#loginScreen.hidden{display:none;}
 .login-card{
   width:100%;max-width:400px;
   background:linear-gradient(145deg,rgba(30,27,48,.9),rgba(20,18,32,.95));
-  border:1px solid var(--border-2);
-  border-radius:24px;padding:42px 32px;
+  border:1px solid var(--border-2);border-radius:24px;padding:42px 32px;
   position:relative;overflow:hidden;
   box-shadow:0 30px 90px rgba(0,0,0,.7),var(--glow);
   animation:cardIn .6s cubic-bezier(.16,1,.3,1);
@@ -80,235 +57,162 @@ body::before{
 .login-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
-  background-size:200% 100%;
-  animation:shine 3s linear infinite;
+  background-size:200% 100%;animation:shine 3s linear infinite;
 }
 @keyframes shine{to{background-position:200% center;}}
-
 .login-logo{
   width:72px;height:72px;border-radius:20px;margin:0 auto 20px;
   display:grid;place-items:center;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  box-shadow:0 15px 40px rgba(168,85,247,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  box-shadow:0 15px 40px rgba(168,85,247,.5);
   font-size:32px;
 }
-.login-card h2{
-  font-size:24px;font-weight:800;text-align:center;margin-bottom:6px;
+.login-card h2{font-size:24px;font-weight:800;text-align:center;margin-bottom:6px;
   background:linear-gradient(135deg,#fff,var(--accent-3));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
 .login-card p{text-align:center;color:var(--muted);font-size:13px;margin-bottom:28px;}
 
 .input-group{margin-bottom:16px;text-align:right;}
-.input-group label{
-  display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;
-}
+.input-group label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
 .input-group input{
   width:100%;padding:14px 16px;border-radius:12px;
-  background:rgba(10,9,16,.6);
-  border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:14px;
-  outline:none;transition:all .25s;
+  background:rgba(10,9,16,.6);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:.25s;
 }
-.input-group input:focus{
-  border-color:var(--accent);
-  background:rgba(10,9,16,.9);
-  box-shadow:0 0 0 4px rgba(168,85,247,.12);
-}
+.input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
 
 .btn-primary{
   width:100%;padding:14px;border-radius:13px;border:0;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   color:#fff;font-family:inherit;font-size:15px;font-weight:800;
-  cursor:pointer;transition:all .25s;
-  box-shadow:0 12px 35px rgba(168,85,247,.35);
-  margin-top:8px;
+  cursor:pointer;transition:.25s;
+  box-shadow:0 12px 35px rgba(168,85,247,.35);margin-top:8px;
 }
 .btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 17px 45px rgba(168,85,247,.5);}
-.btn-primary:active{transform:scale(.98);}
 .btn-primary:disabled{opacity:.6;cursor:wait;}
 
-.login-msg{
-  display:none;margin-top:14px;padding:11px 14px;border-radius:11px;
-  font-size:12.5px;text-align:center;font-weight:600;
-}
+.login-msg{display:none;margin-top:14px;padding:11px 14px;border-radius:11px;font-size:12.5px;text-align:center;font-weight:600;}
 .login-msg.show{display:block;}
 .login-msg.err{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
 
-/* ============ اللوحة الرئيسية ============ */
+/* Main */
 #mainPanel{display:none;position:relative;z-index:1;}
 #mainPanel.show{display:block;}
-
 .wrap{width:min(1240px,94%);margin:0 auto;padding:28px 0 80px;}
 
-/* الهيدر */
 .app-header{
   display:flex;justify-content:space-between;align-items:center;
-  padding:20px 0 24px;
-  border-bottom:1px solid var(--border);
-  margin-bottom:28px;
-  flex-wrap:wrap;gap:14px;
+  padding:20px 0 24px;border-bottom:1px solid var(--border);
+  margin-bottom:28px;flex-wrap:wrap;gap:14px;
 }
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;}
 .brand-icon{
   width:44px;height:44px;border-radius:13px;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   display:grid;place-items:center;
-  box-shadow:0 10px 30px rgba(168,85,247,.4);
-  font-size:22px;
+  box-shadow:0 10px 30px rgba(168,85,247,.4);font-size:22px;
 }
-.brand-text strong{display:block;font-size:17px;font-weight:900;letter-spacing:-.3px;}
-.brand-text span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;font-weight:500;}
+.brand-text strong{display:block;font-size:17px;font-weight:900;}
+.brand-text span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;}
 
 .header-actions{display:flex;gap:10px;flex-wrap:wrap;}
 .icon-btn{
   display:inline-flex;align-items:center;gap:8px;
   padding:10px 16px;border-radius:11px;
-  background:var(--surface);
-  border:1px solid var(--border);
+  background:var(--surface);border:1px solid var(--border);
   color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;
-  cursor:pointer;transition:all .25s;text-decoration:none;
-  backdrop-filter:blur(10px);
+  cursor:pointer;transition:.25s;text-decoration:none;
 }
-.icon-btn:hover{
-  background:var(--surface-2);
-  border-color:var(--border-2);
-  transform:translateY(-1px);
-}
-.icon-btn.danger:hover{
-  border-color:rgba(239,68,68,.5);
-  color:#fca5a5;
-}
+.icon-btn:hover{background:var(--surface-2);border-color:var(--border-2);transform:translateY(-1px);}
+.icon-btn.danger:hover{border-color:rgba(239,68,68,.5);color:#fca5a5;}
 .icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
 
-/* التابات */
+/* Tabs */
 .tabs{
   display:flex;gap:6px;margin-bottom:24px;
-  background:var(--surface);
-  padding:6px;border-radius:16px;
+  background:var(--surface);padding:6px;border-radius:16px;
   border:1px solid var(--border);
-  width:fit-content;max-width:100%;
-  backdrop-filter:blur(20px);
-  overflow-x:auto;
+  width:fit-content;max-width:100%;overflow-x:auto;
 }
 .tabs::-webkit-scrollbar{display:none;}
 .tab{
   padding:11px 20px;border-radius:11px;border:0;
   background:transparent;color:var(--muted);
   font-family:inherit;font-size:13.5px;font-weight:700;
-  cursor:pointer;transition:all .25s;
-  display:inline-flex;align-items:center;gap:8px;
-  white-space:nowrap;
+  cursor:pointer;transition:.25s;
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
 }
 .tab:hover{color:var(--text);}
-.tab.active{
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#fff;
-  box-shadow:0 10px 30px rgba(168,85,247,.4);
-}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.4);}
 .tab svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.tab .badge-mini{
+  font-size:10px;padding:2px 7px;border-radius:100px;
+  background:rgba(255,255,255,.15);font-weight:800;
+}
+.tab.active .badge-mini{background:rgba(255,255,255,.3);}
 
 .panel{display:none;}
 .panel.active{display:block;animation:panelIn .4s cubic-bezier(.16,1,.3,1);}
 @keyframes panelIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
-/* الإحصائيات */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:14px;margin-bottom:24px;
-}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
 .stat{
   background:linear-gradient(145deg,rgba(30,27,48,.7),rgba(20,18,32,.85));
-  border:1px solid var(--border);
-  border-radius:16px;padding:20px;
-  position:relative;overflow:hidden;
-  transition:all .3s;
+  border:1px solid var(--border);border-radius:16px;padding:20px;
+  position:relative;overflow:hidden;transition:.3s;
 }
-.stat:hover{
-  border-color:var(--border-2);
-  transform:translateY(-3px);
-  box-shadow:0 20px 50px rgba(0,0,0,.4);
-}
-.stat::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent-3));
-  opacity:.6;
-}
+.stat:hover{border-color:var(--border-2);transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,.4);}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-3));opacity:.6;}
 .stat.blue::before{background:linear-gradient(90deg,#3b82f6,#60a5fa);}
 .stat.green::before{background:linear-gradient(90deg,#10b981,#34d399);}
 .stat.gold::before{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
-
-.stat-icon{
-  width:38px;height:38px;border-radius:11px;
-  background:rgba(168,85,247,.15);
-  display:grid;place-items:center;
-  margin-bottom:12px;font-size:18px;
-}
+.stat.red::before{background:linear-gradient(90deg,#ef4444,#f87171);}
+.stat-icon{width:38px;height:38px;border-radius:11px;background:rgba(168,85,247,.15);display:grid;place-items:center;margin-bottom:12px;font-size:18px;}
 .stat.blue .stat-icon{background:rgba(59,130,246,.15);}
 .stat.green .stat-icon{background:rgba(16,185,129,.15);}
 .stat.gold .stat-icon{background:rgba(245,158,11,.15);}
-
+.stat.red .stat-icon{background:rgba(239,68,68,.15);}
 .stat-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
 .stat-value{font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1;}
 .stat.blue .stat-value{color:#60a5fa;}
 .stat.green .stat-value{color:#34d399;}
 .stat.gold .stat-value{color:#fbbf24;}
+.stat.red .stat-value{color:#f87171;}
 
-/* شريط البحث */
-.search-bar{
-  display:flex;gap:10px;margin-bottom:20px;
-  flex-wrap:wrap;
-}
+/* Search bar */
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .search-bar input{
-  flex:1;min-width:220px;
-  padding:13px 18px;border-radius:12px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:13.5px;
-  outline:none;transition:all .25s;
-  backdrop-filter:blur(10px);
+  flex:1;min-width:220px;padding:13px 18px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.25s;
 }
-.search-bar input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 4px rgba(168,85,247,.12);
-}
+.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
 .search-bar button{
   padding:13px 22px;border-radius:12px;border:0;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   color:#fff;font-family:inherit;font-size:13px;font-weight:800;
-  cursor:pointer;transition:all .25s;
-  box-shadow:0 10px 30px rgba(168,85,247,.3);
+  cursor:pointer;transition:.25s;box-shadow:0 10px 30px rgba(168,85,247,.3);
   display:inline-flex;align-items:center;gap:7px;
 }
-.search-bar button:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(168,85,247,.5);}
+.search-bar button:hover{transform:translateY(-2px);}
 
-/* الكروت */
+/* List / Cards */
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
-
 .card{
   background:linear-gradient(145deg,rgba(30,27,48,.65),rgba(20,18,32,.85));
-  border:1px solid var(--border);
-  border-radius:16px;padding:18px;
-  transition:all .3s;
-  position:relative;overflow:hidden;
-  backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:16px;padding:18px;
+  transition:.3s;position:relative;overflow:hidden;
 }
-.card:hover{
-  border-color:var(--border-2);
-  transform:translateY(-3px);
-  box-shadow:0 25px 60px rgba(0,0,0,.5);
-}
-
+.card:hover{border-color:var(--border-2);transform:translateY(-3px);box-shadow:0 25px 60px rgba(0,0,0,.5);}
 .card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-.card-title{font-size:15px;font-weight:800;margin-bottom:4px;letter-spacing:-.2px;}
+.card-title{font-size:15px;font-weight:800;margin-bottom:4px;word-break:break-word;}
 .card-phone{font-size:12.5px;color:var(--accent-3);direction:ltr;text-align:right;font-weight:600;}
 
 .badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
 .badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:4px 10px;border-radius:100px;
-  font-size:10.5px;font-weight:800;letter-spacing:.2px;
+  display:inline-flex;align-items:center;gap:4px;padding:4px 10px;
+  border-radius:100px;font-size:10.5px;font-weight:800;
 }
 .badge.free{background:rgba(148,163,184,.15);color:#cbd5e1;}
 .badge.weekly{background:rgba(59,130,246,.2);color:#93c5fd;}
@@ -322,285 +226,91 @@ body::before{
 .badge.download{background:rgba(59,130,246,.2);color:#93c5fd;}
 .badge.video{background:rgba(59,130,246,.15);color:#93c5fd;}
 .badge.cache{background:rgba(16,185,129,.2);color:#6ee7b7;}
+.badge.high{background:rgba(239,68,68,.25);color:#fca5a5;}
+.badge.medium{background:rgba(245,158,11,.2);color:#fcd34d;}
+.badge.low{background:rgba(59,130,246,.2);color:#93c5fd;}
+.badge.critical{background:rgba(239,68,68,.4);color:#fff;animation:pulse-red 1.5s infinite;}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 0 0 6px rgba(239,68,68,0);}}
 
-.meta-row{
-  display:flex;gap:14px;flex-wrap:wrap;
-  margin-top:10px;padding-top:12px;
-  border-top:1px dashed rgba(168,132,255,.12);
-  font-size:11.5px;color:var(--muted);font-weight:600;
-}
+.meta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:12px;border-top:1px dashed rgba(168,132,255,.12);font-size:11.5px;color:var(--muted);font-weight:600;}
 .meta-row span{display:inline-flex;align-items:center;gap:5px;}
 
-.card-actions{display:flex;gap:6px;flex-wrap:wrap;}
-
+.card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
 .card-btn{
   padding:8px 14px;border-radius:9px;
-  background:rgba(168,85,247,.1);
-  border:1px solid var(--border);
+  background:rgba(168,85,247,.1);border:1px solid var(--border);
   color:var(--text);font-family:inherit;font-size:12px;font-weight:700;
-  cursor:pointer;transition:all .2s;
-  display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;text-decoration:none;
 }
-.card-btn:hover{
-  background:var(--surface-2);
-  border-color:var(--border-2);
-  transform:translateY(-1px);
-}
-.card-btn.primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  border-color:transparent;color:#fff;
-  box-shadow:0 8px 25px rgba(168,85,247,.35);
-}
+.card-btn:hover{background:var(--surface-2);border-color:var(--border-2);}
+.card-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;color:#fff;box-shadow:0 8px 25px rgba(168,85,247,.35);}
 .card-btn.primary:hover{box-shadow:0 12px 35px rgba(168,85,247,.5);}
 .card-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
 .card-btn.danger:hover{background:rgba(239,68,68,.25);color:#fff;}
-.card-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.card-btn.success{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#6ee7b7;}
+.card-btn.success:hover{background:rgba(16,185,129,.25);color:#fff;}
+.card-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;}
 
-.empty,.loading{
-  grid-column:1/-1;
-  padding:60px 20px;text-align:center;
-  color:var(--muted);font-size:13.5px;font-weight:600;
-}
-.loading::before{
-  content:'';display:block;
-  width:36px;height:36px;margin:0 auto 16px;
-  border:3px solid rgba(168,85,247,.2);
-  border-top-color:var(--accent);
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-}
+.empty,.loading{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px;font-weight:600;}
+.loading::before{content:'';display:block;width:36px;height:36px;margin:0 auto 16px;border:3px solid rgba(168,85,247,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ============ الباقات ============ */
-.plans-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:16px;
-}
-.plan-card{
-  background:linear-gradient(145deg,rgba(30,27,48,.75),rgba(20,18,32,.9));
-  border:1px solid var(--border);
-  border-radius:20px;padding:24px;
-  position:relative;overflow:hidden;
-  transition:all .3s;
-  display:flex;flex-direction:column;
-}
-.plan-card:hover{
-  transform:translateY(-5px);
-  border-color:var(--border-2);
-  box-shadow:0 30px 70px rgba(0,0,0,.5);
-}
-.plan-card.featured{
-  border-color:rgba(168,85,247,.4);
-  background:linear-gradient(145deg,rgba(45,25,75,.85),rgba(30,20,50,.95));
-  box-shadow:0 20px 60px rgba(168,85,247,.2);
-}
-.plan-card.featured::before{
-  content:'⭐ الأكثر طلباً';
-  position:absolute;top:14px;left:14px;
-  padding:5px 12px;border-radius:100px;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#fff;font-size:10.5px;font-weight:800;
-  box-shadow:0 6px 20px rgba(168,85,247,.5);
-}
-.plan-head{
-  display:flex;justify-content:space-between;align-items:flex-start;
-  margin-bottom:16px;
-}
-.plan-icon{
-  width:52px;height:52px;border-radius:14px;
-  display:grid;place-items:center;font-size:24px;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  box-shadow:0 10px 30px rgba(168,85,247,.35);
-}
-.plan-icon.free{background:linear-gradient(135deg,#64748b,#94a3b8);box-shadow:0 10px 30px rgba(100,116,139,.3);}
-.plan-icon.weekly{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:0 10px 30px rgba(59,130,246,.35);}
-.plan-icon.monthly{background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 10px 30px rgba(245,158,11,.4);color:#000;}
-
-.plan-price{text-align:left;}
-.plan-price .amount{
-  font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1;
-  display:block;
-}
-.plan-price .label{font-size:11.5px;color:var(--muted);margin-top:4px;display:block;font-weight:600;}
-
-.plan-name{
-  font-size:17px;font-weight:900;margin-bottom:6px;
-  letter-spacing:-.3px;
-}
-.plan-desc{font-size:12.5px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
-
-.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;flex:1;}
-.plan-features li{
-  display:flex;align-items:flex-start;gap:9px;
-  font-size:12.5px;color:#d5d2e8;line-height:1.5;font-weight:500;
-}
-.plan-features li::before{
-  content:'✓';
-  flex-shrink:0;width:18px;height:18px;
-  border-radius:50%;
-  background:rgba(16,185,129,.15);
-  color:#6ee7b7;
-  display:grid;place-items:center;
-  font-size:11px;font-weight:900;
-  margin-top:1px;
-}
-.plan-features li.x-feature{color:var(--muted-2);}
-.plan-features li.x-feature::before{
-  content:'✕';
-  background:rgba(239,68,68,.1);
-  color:#f87171;
-}
-
-.plan-platforms{
-  margin-top:16px;padding-top:16px;
-  border-top:1px dashed rgba(168,132,255,.15);
-}
-.plan-platforms-label{
-  font-size:10.5px;color:var(--muted);font-weight:700;
-  margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;
-}
-.plan-platforms-list{
-  display:flex;gap:6px;flex-wrap:wrap;
-}
-.platform-chip{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 10px;border-radius:100px;
-  background:rgba(168,85,247,.1);
-  border:1px solid rgba(168,132,255,.18);
-  font-size:10.5px;font-weight:700;
-  color:#d8b4fe;
-}
-.platform-chip.all{
-  background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(251,191,36,.15));
-  border-color:rgba(245,158,11,.4);
-  color:#fbbf24;
-}
-
-/* ============ Sub tabs ============ */
+/* Sub-tabs */
 .sub-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
-.sub-tab{
-  padding:8px 14px;border-radius:10px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;
-  cursor:pointer;transition:all .2s;
-}
+.sub-tab{padding:8px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;}
 .sub-tab:hover{color:var(--text);border-color:var(--border-2);}
-.sub-tab.active{
-  background:rgba(168,85,247,.15);
-  border-color:rgba(168,132,255,.4);
-  color:var(--accent-3);
-}
+.sub-tab.active{background:rgba(168,85,247,.15);border-color:rgba(168,132,255,.4);color:var(--accent-3);}
 .sub-tab.danger{margin-inline-start:auto;color:#fca5a5;border-color:rgba(239,68,68,.3);}
 .sub-tab.danger:hover{background:rgba(239,68,68,.15);color:#fff;}
 
-/* ============ Modal ============ */
-.modal{
-  position:fixed;inset:0;z-index:2000;
-  background:rgba(5,4,10,.85);
-  backdrop-filter:blur(15px);
-  display:none;align-items:center;justify-content:center;
-  padding:20px;
-}
-.modal.active{display:flex;animation:fadeIn .3s ease;}
+/* Modal */
+.modal{position:fixed;inset:0;z-index:2000;background:rgba(5,4,10,.85);backdrop-filter:blur(15px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal.active{display:flex;animation:fadeIn .3s;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-
 .modal-content{
   width:100%;max-width:540px;
   background:linear-gradient(145deg,rgba(30,27,48,.98),rgba(20,18,32,.99));
-  border:1px solid var(--border-2);
-  border-radius:22px;padding:28px;
-  max-height:92vh;overflow-y:auto;
-  position:relative;overflow-x:hidden;
+  border:1px solid var(--border-2);border-radius:22px;padding:28px;
+  max-height:92vh;overflow-y:auto;position:relative;
   box-shadow:0 40px 100px rgba(0,0,0,.8),var(--glow);
   animation:modalIn .45s cubic-bezier(.16,1,.3,1);
 }
-.modal-content.wide{max-width:720px;}
 @keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.modal-content::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
-  background-size:200% 100%;animation:shine 3s linear infinite;
-}
+.modal-content::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);background-size:200% 100%;animation:shine 3s linear infinite;}
 
-.modal-header{
-  display:flex;justify-content:space-between;align-items:flex-start;
-  margin-bottom:20px;gap:12px;
-}
-.modal-header h3{
-  font-size:18px;font-weight:900;letter-spacing:-.3px;
-  background:linear-gradient(135deg,#fff,var(--accent-3));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.close-btn{
-  width:34px;height:34px;border-radius:10px;
-  background:rgba(239,68,68,.1);
-  border:1px solid rgba(239,68,68,.25);
-  color:#fca5a5;
-  cursor:pointer;transition:all .2s;
-  display:grid;place-items:center;flex-shrink:0;
-  font-size:18px;font-family:inherit;
-}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;}
+.modal-header h3{font-size:18px;font-weight:900;background:linear-gradient(135deg,#fff,var(--accent-3));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.close-btn{width:34px;height:34px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5;cursor:pointer;transition:.2s;display:grid;place-items:center;flex-shrink:0;font-size:18px;}
 .close-btn:hover{background:rgba(239,68,68,.25);color:#fff;transform:rotate(90deg);}
 
-.modal-phone{
-  color:var(--accent-3);font-size:13px;font-weight:700;
-  direction:ltr;text-align:right;margin-bottom:10px;
-}
-.modal-meta{
-  display:flex;gap:12px;flex-wrap:wrap;
-  padding:10px 0 18px;
-  border-bottom:1px dashed rgba(168,132,255,.15);
-  margin-bottom:16px;
-  font-size:11.5px;color:var(--muted);font-weight:600;
-}
-
-/* Form fields */
 .field{margin-bottom:14px;text-align:right;}
 .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
 .field input,.field select{
   width:100%;padding:12px 14px;border-radius:11px;
-  background:rgba(10,9,16,.7);
-  border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:13.5px;
-  outline:none;transition:all .25s;
+  background:rgba(10,9,16,.7);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.25s;
 }
-.field input:focus,.field select:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 4px rgba(168,85,247,.12);
-}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
 .modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
-
-.btn{
-  padding:12px 20px;border-radius:12px;border:0;
-  font-family:inherit;font-size:13.5px;font-weight:800;
-  cursor:pointer;transition:all .25s;
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-}
-.btn.primary{
-  flex:1;background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.35);
-}
-.btn.primary:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(168,85,247,.5);}
-.btn.danger{
-  background:rgba(239,68,68,.1);
-  border:1px solid rgba(239,68,68,.3);
-  color:#fca5a5;
-}
+.btn{padding:12px 20px;border-radius:12px;border:0;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+.btn.primary{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.35);}
+.btn.primary:hover{transform:translateY(-2px);}
+.btn.danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
 .btn.danger:hover{background:rgba(239,68,68,.25);color:#fff;}
 
-/* Video player */
-.video-slot{
-  width:100%;background:#000;
-  border-radius:14px;overflow:hidden;
-  display:flex;justify-content:center;align-items:center;
-  min-height:240px;
+/* Overview section */
+.overview-section{
+  background:linear-gradient(145deg,rgba(30,27,48,.6),rgba(20,18,32,.85));
+  border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;
 }
-.video-slot video{width:100%;display:block;border-radius:14px;max-height:60vh;}
-.video-slot audio{width:100%;padding:20px;}
+.overview-section h3{font-size:15px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--accent-3);}
+.overview-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed rgba(168,132,255,.1);font-size:13px;}
+.overview-row:last-child{border-bottom:0;}
+.overview-row .label{color:var(--muted);font-weight:600;}
+.overview-row .value{font-weight:800;color:#fff;}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
 
 /* Responsive */
 @media(max-width:700px){
@@ -611,11 +321,9 @@ body::before{
   .stat{padding:16px;}
   .stat-value{font-size:20px;}
   .list{grid-template-columns:1fr;}
-  .plans-grid{grid-template-columns:1fr;}
   .tab{padding:9px 14px;font-size:12.5px;}
   .modal-content{padding:22px;}
   .field-row{grid-template-columns:1fr;}
-  .plan-card{padding:20px;}
   .icon-btn{padding:9px 12px;font-size:11.5px;}
   .icon-btn span{display:none;}
 }
@@ -625,13 +333,12 @@ body::before{
 
 <div id="toast" class="toast"></div>
 
-<!-- شاشة الدخول -->
+<!-- Login -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">🔐</div>
     <h2>لوحة التحكم</h2>
     <p>سجّل دخولك للوصول إلى لوحة الأدمن</p>
-
     <div class="input-group">
       <label>اسم المستخدم</label>
       <input id="usernameInput" type="text" placeholder="Username" autocomplete="username">
@@ -645,7 +352,7 @@ body::before{
   </div>
 </div>
 
-<!-- اللوحة الرئيسية -->
+<!-- Main -->
 <div id="mainPanel">
   <div class="wrap">
 
@@ -670,22 +377,38 @@ body::before{
     </header>
 
     <div class="tabs">
-      <button class="tab active" data-tab="users">
+      <button class="tab active" data-tab="overview">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        نظرة عامة
+      </button>
+      <button class="tab" data-tab="users">
         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         المستخدمون
-      </button>
-      <button class="tab" data-tab="plans">
-        <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-        الباقات
       </button>
       <button class="tab" data-tab="history">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         السجلات
       </button>
+      <button class="tab" data-tab="security">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        الأمان
+        <span class="badge-mini" id="securityBadge" style="display:none;">0</span>
+      </button>
+      <button class="tab" data-tab="cloud">
+        <svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        السحابة
+      </button>
     </div>
 
-    <!-- ============ المستخدمون ============ -->
-    <div class="panel active" id="panel-users">
+    <!-- ============ Overview ============ -->
+    <div class="panel active" id="panel-overview">
+      <div id="overviewContent">
+        <div class="loading">جاري التحميل...</div>
+      </div>
+    </div>
+
+    <!-- ============ Users ============ -->
+    <div class="panel" id="panel-users">
       <div class="stats">
         <div class="stat green">
           <div class="stat-icon">👥</div>
@@ -711,10 +434,7 @@ body::before{
 
       <div class="search-bar">
         <input id="userSearch" type="text" placeholder="🔍 ابحث بالاسم أو رقم الهاتف...">
-        <button id="refreshUsersBtn">
-          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          تحديث
-        </button>
+        <button id="refreshUsersBtn">تحديث</button>
       </div>
 
       <div id="usersList" class="list">
@@ -722,14 +442,7 @@ body::before{
       </div>
     </div>
 
-    <!-- ============ الباقات ============ -->
-    <div class="panel" id="panel-plans">
-      <div id="plansList" class="plans-grid">
-        <div class="loading">جاري التحميل...</div>
-      </div>
-    </div>
-
-    <!-- ============ السجلات ============ -->
+    <!-- ============ History ============ -->
     <div class="panel" id="panel-history">
       <div class="sub-tabs">
         <button class="sub-tab active" data-htype="links">📥 الروابط</button>
@@ -738,12 +451,34 @@ body::before{
       </div>
       <div class="search-bar">
         <input id="historySearch" type="text" placeholder="🔍 ابحث في السجل...">
-        <button id="refreshHistoryBtn">
-          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          تحديث
-        </button>
+        <button id="refreshHistoryBtn">تحديث</button>
       </div>
       <div id="historyList" class="list">
+        <div class="loading">جاري التحميل...</div>
+      </div>
+    </div>
+
+    <!-- ============ Security ============ -->
+    <div class="panel" id="panel-security">
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-stype="stats">📊 الإحصائيات</button>
+        <button class="sub-tab" data-stype="otps">🔐 OTPs النشطة</button>
+        <button class="sub-tab" data-stype="bans">🚫 IPs المحظورة</button>
+        <button class="sub-tab" data-stype="events">⚠️ الأحداث</button>
+      </div>
+      <div id="securityContent">
+        <div class="loading">جاري التحميل...</div>
+      </div>
+    </div>
+
+    <!-- ============ Cloud ============ -->
+    <div class="panel" id="panel-cloud">
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-ctype="stats">📊 الإحصائيات</button>
+        <button class="sub-tab" data-ctype="files">📁 الملفات</button>
+        <button class="sub-tab" data-ctype="orphans">⚠️ اليتيمة</button>
+      </div>
+      <div id="cloudContent">
         <div class="loading">جاري التحميل...</div>
       </div>
     </div>
@@ -751,21 +486,20 @@ body::before{
   </div>
 </div>
 
-<!-- مودال تعديل المستخدم -->
+<!-- Modal: User Edit -->
 <div id="userModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="userModalTitle">تعديل المستخدم</h3>
       <button class="close-btn" onclick="closeUserModal()">✕</button>
     </div>
-    <div class="modal-phone" id="userModalPhone"></div>
-    <div class="modal-meta" id="userModalMeta"></div>
+    <div id="userModalPhone" class="card-phone" style="margin-bottom:10px;"></div>
+    <div id="userModalMeta" class="meta-row" style="margin-bottom:16px;"></div>
 
     <div class="field">
       <label>الباقة</label>
       <select id="newPlanSelect"></select>
     </div>
-
     <div class="field-row">
       <div class="field">
         <label>التحميلات (اليوم)</label>
@@ -776,39 +510,29 @@ body::before{
         <input type="number" id="listensInput" min="0">
       </div>
     </div>
-
     <div class="field">
       <label>ميعاد التجديد (YYYY-MM-DD)</label>
       <input type="text" id="renewalDateInput" placeholder="2026-12-31">
     </div>
-
     <div class="field">
       <label>حد استماع مخصص (-1 = بلا حدود)</label>
-      <input type="number" id="customListenInput" placeholder="اتركه فاضي للافتراضي">
+      <input type="number" id="customListenInput" placeholder="اتركه فاضي">
+    </div>
+    <div class="field">
+      <label>مساحة السحابة المخصصة (MB) - اتركه فاضي للافتراضي</label>
+      <input type="number" id="customCloudInput" placeholder="مثال: 5120">
     </div>
 
     <div class="modal-actions">
-      <button id="saveUserBtn" class="btn primary">💾 حفظ التغييرات</button>
+      <button id="saveUserBtn" class="btn primary">💾 حفظ</button>
       <button id="deleteUserBtn" class="btn danger">🗑️ حذف</button>
     </div>
   </div>
 </div>
 
-<!-- مودال المشغل -->
-<div id="videoModal" class="modal">
-  <div class="modal-content wide">
-    <div class="modal-header">
-      <h3 id="videoTitle">معاينة الملف</h3>
-      <button class="close-btn" onclick="closeVideoModal()">✕</button>
-    </div>
-    <div class="video-slot" id="videoPlayerSlot"></div>
-    <div class="meta-row" id="videoInfo"></div>
-  </div>
-</div>
-
 <script>
 // ==========================================
-// الإعدادات
+// 1. الإعدادات
 // ==========================================
 const SERVER_URL = "https://link2go-proxy.vercel.app";
 const TOKEN_KEY = "link2go_admin_token";
@@ -818,6 +542,8 @@ let adminToken = sessionStorage.getItem(TOKEN_KEY) || "";
 let adminUsername = sessionStorage.getItem(USERNAME_KEY) || "";
 let allUsers = [], allPlans = {}, currentEditingUser = null;
 let currentHistoryType = "links";
+let currentSecurityType = "stats";
+let currentCloudType = "stats";
 let allHistory = { links: [], otp: [], login: [] };
 let refreshTimer = null;
 
@@ -825,9 +551,6 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 const todayStr = () => new Date().toLocaleDateString("en-CA");
 
-// ==========================================
-// Toast
-// ==========================================
 function showToast(text, type = "ok") {
   const t = $("toast");
   t.textContent = text;
@@ -835,16 +558,13 @@ function showToast(text, type = "ok") {
   setTimeout(() => { t.className = "toast"; }, 3500);
 }
 
-// ==========================================
-// Session
-// ==========================================
 function clearSession() {
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USERNAME_KEY);
   adminToken = ""; adminUsername = "";
 }
 function showLoginScreen() {
-  $("loginScreen").style.display = "flex";
+  $("loginScreen").classList.remove("hidden");
   $("mainPanel").classList.remove("show");
 }
 function hideLoginScreen() {
@@ -853,9 +573,6 @@ function hideLoginScreen() {
 }
 function forceLogout() { stopRefresh(); clearSession(); showLoginScreen(); }
 
-// ==========================================
-// API
-// ==========================================
 async function apiFetch(path, options = {}) {
   const r = await fetch(SERVER_URL + path, {
     ...options,
@@ -868,13 +585,13 @@ async function apiFetch(path, options = {}) {
   let d = {};
   try { d = await r.json(); } catch (_) {}
   if (r.status === 401) { forceLogout(); throw new Error(d.error || "انتهت الجلسة"); }
-  if (r.status === 429) throw new Error(d.error || "طلبات كتير، استنى شوية");
-  if (!r.ok || !d.success) throw new Error(d.error || `فشل الطلب (${r.status})`);
+  if (r.status === 429) throw new Error(d.error || "طلبات كتير");
+  if (!r.ok || !d.success) throw new Error(d.error || `فشل (${r.status})`);
   return d;
 }
 
 // ==========================================
-// Login
+// 2. Login
 // ==========================================
 $("loginBtn").addEventListener("click", doLogin);
 $("passwordInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
@@ -885,17 +602,14 @@ async function doLogin() {
   const password = $("passwordInput").value;
   const loginMsg = $("loginMsg");
   loginMsg.className = "login-msg";
-
   if (!username || !password) {
-    loginMsg.textContent = "من فضلك اكتب البيانات";
+    loginMsg.textContent = "اكتب البيانات";
     loginMsg.className = "login-msg show err";
     return;
   }
-
   const btn = $("loginBtn");
   btn.textContent = "جاري التحقق...";
   btn.disabled = true;
-
   try {
     const r = await fetch(SERVER_URL + "/admin-login", {
       method: "POST",
@@ -904,7 +618,7 @@ async function doLogin() {
     });
     let d = {};
     try { d = await r.json(); } catch (_) {}
-    if (!r.ok || !d.success) throw new Error(d.error || "فشل تسجيل الدخول");
+    if (!r.ok || !d.success) throw new Error(d.error || "فشل");
 
     adminToken = d.token;
     adminUsername = d.username;
@@ -924,32 +638,16 @@ async function doLogin() {
   }
 }
 
-// ==========================================
-// Logout
-// ==========================================
 $("logoutBtn").addEventListener("click", async () => {
-  if (!confirm("هل أنت متأكد من تسجيل الخروج؟")) return;
-  try {
-    await fetch(SERVER_URL + "/admin-logout", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + adminToken }
-    });
-  } catch (_) {}
-  stopRefresh();
-  clearSession();
-  location.reload();
+  if (!confirm("تسجيل الخروج؟")) return;
+  try { await fetch(SERVER_URL + "/admin-logout", { method: "POST", headers: { "Authorization": "Bearer " + adminToken } }); } catch (_) {}
+  stopRefresh(); clearSession(); location.reload();
 });
 
-// ==========================================
-// Check Auth
-// ==========================================
 async function checkAuth() {
   if (!adminToken) return false;
   try {
-    const r = await fetch(SERVER_URL + "/admin-verify", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + adminToken }
-    });
+    const r = await fetch(SERVER_URL + "/admin-verify", { method: "POST", headers: { "Authorization": "Bearer " + adminToken } });
     if (!r.ok) { clearSession(); return false; }
     const d = await r.json();
     if (!d.success) { clearSession(); return false; }
@@ -959,7 +657,7 @@ async function checkAuth() {
 }
 
 // ==========================================
-// Tabs
+// 3. Tabs
 // ==========================================
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
@@ -968,25 +666,105 @@ document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.add("active");
     $("panel-" + tab.dataset.tab).classList.add("active");
 
-    if (tab.dataset.tab === "users") loadUsers();
-    if (tab.dataset.tab === "plans") loadPlans();
-    if (tab.dataset.tab === "history") loadHistory();
+    const t = tab.dataset.tab;
+    if (t === "overview") loadOverview();
+    if (t === "users") loadUsers();
+    if (t === "history") loadHistory();
+    if (t === "security") loadSecurity();
+    if (t === "cloud") loadCloud();
   });
 });
 
 document.querySelectorAll(".sub-tab").forEach(st => {
   st.addEventListener("click", () => {
     if (st.classList.contains("danger")) return;
-    document.querySelectorAll(".sub-tab").forEach(x => x.classList.remove("active"));
+    const parent = st.parentElement;
+    parent.querySelectorAll(".sub-tab").forEach(x => x.classList.remove("active"));
     st.classList.add("active");
-    currentHistoryType = st.dataset.htype;
-    $("historySearch").value = "";
-    renderHistory();
+
+    if (st.dataset.htype) {
+      currentHistoryType = st.dataset.htype;
+      $("historySearch").value = "";
+      renderHistory();
+    }
+    if (st.dataset.stype) {
+      currentSecurityType = st.dataset.stype;
+      loadSecurity();
+    }
+    if (st.dataset.ctype) {
+      currentCloudType = st.dataset.ctype;
+      loadCloud();
+    }
   });
 });
 
 // ==========================================
-// Users
+// 4. Overview
+// ==========================================
+async function loadOverview() {
+  try {
+    const d = await apiFetch("/admin/dashboard-summary");
+    renderOverview(d);
+  } catch (e) {
+    $("overviewContent").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
+
+function renderOverview(d) {
+  const users = d.users || {};
+  const temp = d.temp_files || {};
+  const cloud = d.cloud || {};
+  const otp = d.otp || {};
+  const sec = d.security || {};
+  const proxy = d.proxy || {};
+
+  $("overviewContent").innerHTML = `
+    <div class="stats">
+      <div class="stat green"><div class="stat-icon">👥</div><div class="stat-label">المستخدمون</div><div class="stat-value">${users.total || 0}</div></div>
+      <div class="stat gold"><div class="stat-icon">👑</div><div class="stat-label">VIP</div><div class="stat-value">${(users.by_plan||{}).monthly || 0}</div></div>
+      <div class="stat blue"><div class="stat-icon">📥</div><div class="stat-label">ملفات مؤقتة</div><div class="stat-value">${temp.count || 0}</div></div>
+      <div class="stat"><div class="stat-icon">☁️</div><div class="stat-label">السحابة</div><div class="stat-value">${cloud.total_files || 0}</div></div>
+      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة</div><div class="stat-value">${sec.active_bans || 0}</div></div>
+      <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTPs نشطة</div><div class="stat-value">${otp.active || 0}</div></div>
+    </div>
+
+    <div class="overview-grid">
+      <div class="overview-section">
+        <h3>👥 المستخدمون</h3>
+        <div class="overview-row"><span class="label">إجمالي</span><span class="value">${users.total || 0}</span></div>
+        <div class="overview-row"><span class="label">Free</span><span class="value">${(users.by_plan||{}).free || 0}</span></div>
+        <div class="overview-row"><span class="label">Weekly</span><span class="value">${(users.by_plan||{}).weekly || 0}</span></div>
+        <div class="overview-row"><span class="label">Monthly</span><span class="value">${(users.by_plan||{}).monthly || 0}</span></div>
+        <div class="overview-row"><span class="label">منتهية</span><span class="value" style="color:#f59e0b;">${users.expired || 0}</span></div>
+        <div class="overview-row"><span class="label">ملغية</span><span class="value" style="color:#ef4444;">${users.cancelled || 0}</span></div>
+      </div>
+
+      <div class="overview-section">
+        <h3>☁️ السحابة</h3>
+        <div class="overview-row"><span class="label">مستخدمون عندهم سحابة</span><span class="value">${cloud.total_users_with_cloud || 0}</span></div>
+        <div class="overview-row"><span class="label">إجمالي الملفات</span><span class="value">${cloud.total_files || 0}</span></div>
+        <div class="overview-row"><span class="label">الحجم الكلي</span><span class="value">${cloud.total_cloud_size_mb || 0} MB</span></div>
+      </div>
+
+      <div class="overview-section">
+        <h3>🛡️ الأمان</h3>
+        <div class="overview-row"><span class="label">محاولات فاشلة</span><span class="value" style="color:#f87171;">${sec.failed_logins || 0}</span></div>
+        <div class="overview-row"><span class="label">IPs محظورة</span><span class="value" style="color:#f87171;">${sec.active_bans || 0}</span></div>
+        <div class="overview-row"><span class="label">أحداث أمنية</span><span class="value">${sec.total_events || 0}</span></div>
+      </div>
+
+      <div class="overview-section">
+        <h3>🌐 البروكسي</h3>
+        <div class="overview-row"><span class="label">متاح</span><span class="value">${proxy.available ? "✅" : "❌"}</span></div>
+        <div class="overview-row"><span class="label">مفعّل حالياً</span><span class="value">${proxy.active ? "🟢" : "⚪"}</span></div>
+        <div class="overview-row"><span class="label">مرات تفعيل</span><span class="value">${proxy.block_count || 0}</span></div>
+      </div>
+    </div>
+  `;
+}
+
+// ==========================================
+// 5. Users
 // ==========================================
 const isExpired = u => u.plan_id !== "free" && u.renewal_date && u.renewal_date < todayStr();
 const effPlan = u => isExpired(u) ? "free" : u.plan_id;
@@ -1013,18 +791,12 @@ function updateStats() {
 function filterUsers() {
   const q = $("userSearch").value.trim().toLowerCase();
   if (!q) return allUsers;
-  return allUsers.filter(u =>
-    (u.username || "").toLowerCase().includes(q) ||
-    (u.phone || "").includes(q)
-  );
+  return allUsers.filter(u => (u.username || "").toLowerCase().includes(q) || (u.phone || "").includes(q));
 }
 
 function renderUsers(users) {
   const container = $("usersList");
-  if (!users.length) {
-    container.innerHTML = `<div class="empty">📭 مفيش مستخدمين</div>`;
-    return;
-  }
+  if (!users.length) { container.innerHTML = `<div class="empty">📭 مفيش مستخدمين</div>`; return; }
   container.innerHTML = "";
   users.forEach(u => {
     const el = document.createElement("div");
@@ -1033,7 +805,7 @@ function renderUsers(users) {
     const lim = u.limit ?? u.plan_limit ?? 0;
     const lis = u.listens_limit ?? u.plan_listens_limit ?? 0;
     const cls = plan === "monthly" ? "monthly" : plan === "weekly" ? "weekly" : "free";
-
+    const cloud = u.cloud_storage || {};
     el.innerHTML = `
       <div class="card-head">
         <div style="flex:1;min-width:0;">
@@ -1046,16 +818,14 @@ function renderUsers(users) {
             ${u.upgrade_requested ? `<span class="badge pending">طلب ترقية</span>` : ""}
           </div>
         </div>
-        <div class="card-actions">
-          <button class="card-btn primary" data-action="edit">✏️ تعديل</button>
-        </div>
+        <div class="card-actions"><button class="card-btn primary" data-action="edit">✏️ تعديل</button></div>
       </div>
       <div class="meta-row">
         <span>📥 ${u.daily_downloads} / ${lim === -1 ? "∞" : lim}</span>
         <span>🎧 ${u.monthly_listens} / ${lis === -1 ? "∞" : lis}</span>
         ${u.renewal_date ? `<span>📅 ${esc(u.renewal_date)}</span>` : ""}
+        ${cloud.files_count ? `<span>☁️ ${cloud.files_count} ملف (${cloud.used_mb || 0} MB)</span>` : ""}
       </div>`;
-
     el.querySelector('[data-action="edit"]').addEventListener("click", () => openUserModal(u.phone));
     container.appendChild(el);
   });
@@ -1065,89 +835,15 @@ $("userSearch").addEventListener("input", () => renderUsers(filterUsers()));
 $("refreshUsersBtn").addEventListener("click", loadUsers);
 $("refreshBtn").addEventListener("click", () => {
   const activeTab = document.querySelector(".tab.active").dataset.tab;
-  if (activeTab === "users") loadUsers();
-  else if (activeTab === "plans") loadPlans();
+  if (activeTab === "overview") loadOverview();
+  else if (activeTab === "users") loadUsers();
   else if (activeTab === "history") loadHistory();
+  else if (activeTab === "security") loadSecurity();
+  else if (activeTab === "cloud") loadCloud();
 });
 
 // ==========================================
-// Plans
-// ==========================================
-const PLAN_ICONS = { free: "🆓", weekly: "⚡", monthly: "👑" };
-const PLATFORM_ICONS = {
-  tiktok: "🎵", soundcloud: "☁️", facebook: "📘",
-  instagram: "📷", youtube: "▶️", x: "𝕏",
-  shahid: "🎬", anghami: "🎧"
-};
-
-async function loadPlans() {
-  $("plansList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
-  try {
-    const r = await fetch(SERVER_URL + "/get-plans");
-    const d = await r.json();
-    if (!r.ok || !d.success) throw new Error(d.error || "فشل");
-    allPlans = d.plans || {};
-    renderPlans(allPlans);
-  } catch (e) {
-    $("plansList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-function renderPlans(plans) {
-  const container = $("plansList");
-  const order = ["free", "weekly", "monthly"];
-  const list = order.filter(p => plans[p]).map(p => ({ id: p, ...plans[p] }));
-
-  if (!list.length) {
-    container.innerHTML = `<div class="empty">📭 مفيش باقات</div>`;
-    return;
-  }
-
-  container.innerHTML = "";
-  list.forEach(p => {
-    const el = document.createElement("div");
-    el.className = "plan-card" + (p.id === "monthly" ? " featured" : "");
-
-    const price = p.price === 0 ? "مجاناً" : p.price + " ج";
-    const duration = p.duration_label || "";
-    const icon = PLAN_ICONS[p.id] || "💎";
-
-    const platformsList = p.all_platforms
-      ? `<span class="platform-chip all">🌍 جميع المنصات</span>`
-      : (p.platforms || []).map(pl =>
-          `<span class="platform-chip">${PLATFORM_ICONS[pl] || "🌐"} ${esc(pl)}</span>`
-        ).join("");
-
-    el.innerHTML = `
-      <div class="plan-head">
-        <div class="plan-icon ${p.id}">${icon}</div>
-        <div class="plan-price">
-          <span class="amount">${price}</span>
-          <span class="label">${duration}</span>
-        </div>
-      </div>
-      <div class="plan-name">${esc(p.name)}</div>
-      <div class="plan-desc">
-        ${p.limit === -1 ? "تحميلات غير محدودة" : `${p.limit} تحميل يومياً`} •
-        ${p.listens_limit === -1 ? "استماع غير محدود" : `${p.listens_limit} استماع شهرياً`}
-      </div>
-      <ul class="plan-features">
-        <li>${p.limit === -1 ? "تحميلات غير محدودة (Unlimited)" : `${p.limit} تحميل يومياً`}</li>
-        <li>${p.listens_limit === -1 ? "استماع غير محدود" : `${p.listens_limit} استماع شهرياً`}</li>
-        <li>${p.all_platforms ? "التحميل من أي موقع في العالم" : "منصات محددة"}</li>
-        <li>${p.duration_days > 0 ? `${p.duration_days} يوم صلاحية` : "بدون تاريخ انتهاء"}</li>
-      </ul>
-      <div class="plan-platforms">
-        <div class="plan-platforms-label">المنصات المدعومة</div>
-        <div class="plan-platforms-list">${platformsList}</div>
-      </div>
-    `;
-    container.appendChild(el);
-  });
-}
-
-// ==========================================
-// History
+// 6. History
 // ==========================================
 async function loadHistory() {
   $("historyList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
@@ -1160,72 +856,51 @@ async function loadHistory() {
   }
 }
 
-const LOGIN_ACTIONS = {
-  admin_login: "🔑 دخول أدمن",
-  otp_login: "📱 دخول مستخدم",
-  signup: "🆕 تسجيل جديد",
-  logout: "🚪 خروج"
-};
-const ADMIN_ACTIONS = {
-  set_plan: "تغيير باقة",
-  delete_user: "حذف مستخدم",
-  set_counters: "تعديل عدادات",
-  set_listen_limit: "تعديل حد الاستماع",
-  clear_history: "مسح السجل",
-  delete_file: "حذف ملف"
-};
+const LOGIN_ACTIONS = { admin_login: "🔑 دخول أدمن", otp_login: "📱 دخول مستخدم", signup: "🆕 تسجيل", logout: "🚪 خروج" };
+const ADMIN_ACTIONS = { set_plan: "تغيير باقة", delete_user: "حذف مستخدم", set_counters: "تعديل عدادات", set_listen_limit: "تعديل حد", clear_history: "مسح سجل", delete_file: "حذف ملف", unban_ip: "إلغاء حظر" };
 
 function renderHistory(list = allHistory[currentHistoryType] || []) {
   const container = $("historyList");
-  if (!list.length) {
-    container.innerHTML = `<div class="empty">📭 مفيش سجل</div>`;
-    return;
-  }
+  if (!list.length) { container.innerHTML = `<div class="empty">📭 مفيش سجل</div>`; return; }
   container.innerHTML = "";
   const t = currentHistoryType;
 
   list.forEach(item => {
     const ok = item.status === "success";
-    const st = ok ? ["success", "نجح"]
-             : item.status === "quota" ? ["quota", "حد أقصى"]
-             : ["failed", "فشل"];
+    const st = ok ? ["success", "نجح"] : item.status === "quota" ? ["quota", "حد أقصى"] : ["failed", "فشل"];
     let title = "", phone = "", badges = "", lines = "";
 
     if (t === "links") {
       title = esc(item.username || "مجهول");
       phone = item.phone || "—";
       badges = `<span class="badge ${item.action === "stream" ? "stream" : "download"}">${item.action === "stream" ? "🎧 استماع" : "⬇️ تحميل"}</span>`;
-      lines += `<span style="word-break:break-all;direction:ltr;text-align:right;color:#c4b5fd;font-size:10.5px;">${esc((item.url || "").slice(0, 80))}</span>`;
-      if (item.error === "cache") badges += `<span class="badge cache">⚡ من الكاش</span>`;
+      lines += `<span style="word-break:break-all;direction:ltr;color:#c4b5fd;font-size:10.5px;">${esc((item.url || "").slice(0, 80))}</span>`;
+      if (item.error === "cache") badges += `<span class="badge cache">⚡ كاش</span>`;
       else if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
     } else if (t === "otp") {
       title = "📱 " + esc(item.phone || "—");
       badges = `<span class="badge video">${item.action === "send" ? "📤 إرسال" : "✅ تحقق"}</span>`;
+      if (item.otp_code) lines += `<span style="color:#fbbf24;font-weight:800;direction:ltr;">🔢 الكود: ${esc(item.otp_code)}</span>`;
       if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
     } else {
       const raw = String(item.action || "");
       const base = raw.split(":")[0];
-      const isAdminAction = raw.includes(":") && ADMIN_ACTIONS[base];
+      const isAdmin = raw.includes(":") && ADMIN_ACTIONS[base];
       title = esc(item.username || "—");
       phone = item.phone || "—";
-      badges = `<span class="badge free">${isAdminAction ? "🛠️ " + ADMIN_ACTIONS[base] : (LOGIN_ACTIONS[raw] || esc(raw))}</span>`;
-      if (isAdminAction) lines += `<span style="direction:ltr;text-align:right;color:#c4b5fd;font-size:10.5px;">${esc(raw.slice(base.length + 1))}</span>`;
+      badges = `<span class="badge free">${isAdmin ? "🛠️ " + ADMIN_ACTIONS[base] : (LOGIN_ACTIONS[raw] || esc(raw))}</span>`;
+      if (isAdmin) lines += `<span style="direction:ltr;color:#c4b5fd;font-size:10.5px;">${esc(raw.slice(base.length + 1))}</span>`;
       if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
     }
 
     const el = document.createElement("div");
     el.className = "card";
     el.innerHTML = `
-      <div class="card-head">
-        <div style="flex:1;min-width:0;">
-          <div class="card-title">${title}</div>
-          ${phone ? `<div class="card-phone">📱 ${esc(phone)}</div>` : ""}
-          <div class="badges">
-            ${badges}
-            <span class="badge ${st[0]}">${st[1]}</span>
-          </div>
-        </div>
-      </div>
+      <div class="card-head"><div style="flex:1;min-width:0;">
+        <div class="card-title">${title}</div>
+        ${phone ? `<div class="card-phone">📱 ${esc(phone)}</div>` : ""}
+        <div class="badges">${badges}<span class="badge ${st[0]}">${st[1]}</span></div>
+      </div></div>
       <div class="meta-row" style="flex-direction:column;gap:5px;">
         ${lines}
         <span>🕐 ${esc(item.timestamp || "—")}${item.ip ? " · 🌐 " + esc(item.ip) : ""}</span>
@@ -1241,29 +916,237 @@ $("historySearch").addEventListener("input", e => {
   renderHistory(q ? list.filter(i => JSON.stringify(i).toLowerCase().includes(q)) : list);
 });
 
-// زر مسح السجل
-(function addClearBtn() {
-  const b = document.createElement("button");
-  b.className = "sub-tab danger";
-  b.textContent = "🗑️ مسح السجل";
-  b.addEventListener("click", async () => {
-    if (!confirm("مسح سجل هذا القسم نهائياً؟")) return;
-    try {
-      await apiFetch("/history/clear", {
-        method: "POST",
-        body: JSON.stringify({ type: currentHistoryType })
-      });
-      showToast("✅ تم مسح السجل");
-      loadHistory();
-    } catch (e) {
-      showToast("❌ " + e.message, "err");
+// ==========================================
+// 7. Security
+// ==========================================
+async function loadSecurity() {
+  const container = $("securityContent");
+  container.innerHTML = `<div class="loading">جاري التحميل...</div>`;
+
+  try {
+    if (currentSecurityType === "stats") {
+      const d = await apiFetch("/admin/security-stats");
+      renderSecurityStats(d);
+    } else if (currentSecurityType === "otps") {
+      const d = await apiFetch("/admin/otp-active");
+      renderActiveOtps(d);
+    } else if (currentSecurityType === "bans") {
+      const d = await apiFetch("/admin/security-stats");
+      renderBans(d);
+    } else if (currentSecurityType === "events") {
+      const d = await apiFetch("/admin/security-log?limit=100");
+      renderSecurityEvents(d);
     }
-  });
-  document.querySelector(".sub-tabs").appendChild(b);
-})();
+  } catch (e) {
+    container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
+
+function renderSecurityStats(d) {
+  const s = d.stats || {};
+  // update badge
+  const totalIssues = (s.failed_logins_24h || 0) + (s.active_bans || 0);
+  const badge = $("securityBadge");
+  if (totalIssues > 0) {
+    badge.style.display = "inline-block";
+    badge.textContent = totalIssues;
+  } else {
+    badge.style.display = "none";
+  }
+
+  $("securityContent").innerHTML = `
+    <div class="stats">
+      <div class="stat red"><div class="stat-icon">🚨</div><div class="stat-label">محاولات دخول فاشلة (24س)</div><div class="stat-value">${s.failed_logins_24h || 0}</div></div>
+      <div class="stat green"><div class="stat-icon">✅</div><div class="stat-label">دخول ناجح (24س)</div><div class="stat-value">${s.success_logins_24h || 0}</div></div>
+      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة</div><div class="stat-value">${s.active_bans || 0}</div></div>
+      <div class="stat"><div class="stat-icon">⚠️</div><div class="stat-label">أحداث خطيرة</div><div class="stat-value">${s.high_severity_events || 0}</div></div>
+      <div class="stat"><div class="stat-icon">🕵️</div><div class="stat-label">هجمات سكانر</div><div class="stat-value">${s.scanner_attacks || 0}</div></div>
+      <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTP Brute Force</div><div class="stat-value">${s.otp_bruteforce_attempts || 0}</div></div>
+    </div>
+    <div class="overview-section">
+      <h3>📈 ملخص</h3>
+      <div class="overview-row"><span class="label">إجمالي محاولات الدخول الفاشلة</span><span class="value">${s.total_failed_logins || 0}</span></div>
+      <div class="overview-row"><span class="label">محاولات دخول أدمن فاشلة</span><span class="value">${s.admin_login_failures || 0}</span></div>
+      <div class="overview-row"><span class="label">أحداث متوسطة الخطورة</span><span class="value">${s.medium_severity_events || 0}</span></div>
+      <div class="overview-row"><span class="label">إجمالي الأحداث الأمنية</span><span class="value">${s.total_security_events || 0}</span></div>
+    </div>`;
+}
+
+function renderActiveOtps(d) {
+  const otps = d.active_otps || [];
+  if (!otps.length) {
+    $("securityContent").innerHTML = `<div class="empty">✅ مفيش OTPs نشطة حالياً</div>`;
+    return;
+  }
+  $("securityContent").innerHTML = `<div class="list">${otps.map(o => `
+    <div class="card">
+      <div class="card-head">
+        <div style="flex:1;">
+          <div class="card-title">📱 ${esc(o.phone)}</div>
+          <div class="card-phone">🌐 ${esc(o.ip || "—")}</div>
+        </div>
+        <div style="text-align:center;background:rgba(251,191,36,.15);padding:10px 14px;border-radius:12px;border:1px solid rgba(251,191,36,.3);">
+          <div style="font-size:10px;color:#fbbf24;font-weight:700;">الكود</div>
+          <div style="font-size:20px;font-weight:900;color:#fbbf24;letter-spacing:3px;direction:ltr;">${esc(o.otp_code || '—')}</div>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>🕐 اتسجل من ${o.sent_at_ago} ثانية</span>
+        <span>⏳ متبقي ${o.expires_in} ثانية</span>
+        <span>⚠️ محاولات: ${o.attempts}</span>
+      </div>
+    </div>`).join("")}</div>`;
+}
+
+function renderBans(d) {
+  const bans = d.active_bans || [];
+  if (!bans.length) {
+    $("securityContent").innerHTML = `<div class="empty">✅ مفيش IPs محظورة حالياً</div>`;
+    return;
+  }
+  $("securityContent").innerHTML = `<div class="list">${bans.map(b => `
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;">🚫 ${esc(b.ip)}</div>
+          <div class="card-phone">⏱️ متبقي: ${Math.floor(b.remaining_seconds / 60)} دقيقة</div>
+        </div>
+        <div class="card-actions">
+          <button class="card-btn danger" onclick="unbanIp('${esc(b.ip)}')">✅ إلغاء الحظر</button>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>🕐 محظور لحد ${esc(b.banned_until)}</span>
+      </div>
+    </div>`).join("")}</div>`;
+}
+
+async function unbanIp(ip) {
+  if (!confirm(`إلغاء حظر ${ip}؟`)) return;
+  try {
+    await apiFetch("/admin/unban-ip", { method: "POST", body: JSON.stringify({ ip }) });
+    showToast("✅ تم إلغاء الحظر");
+    loadSecurity();
+  } catch (e) {
+    showToast("❌ " + e.message, "err");
+  }
+}
+
+function renderSecurityEvents(d) {
+  const events = d.events || [];
+  if (!events.length) {
+    $("securityContent").innerHTML = `<div class="empty">📭 مفيش أحداث أمنية</div>`;
+    return;
+  }
+  const EVT_NAMES = {
+    ip_banned: "🚫 IP محظور",
+    scanner_detected: "🕵️ سكانر",
+    otp_bruteforce: "🔐 OTP Brute Force",
+    failed_admin_login: "🔑 محاولة دخول أدمن فاشلة",
+    url_too_long: "📏 URL طويل جداً",
+  };
+  $("securityContent").innerHTML = `<div class="list">${events.map(e => `
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">${EVT_NAMES[e.event_type] || esc(e.event_type)}</div>
+          ${e.ip ? `<div class="card-phone">🌐 ${esc(e.ip)}</div>` : ""}
+          <div class="badges">
+            <span class="badge ${e.severity || 'low'}">${e.severity === 'critical' ? 'حرج' : e.severity === 'high' ? 'خطير' : e.severity === 'medium' ? 'متوسط' : 'منخفض'}</span>
+          </div>
+        </div>
+      </div>
+      ${e.details ? `<div class="meta-row"><span style="direction:ltr;">${esc(e.details)}</span></div>` : ""}
+      <div class="meta-row"><span>🕐 ${esc(e.timestamp || "—")}</span></div>
+    </div>`).join("")}</div>`;
+}
 
 // ==========================================
-// User Modal
+// 8. Cloud
+// ==========================================
+async function loadCloud() {
+  const container = $("cloudContent");
+  container.innerHTML = `<div class="loading">جاري التحميل...</div>`;
+
+  try {
+    if (currentCloudType === "stats") {
+      const d = await apiFetch("/admin/cloud-overview");
+      const s = d.stats || {};
+      container.innerHTML = `
+        <div class="stats">
+          <div class="stat"><div class="stat-icon">👥</div><div class="stat-label">مستخدمون لديهم سحابة</div><div class="stat-value">${s.total_users_with_cloud || 0}</div></div>
+          <div class="stat blue"><div class="stat-icon">📁</div><div class="stat-label">إجمالي الملفات</div><div class="stat-value">${s.total_files || 0}</div></div>
+          <div class="stat green"><div class="stat-icon">💾</div><div class="stat-label">الحجم الكلي</div><div class="stat-value" style="font-size:18px;">${s.total_cloud_size_mb || 0} MB</div></div>
+        </div>`;
+    } else if (currentCloudType === "files") {
+      const d = await apiFetch("/admin/cloud-files?limit=200");
+      const files = d.files || [];
+      if (!files.length) {
+        container.innerHTML = `<div class="empty">📭 مفيش ملفات سحابية</div>`;
+        return;
+      }
+      container.innerHTML = `<div class="list">${files.map(f => `
+        <div class="card">
+          <div class="card-head">
+            <div style="flex:1;min-width:0;">
+              <div class="card-title">${esc(f.title)}</div>
+              <div class="card-phone">📱 ${esc(f.phone)}</div>
+            </div>
+            <span class="badge free">${esc(f.ext || '—')}</span>
+          </div>
+          <div class="meta-row">
+            <span>📦 ${f.size_mb || 0} MB</span>
+            <span>🕐 ${esc((f.created_at||'').split(' ')[0])}</span>
+          </div>
+          <div class="card-actions">
+            <a class="card-btn primary" href="${SERVER_URL}${f.inline_url}" target="_blank">▶️ فتح</a>
+            <a class="card-btn" href="${SERVER_URL}${f.download_url}">⬇️ تحميل</a>
+          </div>
+        </div>`).join("")}</div>`;
+    } else if (currentCloudType === "orphans") {
+      const d = await apiFetch("/admin/cloud-orphans");
+      const orphans = d.orphans || [];
+      if (!orphans.length) {
+        container.innerHTML = `<div class="empty">✅ مفيش ملفات يتيمة</div>`;
+        return;
+      }
+      container.innerHTML = `<div class="list">${orphans.map(o => {
+        if (o.type === "deleted_user_has_files") {
+          return `<div class="card" style="border-color:rgba(239,68,68,.3);">
+            <div class="card-head">
+              <div>
+                <div class="card-title">🗑️ مستخدم محذوف عنده ملفات</div>
+                <div class="card-phone">📱 ${esc(o.phone)}</div>
+              </div>
+              <span class="badge failed">${o.files_count} ملف</span>
+            </div>
+            <div class="meta-row">
+              <span>💾 ${(o.total_size_bytes / 1024 / 1024).toFixed(2)} MB</span>
+            </div>
+          </div>`;
+        }
+        return `<div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">⚠️ ملف مش مسجل</div>
+              <div class="card-phone">📱 ${esc(o.phone)}</div>
+            </div>
+          </div>
+          <div class="meta-row">
+            <span style="direction:ltr;font-size:10px;">${esc(o.filename)}</span>
+            <span>📦 ${(o.size_bytes / 1024 / 1024).toFixed(2)} MB</span>
+            ${o.user_exists ? '' : '<span style="color:#ef4444;">مستخدم محذوف</span>'}
+          </div>
+        </div>`;
+      }).join("")}</div>`;
+    }
+  } catch (e) {
+    container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
+
+// ==========================================
+// 9. User Modal
 // ==========================================
 async function openUserModal(phone) {
   $("userModal").classList.add("active");
@@ -1281,12 +1164,23 @@ async function openUserModal(phone) {
   }
 }
 
+async function loadPlans() {
+  try {
+    const r = await fetch(SERVER_URL + "/get-plans");
+    const d = await r.json();
+    if (r.ok && d.success) allPlans = d.plans || {};
+  } catch (e) {}
+}
+
 function renderUserModal(u) {
   $("userModalTitle").textContent = u.username || "مستخدم";
   $("userModalPhone").textContent = "📱 " + u.phone;
   const meta = [];
   if (u.created_at) meta.push(`🗓️ ${esc(u.created_at)}`);
   if (u.last_login) meta.push(`🔐 ${esc(u.last_login)}`);
+  if (u.cloud_storage && u.cloud_storage.files_count) {
+    meta.push(`☁️ ${u.cloud_storage.files_count} ملف (${u.cloud_storage.used_mb} MB)`);
+  }
   $("userModalMeta").innerHTML = meta.map(p => `<span>${p}</span>`).join("");
 
   $("newPlanSelect").innerHTML = Object.keys(allPlans).map(pid =>
@@ -1297,6 +1191,7 @@ function renderUserModal(u) {
   $("listensInput").value = u.monthly_listens || 0;
   $("renewalDateInput").value = u.renewal_date || "";
   $("customListenInput").value = "";
+  $("customCloudInput").value = "";
 }
 
 $("saveUserBtn").addEventListener("click", async () => {
@@ -1307,13 +1202,8 @@ $("saveUserBtn").addEventListener("click", async () => {
   try {
     const phone = encodeURIComponent(currentEditingUser.phone);
     const newPlan = $("newPlanSelect").value;
-    const planChanged = newPlan !== currentEditingUser.plan_id;
-
-    if (planChanged) {
-      await apiFetch(`/user/${phone}/set-plan`, {
-        method: "POST",
-        body: JSON.stringify({ plan: newPlan })
-      });
+    if (newPlan !== currentEditingUser.plan_id) {
+      await apiFetch(`/user/${phone}/set-plan`, { method: "POST", body: JSON.stringify({ plan: newPlan }) });
     }
 
     const body = {
@@ -1321,24 +1211,22 @@ $("saveUserBtn").addEventListener("click", async () => {
       monthly_listens: parseInt($("listensInput").value) || 0
     };
     const dateVal = $("renewalDateInput").value || "";
-    const dateEdited = dateVal !== (currentEditingUser.renewal_date || "");
-    if (!planChanged || dateEdited) body.renewal_date = dateVal;
+    if (dateVal !== (currentEditingUser.renewal_date || "")) body.renewal_date = dateVal;
 
-    const custom = parseInt($("customListenInput").value);
-    if (!Number.isNaN(custom)) body.listens_limit = custom;
+    const customListen = $("customListenInput").value.trim();
+    if (customListen !== "") body.listens_limit = parseInt(customListen);
 
-    await apiFetch(`/user/${phone}/set-counters`, {
-      method: "POST",
-      body: JSON.stringify(body)
-    });
+    const customCloud = $("customCloudInput").value.trim();
+    if (customCloud !== "") body.cloud_storage_mb = parseInt(customCloud);
 
-    showToast("✅ تم حفظ التغييرات");
+    await apiFetch(`/user/${phone}/set-counters`, { method: "POST", body: JSON.stringify(body) });
+    showToast("✅ تم الحفظ");
     closeUserModal();
     loadUsers();
   } catch (e) {
     showToast("❌ " + e.message, "err");
   } finally {
-    btn.textContent = "💾 حفظ التغييرات";
+    btn.textContent = "💾 حفظ";
     btn.disabled = false;
   }
 });
@@ -1346,13 +1234,13 @@ $("saveUserBtn").addEventListener("click", async () => {
 $("deleteUserBtn").addEventListener("click", async () => {
   if (!currentEditingUser) return;
   const u = currentEditingUser;
-  if (!confirm(`هل أنت متأكد من حذف المستخدم "${u.username || u.phone}"؟`)) return;
+  if (!confirm(`حذف "${u.username || u.phone}"؟`)) return;
   const btn = $("deleteUserBtn");
   btn.textContent = "جاري الحذف...";
   btn.disabled = true;
   try {
     await apiFetch(`/user/${encodeURIComponent(u.phone)}`, { method: "DELETE" });
-    showToast("✅ تم حذف المستخدم");
+    showToast("✅ تم الحذف");
     closeUserModal();
     loadUsers();
   } catch (e) {
@@ -1367,29 +1255,18 @@ function closeUserModal() {
   $("userModal").classList.remove("active");
   currentEditingUser = null;
 }
-$("userModal").addEventListener("click", e => {
-  if (e.target.id === "userModal") closeUserModal();
-});
+$("userModal").addEventListener("click", e => { if (e.target.id === "userModal") closeUserModal(); });
 
 // ==========================================
-// Video Modal
-// ==========================================
-function closeVideoModal() {
-  $("videoModal").classList.remove("active");
-  $("videoPlayerSlot").innerHTML = "";
-}
-$("videoModal").addEventListener("click", e => {
-  if (e.target.id === "videoModal") closeVideoModal();
-});
-
-// ==========================================
-// Auto refresh
+// 10. Auto Refresh
 // ==========================================
 function startRefresh() {
   stopRefresh();
   refreshTimer = setInterval(() => {
     if (document.hidden || !adminToken) return;
-    if (document.querySelector('.tab[data-tab="users"].active')) loadUsers();
+    const activeTab = document.querySelector(".tab.active").dataset.tab;
+    if (activeTab === "overview") loadOverview();
+    else if (activeTab === "users") loadUsers();
   }, 30000);
 }
 function stopRefresh() {
@@ -1397,17 +1274,14 @@ function stopRefresh() {
 }
 
 // ==========================================
-// Dashboard Start
+// 11. Init
 // ==========================================
 function startDashboard() {
   loadPlans();
-  loadUsers();
+  loadOverview();
   startRefresh();
 }
 
-// ==========================================
-// Init
-// ==========================================
 (async function init() {
   if (await checkAuth()) {
     hideLoginScreen();
