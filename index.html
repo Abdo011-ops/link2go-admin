@@ -28,6 +28,7 @@ body{
   min-height:100vh;overflow-x:hidden;
 }
 
+/* Toast */
 .toast{
   position:fixed;top:24px;left:50%;transform:translate(-50%,-120%);
   padding:13px 24px;border-radius:13px;
@@ -35,11 +36,15 @@ body{
   backdrop-filter:blur(20px);font-size:13px;font-weight:700;
   z-index:9999;transition:transform .4s cubic-bezier(.16,1,.3,1);
   box-shadow:0 20px 60px rgba(0,0,0,.5);max-width:90vw;
-  display:flex;align-items:center;gap:10px;
+  display:flex;align-items:center;gap:10px;pointer-events:none;
 }
 .toast.show{transform:translate(-50%,0);}
 .toast.ok{border-color:rgba(16,185,129,.4);color:#6ee7b7;}
 .toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5;}
+@media(max-width:600px){
+  .toast{top:auto;bottom:20px;transform:translate(-50%,140%);}
+  .toast.show{transform:translate(-50%,0);}
+}
 
 /* Login */
 #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1;}
@@ -112,8 +117,9 @@ body{
 }
 .brand-text strong{display:block;font-size:17px;font-weight:900;}
 .brand-text span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;}
+.brand-text .last-update{font-size:10.5px;color:var(--muted-2);margin-top:2px;}
 
-.header-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .icon-btn{
   display:inline-flex;align-items:center;gap:8px;
   padding:10px 16px;border-radius:11px;
@@ -121,7 +127,8 @@ body{
   color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;
   cursor:pointer;transition:.25s;text-decoration:none;
 }
-.icon-btn:hover{background:var(--surface-2);border-color:var(--border-2);transform:translateY(-1px);}
+.icon-btn:hover:not(:disabled){background:var(--surface-2);border-color:var(--border-2);transform:translateY(-1px);}
+.icon-btn:disabled{opacity:.5;cursor:wait;}
 .icon-btn.danger:hover{border-color:rgba(239,68,68,.5);color:#fca5a5;}
 .icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
 
@@ -178,7 +185,7 @@ body{
 .stat.gold .stat-value{color:#fbbf24;}
 .stat.red .stat-value{color:#f87171;}
 
-/* Search bar */
+/* Search */
 .search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .search-bar input{
   flex:1;min-width:220px;padding:13px 18px;border-radius:12px;
@@ -192,7 +199,8 @@ body{
   color:#fff;font-family:inherit;font-size:13px;font-weight:800;
   cursor:pointer;transition:.25s;box-shadow:0 10px 30px rgba(168,85,247,.3);
 }
-.search-bar button:hover{transform:translateY(-2px);}
+.search-bar button:hover:not(:disabled){transform:translateY(-2px);}
+.search-bar button:disabled{opacity:.6;cursor:wait;}
 
 /* Cards */
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
@@ -223,9 +231,9 @@ body{
 .badge.download{background:rgba(59,130,246,.2);color:#93c5fd;}
 .badge.video{background:rgba(59,130,246,.15);color:#93c5fd;}
 .badge.cache{background:rgba(16,185,129,.2);color:#6ee7b7;}
-.badge.high{background:rgba(239,68,68,.25);color:#fca5a5;}
-.badge.medium{background:rgba(245,158,11,.2);color:#fcd34d;}
 .badge.low{background:rgba(59,130,246,.2);color:#93c5fd;}
+.badge.medium{background:rgba(245,158,11,.2);color:#fcd34d;}
+.badge.high{background:rgba(239,68,68,.25);color:#fca5a5;}
 .badge.critical{background:rgba(239,68,68,.4);color:#fff;animation:pulse-red 1.5s infinite;}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 0 0 6px rgba(239,68,68,0);}}
 
@@ -239,13 +247,14 @@ body{
   color:var(--text);font-family:inherit;font-size:12px;font-weight:700;
   cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;text-decoration:none;
 }
-.card-btn:hover{background:var(--surface-2);border-color:var(--border-2);}
+.card-btn:hover:not(:disabled){background:var(--surface-2);border-color:var(--border-2);}
+.card-btn:disabled{opacity:.5;cursor:wait;}
 .card-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;color:#fff;box-shadow:0 8px 25px rgba(168,85,247,.35);}
-.card-btn.primary:hover{box-shadow:0 12px 35px rgba(168,85,247,.5);}
+.card-btn.primary:hover:not(:disabled){box-shadow:0 12px 35px rgba(168,85,247,.5);}
 .card-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
-.card-btn.danger:hover{background:rgba(239,68,68,.25);color:#fff;}
+.card-btn.danger:hover:not(:disabled){background:rgba(239,68,68,.25);color:#fff;}
 .card-btn.success{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#6ee7b7;}
-.card-btn.success:hover{background:rgba(16,185,129,.25);color:#fff;}
+.card-btn.success:hover:not(:disabled){background:rgba(16,185,129,.25);color:#fff;}
 .card-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;}
 
 .empty,.loading{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px;font-weight:600;}
@@ -258,7 +267,7 @@ body{
 .sub-tab:hover{color:var(--text);border-color:var(--border-2);}
 .sub-tab.active{background:rgba(168,85,247,.15);border-color:rgba(168,132,255,.4);color:var(--accent-3);}
 
-/* Overview section */
+/* Overview */
 .overview-section{
   background:linear-gradient(145deg,rgba(30,27,48,.6),rgba(20,18,32,.85));
   border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;
@@ -291,16 +300,24 @@ body{
 
 .field{margin-bottom:14px;text-align:right;}
 .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.field .hint{font-size:10.5px;color:var(--muted-2);margin-top:4px;font-weight:500;}
 .field input,.field select{width:100%;padding:12px 14px;border-radius:11px;background:rgba(10,9,16,.7);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.25s;}
 .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
 .modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
 .btn{padding:12px 20px;border-radius:12px;border:0;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+.btn:disabled{opacity:.6;cursor:wait;}
 .btn.primary{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.35);}
-.btn.primary:hover{transform:translateY(-2px);}
+.btn.primary:hover:not(:disabled){transform:translateY(-2px);}
 .btn.danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
-.btn.danger:hover{background:rgba(239,68,68,.25);color:#fff;}
+.btn.danger:hover:not(:disabled){background:rgba(239,68,68,.25);color:#fff;}
+.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn.ghost:hover:not(:disabled){border-color:var(--border-2);color:var(--text);}
+
+/* Confirm modal */
+#confirmModal .modal-content{max-width:420px;}
+#confirmModal .confirm-text{font-size:13.5px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
 
 @media(max-width:700px){
   .wrap{padding:20px 0 60px;}
@@ -351,6 +368,7 @@ body{
         <div class="brand-text">
           <strong>Link2Go Admin</strong>
           <span id="welcomeText">مرحباً</span>
+          <div class="last-update" id="lastUpdateText"></div>
         </div>
       </div>
       <div class="header-actions">
@@ -389,49 +407,24 @@ body{
       </button>
     </div>
 
-    <!-- ============ Overview ============ -->
     <div class="panel active" id="panel-overview">
-      <div id="overviewContent">
-        <div class="loading">جاري التحميل...</div>
-      </div>
+      <div id="overviewContent"><div class="loading">جاري التحميل...</div></div>
     </div>
 
-    <!-- ============ Users ============ -->
     <div class="panel" id="panel-users">
       <div class="stats">
-        <div class="stat green">
-          <div class="stat-icon">👥</div>
-          <div class="stat-label">إجمالي المستخدمين</div>
-          <div class="stat-value" id="statTotal">0</div>
-        </div>
-        <div class="stat blue">
-          <div class="stat-icon">💙</div>
-          <div class="stat-label">الباقة المجانية</div>
-          <div class="stat-value" id="statFree">0</div>
-        </div>
-        <div class="stat">
-          <div class="stat-icon">💜</div>
-          <div class="stat-label">الباقة الأسبوعية</div>
-          <div class="stat-value" id="statWeekly">0</div>
-        </div>
-        <div class="stat gold">
-          <div class="stat-icon">👑</div>
-          <div class="stat-label">الباقة الشهرية VIP</div>
-          <div class="stat-value" id="statMonthly">0</div>
-        </div>
+        <div class="stat green"><div class="stat-icon">👥</div><div class="stat-label">إجمالي المستخدمين</div><div class="stat-value" id="statTotal">0</div></div>
+        <div class="stat blue"><div class="stat-icon">💙</div><div class="stat-label">الباقة المجانية</div><div class="stat-value" id="statFree">0</div></div>
+        <div class="stat"><div class="stat-icon">💜</div><div class="stat-label">الباقة الأسبوعية</div><div class="stat-value" id="statWeekly">0</div></div>
+        <div class="stat gold"><div class="stat-icon">👑</div><div class="stat-label">الباقة الشهرية VIP</div><div class="stat-value" id="statMonthly">0</div></div>
       </div>
-
       <div class="search-bar">
         <input id="userSearch" type="text" placeholder="🔍 ابحث بالاسم أو رقم الهاتف...">
         <button id="refreshUsersBtn">تحديث</button>
       </div>
-
-      <div id="usersList" class="list">
-        <div class="loading">جاري التحميل...</div>
-      </div>
+      <div id="usersList" class="list"><div class="loading">جاري التحميل...</div></div>
     </div>
 
-    <!-- ============ History ============ -->
     <div class="panel" id="panel-history">
       <div class="sub-tabs">
         <button class="sub-tab active" data-htype="links">📥 الروابط</button>
@@ -442,12 +435,9 @@ body{
         <input id="historySearch" type="text" placeholder="🔍 ابحث في السجل...">
         <button id="refreshHistoryBtn">تحديث</button>
       </div>
-      <div id="historyList" class="list">
-        <div class="loading">جاري التحميل...</div>
-      </div>
+      <div id="historyList" class="list"><div class="loading">جاري التحميل...</div></div>
     </div>
 
-    <!-- ============ Security ============ -->
     <div class="panel" id="panel-security">
       <div class="sub-tabs">
         <button class="sub-tab active" data-stype="stats">📊 الإحصائيات</button>
@@ -455,32 +445,27 @@ body{
         <button class="sub-tab" data-stype="bans">🚫 IPs المحظورة</button>
         <button class="sub-tab" data-stype="events">⚠️ الأحداث</button>
       </div>
-      <div id="securityContent">
-        <div class="loading">جاري التحميل...</div>
-      </div>
+      <div id="securityContent"><div class="loading">جاري التحميل...</div></div>
     </div>
 
-    <!-- ============ Cloud ============ -->
     <div class="panel" id="panel-cloud">
       <div class="sub-tabs">
         <button class="sub-tab active" data-ctype="stats">📊 الإحصائيات</button>
         <button class="sub-tab" data-ctype="files">📁 الملفات</button>
         <button class="sub-tab" data-ctype="orphans">⚠️ اليتيمة</button>
       </div>
-      <div id="cloudContent">
-        <div class="loading">جاري التحميل...</div>
-      </div>
+      <div id="cloudContent"><div class="loading">جاري التحميل...</div></div>
     </div>
 
   </div>
 </div>
 
-<!-- Modal: User Edit -->
+<!-- User Edit Modal -->
 <div id="userModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="userModalTitle">تعديل المستخدم</h3>
-      <button class="close-btn" onclick="closeUserModal()">✕</button>
+      <button class="close-btn" data-close="userModal">✕</button>
     </div>
     <div id="userModalPhone" class="card-phone" style="margin-bottom:10px;"></div>
     <div id="userModalMeta" class="meta-row" style="margin-bottom:16px;"></div>
@@ -504,12 +489,14 @@ body{
       <input type="text" id="renewalDateInput" placeholder="2026-12-31">
     </div>
     <div class="field">
-      <label>حد استماع مخصص (-1 = بلا حدود)</label>
-      <input type="number" id="customListenInput" placeholder="اتركه فاضي">
+      <label>حد استماع مخصص</label>
+      <input type="number" id="customListenInput">
+      <div class="hint" id="customListenHint">-1 = بلا حدود. اتركه فاضي للإبقاء على الحالي</div>
     </div>
     <div class="field">
-      <label>مساحة السحابة المخصصة (MB) - اتركه فاضي للافتراضي</label>
-      <input type="number" id="customCloudInput" placeholder="مثال: 5120">
+      <label>مساحة السحابة المخصصة (MB)</label>
+      <input type="number" id="customCloudInput">
+      <div class="hint" id="customCloudHint">اتركه فاضي للإبقاء على الحالي</div>
     </div>
 
     <div class="modal-actions">
@@ -519,13 +506,33 @@ body{
   </div>
 </div>
 
+<!-- Confirm Modal -->
+<div id="confirmModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="confirmTitle">تأكيد</h3>
+      <button class="close-btn" data-close="confirmModal">✕</button>
+    </div>
+    <div class="confirm-text" id="confirmText"></div>
+    <div class="modal-actions">
+      <button id="confirmOkBtn" class="btn primary">تأكيد</button>
+      <button class="btn ghost" data-close="confirmModal">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <script>
+/* ============ Config ============ */
 const SERVER_URL = "https://link2go-proxy.vercel.app";
 const TOKEN_KEY = "link2go_admin_token";
 const USERNAME_KEY = "link2go_admin_username";
+const REFRESH_MS = 30000;
+const DEBOUNCE_MS = 250;
+const MAX_RENDER = 300;
 
-let adminToken = sessionStorage.getItem(TOKEN_KEY) || "";
-let adminUsername = sessionStorage.getItem(USERNAME_KEY) || "";
+/* ============ State ============ */
+let adminToken = localStorage.getItem(TOKEN_KEY) || "";
+let adminUsername = localStorage.getItem(USERNAME_KEY) || "";
 let allUsers = [], allPlans = {}, currentEditingUser = null;
 let currentHistoryType = "links";
 let currentSecurityType = "stats";
@@ -533,24 +540,94 @@ let currentCloudType = "stats";
 let allHistory = { links: [], otp: [], login: [] };
 let refreshTimer = null;
 
+/* ============ Helpers ============ */
 const $ = id => document.getElementById(id);
-const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-const todayStr = () => new Date().toLocaleDateString("en-CA");
+const esc = s => String(s ?? "")
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 
+// يمنع javascript: و data: في الـ href
+function safeUrl(u) {
+  const s = String(u || "");
+  if (!s) return "#";
+  if (/^\s*(javascript|data|vbscript):/i.test(s)) return "#";
+  return s;
+}
+
+// تاريخ اليوم بصيغة YYYY-MM-DD بدون مشاكل timezone
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function debounce(fn, ms) {
+  let t = null;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
+let toastTimer = null;
 function showToast(text, type = "ok") {
   const t = $("toast");
   t.textContent = text;
   t.className = "toast show " + type;
-  setTimeout(() => { t.className = "toast"; }, 3500);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = "toast"; }, 3500);
 }
 
+function setLastUpdate() {
+  const d = new Date();
+  $("lastUpdateText").textContent = "آخر تحديث: " +
+    d.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function busy(btn, isBusy, labelBusy) {
+  if (!btn) return;
+  if (isBusy) {
+    btn.dataset._label = btn.textContent;
+    if (labelBusy) btn.textContent = labelBusy;
+    btn.disabled = true;
+  } else {
+    if (btn.dataset._label) btn.textContent = btn.dataset._label;
+    btn.disabled = false;
+  }
+}
+
+/* ============ Confirm Modal ============ */
+let confirmResolver = null;
+function askConfirm(title, text) {
+  return new Promise(resolve => {
+    confirmResolver = resolve;
+    $("confirmTitle").textContent = title;
+    $("confirmText").textContent = text;
+    $("confirmModal").classList.add("active");
+  });
+}
+$("confirmOkBtn").addEventListener("click", () => {
+  $("confirmModal").classList.remove("active");
+  if (confirmResolver) { confirmResolver(true); confirmResolver = null; }
+});
+document.querySelectorAll('[data-close="confirmModal"]').forEach(b => {
+  b.addEventListener("click", () => {
+    $("confirmModal").classList.remove("active");
+    if (confirmResolver) { confirmResolver(false); confirmResolver = null; }
+  });
+});
+
+/* ============ Session ============ */
 function clearSession() {
-  sessionStorage.removeItem(TOKEN_KEY);
-  sessionStorage.removeItem(USERNAME_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USERNAME_KEY);
   adminToken = ""; adminUsername = "";
 }
 function showLoginScreen() {
   $("loginScreen").classList.remove("hidden");
+  $("loginScreen").style.display = "";
   $("mainPanel").classList.remove("show");
 }
 function hideLoginScreen() {
@@ -559,6 +636,7 @@ function hideLoginScreen() {
 }
 function forceLogout() { stopRefresh(); clearSession(); showLoginScreen(); }
 
+/* ============ API ============ */
 async function apiFetch(path, options = {}) {
   const r = await fetch(SERVER_URL + path, {
     ...options,
@@ -571,28 +649,26 @@ async function apiFetch(path, options = {}) {
   let d = {};
   try { d = await r.json(); } catch (_) {}
   if (r.status === 401) { forceLogout(); throw new Error(d.error || "انتهت الجلسة"); }
-  if (r.status === 429) throw new Error(d.error || "طلبات كتير");
+  if (r.status === 429) throw new Error(d.error || "طلبات كتير، استنى شوية");
   if (!r.ok || !d.success) throw new Error(d.error || `فشل (${r.status})`);
   return d;
 }
 
-$("loginBtn").addEventListener("click", doLogin);
-$("passwordInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-$("usernameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("passwordInput").focus(); });
-
+/* ============ Login ============ */
 async function doLogin() {
   const username = $("usernameInput").value.trim();
   const password = $("passwordInput").value;
   const loginMsg = $("loginMsg");
   loginMsg.className = "login-msg";
+
   if (!username || !password) {
-    loginMsg.textContent = "اكتب البيانات";
+    loginMsg.textContent = "اكتب اسم المستخدم وكلمة المرور";
     loginMsg.className = "login-msg show err";
     return;
   }
+
   const btn = $("loginBtn");
-  btn.textContent = "جاري التحقق...";
-  btn.disabled = true;
+  busy(btn, true, "جاري التحقق...");
   try {
     const r = await fetch(SERVER_URL + "/admin-login", {
       method: "POST",
@@ -601,12 +677,12 @@ async function doLogin() {
     });
     let d = {};
     try { d = await r.json(); } catch (_) {}
-    if (!r.ok || !d.success) throw new Error(d.error || "فشل");
+    if (!r.ok || !d.success) throw new Error(d.error || "فشل تسجيل الدخول");
 
     adminToken = d.token;
     adminUsername = d.username;
-    sessionStorage.setItem(TOKEN_KEY, adminToken);
-    sessionStorage.setItem(USERNAME_KEY, adminUsername);
+    localStorage.setItem(TOKEN_KEY, adminToken);
+    localStorage.setItem(USERNAME_KEY, adminUsername);
 
     $("passwordInput").value = "";
     hideLoginScreen();
@@ -616,21 +692,41 @@ async function doLogin() {
     loginMsg.textContent = e.message;
     loginMsg.className = "login-msg show err";
   } finally {
-    btn.textContent = "تسجيل الدخول";
-    btn.disabled = false;
+    busy(btn, false);
   }
 }
 
+$("loginBtn").addEventListener("click", doLogin);
+$("passwordInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+$("usernameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("passwordInput").focus(); });
+
 $("logoutBtn").addEventListener("click", async () => {
-  if (!confirm("تسجيل الخروج؟")) return;
-  try { await fetch(SERVER_URL + "/admin-logout", { method: "POST", headers: { "Authorization": "Bearer " + adminToken } }); } catch (_) {}
+  const ok = await askConfirm("تسجيل الخروج", "هل تريد تسجيل الخروج من لوحة التحكم؟");
+  if (!ok) return;
+  try {
+    await fetch(SERVER_URL + "/admin-logout", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + adminToken }
+    });
+  } catch (_) {}
   stopRefresh(); clearSession(); location.reload();
 });
 
 async function checkAuth() {
   if (!adminToken) return false;
   try {
-    const r = await fetch(SERVER_URL + "/admin-verify", { method: "POST", headers: { "Authorization": "Bearer " + adminToken } });
+    // GET أولاً (أخف)، ولو رجع 405 نستخدم POST
+    let r = await fetch(SERVER_URL + "/admin-verify", {
+      method: "GET",
+      headers: { "Authorization": "Bearer " + adminToken }
+    });
+    if (r.status === 405 || r.status === 404) {
+      r = await fetch(SERVER_URL + "/admin-verify", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + adminToken, "Content-Type": "application/json" },
+        body: "{}"
+      });
+    }
     if (!r.ok) { clearSession(); return false; }
     const d = await r.json();
     if (!d.success) { clearSession(); return false; }
@@ -639,6 +735,7 @@ async function checkAuth() {
   } catch (_) { return false; }
 }
 
+/* ============ Tabs ============ */
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -657,7 +754,6 @@ document.querySelectorAll(".tab").forEach(tab => {
 
 document.querySelectorAll(".sub-tab").forEach(st => {
   st.addEventListener("click", () => {
-    if (st.classList.contains("danger")) return;
     const parent = st.parentElement;
     parent.querySelectorAll(".sub-tab").forEach(x => x.classList.remove("active"));
     st.classList.add("active");
@@ -678,12 +774,27 @@ document.querySelectorAll(".sub-tab").forEach(st => {
   });
 });
 
+/* ============ Overview ============ */
 async function loadOverview() {
   try {
     const d = await apiFetch("/admin/dashboard-summary");
     renderOverview(d);
+    updateSecurityBadge(d);
+    setLastUpdate();
   } catch (e) {
     $("overviewContent").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
+  }
+}
+
+function updateSecurityBadge(d) {
+  const sec = d.security || {};
+  const total = (sec.failed_logins || 0) + (sec.active_bans || 0);
+  const badge = $("securityBadge");
+  if (total > 0) {
+    badge.style.display = "inline-block";
+    badge.textContent = total > 99 ? "99+" : total;
+  } else {
+    badge.style.display = "none";
   }
 }
 
@@ -704,7 +815,6 @@ function renderOverview(d) {
       <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة</div><div class="stat-value">${sec.active_bans || 0}</div></div>
       <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTPs نشطة</div><div class="stat-value">${otp.active || 0}</div></div>
     </div>
-
     <div class="overview-grid">
       <div class="overview-section">
         <h3>👥 المستخدمون</h3>
@@ -715,31 +825,28 @@ function renderOverview(d) {
         <div class="overview-row"><span class="label">منتهية</span><span class="value" style="color:#f59e0b;">${users.expired || 0}</span></div>
         <div class="overview-row"><span class="label">ملغية</span><span class="value" style="color:#ef4444;">${users.cancelled || 0}</span></div>
       </div>
-
       <div class="overview-section">
         <h3>☁️ السحابة</h3>
         <div class="overview-row"><span class="label">مستخدمون عندهم سحابة</span><span class="value">${cloud.total_users_with_cloud || 0}</span></div>
         <div class="overview-row"><span class="label">إجمالي الملفات</span><span class="value">${cloud.total_files || 0}</span></div>
         <div class="overview-row"><span class="label">الحجم الكلي</span><span class="value">${cloud.total_cloud_size_mb || 0} MB</span></div>
       </div>
-
       <div class="overview-section">
         <h3>🛡️ الأمان</h3>
         <div class="overview-row"><span class="label">محاولات فاشلة</span><span class="value" style="color:#f87171;">${sec.failed_logins || 0}</span></div>
         <div class="overview-row"><span class="label">IPs محظورة</span><span class="value" style="color:#f87171;">${sec.active_bans || 0}</span></div>
         <div class="overview-row"><span class="label">أحداث أمنية</span><span class="value">${sec.total_events || 0}</span></div>
       </div>
-
       <div class="overview-section">
         <h3>🌐 البروكسي</h3>
         <div class="overview-row"><span class="label">متاح</span><span class="value">${proxy.available ? "✅" : "❌"}</span></div>
         <div class="overview-row"><span class="label">مفعّل حالياً</span><span class="value">${proxy.active ? "🟢" : "⚪"}</span></div>
         <div class="overview-row"><span class="label">مرات تفعيل</span><span class="value">${proxy.block_count || 0}</span></div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
+/* ============ Users ============ */
 const isExpired = u => u.plan_id !== "free" && u.renewal_date && u.renewal_date < todayStr();
 const effPlan = u => isExpired(u) ? "free" : u.plan_id;
 
@@ -749,96 +856,149 @@ async function loadUsers() {
     allUsers = d.users || [];
     renderUsers(filterUsers());
     updateStats();
+    setLastUpdate();
   } catch (e) {
     $("usersList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
   }
 }
 
+const STAT_MAP = { free: "statFree", weekly: "statWeekly", monthly: "statMonthly" };
 function updateStats() {
   $("statTotal").textContent = allUsers.length;
-  ["free", "weekly", "monthly"].forEach(p => {
-    const id = "stat" + p[0].toUpperCase() + p.slice(1);
-    $(id).textContent = allUsers.filter(u => effPlan(u) === p).length;
-  });
+  const counts = { free: 0, weekly: 0, monthly: 0 };
+  for (const u of allUsers) {
+    const p = effPlan(u);
+    if (counts[p] != null) counts[p]++;
+  }
+  for (const [plan, id] of Object.entries(STAT_MAP)) {
+    $(id).textContent = counts[plan] || 0;
+  }
 }
 
 function filterUsers() {
   const q = $("userSearch").value.trim().toLowerCase();
   if (!q) return allUsers;
-  return allUsers.filter(u => (u.username || "").toLowerCase().includes(q) || (u.phone || "").includes(q));
+  return allUsers.filter(u =>
+    (u.username || "").toLowerCase().includes(q) ||
+    (u.phone || "").includes(q)
+  );
 }
 
 function renderUsers(users) {
   const container = $("usersList");
-  if (!users.length) { container.innerHTML = `<div class="empty">📭 مفيش مستخدمين</div>`; return; }
-  container.innerHTML = "";
-  users.forEach(u => {
-    const el = document.createElement("div");
-    el.className = "card";
+  if (!users.length) { container.innerHTML = `<div class="empty">📭 مفيش مستخدمين مطابقين</div>`; return; }
+
+  const frag = document.createDocumentFragment();
+  users.slice(0, MAX_RENDER).forEach(u => {
     const plan = effPlan(u);
     const lim = u.limit ?? u.plan_limit ?? 0;
     const lis = u.listens_limit ?? u.plan_listens_limit ?? 0;
     const cls = plan === "monthly" ? "monthly" : plan === "weekly" ? "weekly" : "free";
     const cloud = u.cloud_storage || {};
+
+    const el = document.createElement("div");
+    el.className = "card";
     el.innerHTML = `
       <div class="card-head">
         <div style="flex:1;min-width:0;">
           <div class="card-title">${esc(u.username || "بدون اسم")}</div>
           <div class="card-phone">📱 ${esc(u.phone)}</div>
           <div class="badges">
-            <span class="badge ${cls}">${esc(u.plan_name)}</span>
+            <span class="badge ${cls}">${esc(u.plan_name || plan)}</span>
             ${isExpired(u) ? `<span class="badge cancelled">منتهية</span>` : ""}
             ${u.is_cancelled ? `<span class="badge cancelled">ملغي</span>` : ""}
             ${u.upgrade_requested ? `<span class="badge pending">طلب ترقية</span>` : ""}
           </div>
         </div>
-        <div class="card-actions"><button class="card-btn primary" data-action="edit">✏️ تعديل</button></div>
+        <div class="card-actions">
+          <button class="card-btn primary" data-action="edit" data-phone="${esc(u.phone)}">✏️ تعديل</button>
+        </div>
       </div>
       <div class="meta-row">
-        <span>📥 ${u.daily_downloads} / ${lim === -1 ? "∞" : lim}</span>
-        <span>🎧 ${u.monthly_listens} / ${lis === -1 ? "∞" : lis}</span>
+        <span>📥 ${u.daily_downloads || 0} / ${lim === -1 ? "∞" : lim}</span>
+        <span>🎧 ${u.monthly_listens || 0} / ${lis === -1 ? "∞" : lis}</span>
         ${u.renewal_date ? `<span>📅 ${esc(u.renewal_date)}</span>` : ""}
         ${cloud.files_count ? `<span>☁️ ${cloud.files_count} ملف (${cloud.used_mb || 0} MB)</span>` : ""}
       </div>`;
-    el.querySelector('[data-action="edit"]').addEventListener("click", () => openUserModal(u.phone));
-    container.appendChild(el);
+    frag.appendChild(el);
   });
+  container.innerHTML = "";
+  container.appendChild(frag);
+
+  if (users.length > MAX_RENDER) {
+    const note = document.createElement("div");
+    note.className = "empty";
+    note.style.gridColumn = "1/-1";
+    note.textContent = `تم عرض أول ${MAX_RENDER} من ${users.length} — استخدم البحث لتضييق النتائج`;
+    container.appendChild(note);
+  }
 }
 
-$("userSearch").addEventListener("input", () => renderUsers(filterUsers()));
-$("refreshUsersBtn").addEventListener("click", loadUsers);
-$("refreshBtn").addEventListener("click", () => {
-  const activeTab = document.querySelector(".tab.active").dataset.tab;
-  if (activeTab === "overview") loadOverview();
-  else if (activeTab === "users") loadUsers();
-  else if (activeTab === "history") loadHistory();
-  else if (activeTab === "security") loadSecurity();
-  else if (activeTab === "cloud") loadCloud();
+// Event delegation للمستخدمين
+$("usersList").addEventListener("click", e => {
+  const btn = e.target.closest('[data-action="edit"]');
+  if (!btn) return;
+  openUserModal(btn.dataset.phone);
 });
 
+$("userSearch").addEventListener("input", debounce(() => renderUsers(filterUsers()), DEBOUNCE_MS));
+
+$("refreshUsersBtn").addEventListener("click", async () => {
+  const b = $("refreshUsersBtn");
+  busy(b, true, "جاري التحديث...");
+  try { await loadUsers(); } finally { busy(b, false); }
+});
+
+$("refreshBtn").addEventListener("click", async () => {
+  const b = $("refreshBtn");
+  busy(b, true);
+  try {
+    const activeTab = document.querySelector(".tab.active").dataset.tab;
+    if (activeTab === "overview") await loadOverview();
+    else if (activeTab === "users") await loadUsers();
+    else if (activeTab === "history") await loadHistory();
+    else if (activeTab === "security") await loadSecurity();
+    else if (activeTab === "cloud") await loadCloud();
+  } finally { busy(b, false); }
+});
+
+/* ============ History ============ */
 async function loadHistory() {
   $("historyList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
   try {
     const d = await apiFetch("/history?type=all&limit=500");
     allHistory = Object.assign({ links: [], otp: [], login: [] }, d.data || {});
     renderHistory();
+    setLastUpdate();
   } catch (e) {
     $("historyList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
   }
 }
 
-const LOGIN_ACTIONS = { admin_login: "🔑 دخول أدمن", otp_login: "📱 دخول مستخدم", signup: "🆕 تسجيل", logout: "🚪 خروج" };
-const ADMIN_ACTIONS = { set_plan: "تغيير باقة", delete_user: "حذف مستخدم", set_counters: "تعديل عدادات", set_listen_limit: "تعديل حد", clear_history: "مسح سجل", delete_file: "حذف ملف", unban_ip: "إلغاء حظر" };
+const LOGIN_ACTIONS = {
+  admin_login: "🔑 دخول أدمن", otp_login: "📱 دخول مستخدم",
+  signup: "🆕 تسجيل", logout: "🚪 خروج"
+};
+const ADMIN_ACTIONS = {
+  set_plan: "تغيير باقة", delete_user: "حذف مستخدم",
+  set_counters: "تعديل عدادات", set_listen_limit: "تعديل حد",
+  clear_history: "مسح سجل", delete_file: "حذف ملف", unban_ip: "إلغاء حظر"
+};
 
-function renderHistory(list = allHistory[currentHistoryType] || []) {
+function renderHistory(list) {
   const container = $("historyList");
-  if (!list.length) { container.innerHTML = `<div class="empty">📭 مفيش سجل</div>`; return; }
-  container.innerHTML = "";
-  const t = currentHistoryType;
+  const src = list || allHistory[currentHistoryType] || [];
+  if (!src.length) { container.innerHTML = `<div class="empty">📭 مفيش سجل</div>`; return; }
 
-  list.forEach(item => {
+  const t = currentHistoryType;
+  const frag = document.createDocumentFragment();
+
+  src.slice(0, MAX_RENDER).forEach(item => {
     const ok = item.status === "success";
-    const st = ok ? ["success", "نجح"] : item.status === "quota" ? ["quota", "حد أقصى"] : ["failed", "فشل"];
+    const st = ok ? ["success", "نجح"]
+      : item.status === "quota" ? ["quota", "حد أقصى"]
+      : ["failed", "فشل"];
+
     let title = "", phone = "", badges = "", lines = "";
 
     if (t === "links") {
@@ -876,17 +1036,28 @@ function renderHistory(list = allHistory[currentHistoryType] || []) {
         ${lines}
         <span>🕐 ${esc(item.timestamp || "—")}${item.ip ? " · 🌐 " + esc(item.ip) : ""}</span>
       </div>`;
-    container.appendChild(el);
+    frag.appendChild(el);
   });
+
+  container.innerHTML = "";
+  container.appendChild(frag);
 }
 
-$("refreshHistoryBtn").addEventListener("click", loadHistory);
-$("historySearch").addEventListener("input", e => {
-  const q = e.target.value.trim().toLowerCase();
-  const list = allHistory[currentHistoryType] || [];
-  renderHistory(q ? list.filter(i => JSON.stringify(i).toLowerCase().includes(q)) : list);
+$("refreshHistoryBtn").addEventListener("click", async () => {
+  const b = $("refreshHistoryBtn");
+  busy(b, true, "جاري التحديث...");
+  try { await loadHistory(); } finally { busy(b, false); }
 });
 
+$("historySearch").addEventListener("input", debounce(e => {
+  const q = e.target.value.trim().toLowerCase();
+  const list = allHistory[currentHistoryType] || [];
+  if (!q) { renderHistory(list); return; }
+  const filtered = list.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+  renderHistory(filtered);
+}, DEBOUNCE_MS));
+
+/* ============ Security ============ */
 async function loadSecurity() {
   const container = $("securityContent");
   container.innerHTML = `<div class="loading">جاري التحميل...</div>`;
@@ -899,12 +1070,19 @@ async function loadSecurity() {
       const d = await apiFetch("/admin/otp-active");
       renderActiveOtps(d);
     } else if (currentSecurityType === "bans") {
-      const d = await apiFetch("/admin/security-stats");
+      // نحاول endpoint البانز الأول، ولو مش موجود نستخدم stats
+      let d;
+      try {
+        d = await apiFetch("/admin/security-bans");
+      } catch (_) {
+        d = await apiFetch("/admin/security-stats");
+      }
       renderBans(d);
     } else if (currentSecurityType === "events") {
       const d = await apiFetch("/admin/security-log?limit=100");
       renderSecurityEvents(d);
     }
+    setLastUpdate();
   } catch (e) {
     container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
   }
@@ -916,7 +1094,7 @@ function renderSecurityStats(d) {
   const badge = $("securityBadge");
   if (totalIssues > 0) {
     badge.style.display = "inline-block";
-    badge.textContent = totalIssues;
+    badge.textContent = totalIssues > 99 ? "99+" : totalIssues;
   } else {
     badge.style.display = "none";
   }
@@ -958,46 +1136,67 @@ function renderActiveOtps(d) {
         </div>
       </div>
       <div class="meta-row">
-        <span>🕐 اتسجل من ${o.sent_at_ago} ثانية</span>
-        <span>⏳ متبقي ${o.expires_in} ثانية</span>
-        <span>⚠️ محاولات: ${o.attempts}</span>
+        <span>🕐 اتسجل من ${o.sent_at_ago ?? '—'} ثانية</span>
+        <span>⏳ متبقي ${o.expires_in ?? '—'} ثانية</span>
+        <span>⚠️ محاولات: ${o.attempts ?? 0}</span>
       </div>
     </div>`).join("")}</div>`;
 }
 
 function renderBans(d) {
-  const bans = d.active_bans || [];
-  if (!bans.length) {
+  // نقبل أي شكل من الـ API: d.active_bans أو d.stats.active_bans أو d.bans
+  const bans = d.active_bans || (d.stats && d.stats.active_bans) || d.bans || [];
+  const list = Array.isArray(bans) ? bans : [];
+  if (!list.length) {
     $("securityContent").innerHTML = `<div class="empty">✅ مفيش IPs محظورة حالياً</div>`;
     return;
   }
-  $("securityContent").innerHTML = `<div class="list">${bans.map(b => `
+  $("securityContent").innerHTML = `<div class="list">${list.map(b => `
     <div class="card">
       <div class="card-head">
         <div>
           <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;">🚫 ${esc(b.ip)}</div>
-          <div class="card-phone">⏱️ متبقي: ${Math.floor(b.remaining_seconds / 60)} دقيقة</div>
+          <div class="card-phone">⏱️ متبقي: ${Math.max(0, Math.floor((b.remaining_seconds || 0) / 60))} دقيقة</div>
         </div>
         <div class="card-actions">
-          <button class="card-btn danger" onclick="unbanIp('${esc(b.ip)}')">✅ إلغاء الحظر</button>
+          <button class="card-btn danger" data-action="unban" data-ip="${esc(b.ip)}">✅ إلغاء الحظر</button>
         </div>
       </div>
-      <div class="meta-row">
-        <span>🕐 محظور لحد ${esc(b.banned_until)}</span>
-      </div>
+      <div class="meta-row"><span>🕐 محظور لحد ${esc(b.banned_until || '—')}</span></div>
     </div>`).join("")}</div>`;
 }
 
-async function unbanIp(ip) {
-  if (!confirm(`إلغاء حظر ${ip}؟`)) return;
+async function unbanIp(ip, btn) {
+  const ok = await askConfirm("إلغاء حظر", `هل تريد إلغاء حظر الـ IP: ${ip}؟`);
+  if (!ok) return;
+  busy(btn, true, "جاري...");
   try {
     await apiFetch("/admin/unban-ip", { method: "POST", body: JSON.stringify({ ip }) });
     showToast("✅ تم إلغاء الحظر");
     loadSecurity();
   } catch (e) {
     showToast("❌ " + e.message, "err");
+    busy(btn, false);
   }
 }
+
+// Event delegation للأمان
+$("securityContent").addEventListener("click", e => {
+  const btn = e.target.closest('[data-action="unban"]');
+  if (!btn) return;
+  unbanIp(btn.dataset.ip, btn);
+});
+
+const EVT_NAMES = {
+  ip_banned: "🚫 IP محظور",
+  scanner_detected: "🕵️ سكانر",
+  otp_bruteforce: "🔐 OTP Brute Force",
+  failed_admin_login: "🔑 محاولة دخول أدمن فاشلة",
+  url_too_long: "📏 URL طويل جداً",
+};
+const SEV_LABELS = {
+  critical: "حرج", high: "خطير", medium: "متوسط", low: "منخفض"
+};
 
 function renderSecurityEvents(d) {
   const events = d.events || [];
@@ -1005,28 +1204,34 @@ function renderSecurityEvents(d) {
     $("securityContent").innerHTML = `<div class="empty">📭 مفيش أحداث أمنية</div>`;
     return;
   }
-  const EVT_NAMES = {
-    ip_banned: "🚫 IP محظور",
-    scanner_detected: "🕵️ سكانر",
-    otp_bruteforce: "🔐 OTP Brute Force",
-    failed_admin_login: "🔑 محاولة دخول أدمن فاشلة",
-    url_too_long: "📏 URL طويل جداً",
-  };
-  $("securityContent").innerHTML = `<div class="list">${events.map(e => `
-    <div class="card">
+  const frag = document.createDocumentFragment();
+  events.slice(0, MAX_RENDER).forEach(e => {
+    const el = document.createElement("div");
+    el.className = "card";
+    const sev = e.severity || "low";
+    el.innerHTML = `
       <div class="card-head">
         <div>
-          <div class="card-title">${EVT_NAMES[e.event_type] \vert{}\vert{} esc(e.event_type)}</div>${e.ip ? `<div class="card-phone">🌐 ${esc(e.ip)}</div>` : ""}
+          <div class="card-title">${EVT_NAMES[e.event_type] || esc(e.event_type)}</div>
+          ${e.ip ? `<div class="card-phone">🌐 ${esc(e.ip)}</div>` : ""}
           <div class="badges">
-            <span class="badge ${e.severity \vert{}\vert{} 'low'}">${e.severity === 'critical' ? 'حرج' : e.severity === 'high' ? 'خطير' : e.severity === 'medium' ? 'متوسط' : 'منخفض'}</span>
+            <span class="badge ${sev}">${SEV_LABELS[sev] || sev}</span>
           </div>
         </div>
       </div>
       ${e.details ? `<div class="meta-row"><span style="direction:ltr;">${esc(e.details)}</span></div>` : ""}
-      <div class="meta-row"><span>🕐 ${esc(e.timestamp || "—")}</span></div>
-    </div>`).join("")}</div>`;
+      <div class="meta-row"><span>🕐 ${esc(e.timestamp || "—")}</span></div>`;
+    frag.appendChild(el);
+  });
+  const container = $("securityContent");
+  container.innerHTML = "";
+  const wrap = document.createElement("div");
+  wrap.className = "list";
+  wrap.appendChild(frag);
+  container.appendChild(wrap);
 }
 
+/* ============ Cloud ============ */
 async function loadCloud() {
   const container = $("cloudContent");
   container.innerHTML = `<div class="loading">جاري التحميل...</div>`;
@@ -1044,10 +1249,7 @@ async function loadCloud() {
     } else if (currentCloudType === "files") {
       const d = await apiFetch("/admin/cloud-files?limit=200");
       const files = d.files || [];
-      if (!files.length) {
-        container.innerHTML = `<div class="empty">📭 مفيش ملفات سحابية</div>`;
-        return;
-      }
+      if (!files.length) { container.innerHTML = `<div class="empty">📭 مفيش ملفات سحابية</div>`; return; }
       container.innerHTML = `<div class="list">${files.map(f => `
         <div class="card">
           <div class="card-head">
@@ -1059,20 +1261,17 @@ async function loadCloud() {
           </div>
           <div class="meta-row">
             <span>📦 ${f.size_mb || 0} MB</span>
-            <span>🕐 ${esc((f.created_at||'').split(' ')[0])}</span>
+            <span>🕐 ${esc((f.created_at || '').split(' ')[0])}</span>
           </div>
           <div class="card-actions">
-            <a class="card-btn primary" href="${SERVER_URL}${f.inline_url}" target="_blank">▶️ فتح</a>
-            <a class="card-btn" href="${SERVER_URL}${f.download_url}">⬇️ تحميل</a>
+            <a class="card-btn primary" href="${safeUrl(SERVER_URL + (f.inline_url || ''))}" target="_blank" rel="noopener noreferrer">▶️ فتح</a>
+            <a class="card-btn" href="${safeUrl(SERVER_URL + (f.download_url || ''))}" rel="noopener noreferrer">⬇️ تحميل</a>
           </div>
         </div>`).join("")}</div>`;
     } else if (currentCloudType === "orphans") {
       const d = await apiFetch("/admin/cloud-orphans");
       const orphans = d.orphans || [];
-      if (!orphans.length) {
-        container.innerHTML = `<div class="empty">✅ مفيش ملفات يتيمة</div>`;
-        return;
-      }
+      if (!orphans.length) { container.innerHTML = `<div class="empty">✅ مفيش ملفات يتيمة</div>`; return; }
       container.innerHTML = `<div class="list">${orphans.map(o => {
         if (o.type === "deleted_user_has_files") {
           return `<div class="card" style="border-color:rgba(239,68,68,.3);">
@@ -1083,9 +1282,7 @@ async function loadCloud() {
               </div>
               <span class="badge failed">${o.files_count} ملف</span>
             </div>
-            <div class="meta-row">
-              <span>💾 ${(o.total_size_bytes / 1024 / 1024).toFixed(2)} MB</span>
-            </div>
+            <div class="meta-row"><span>💾 ${((o.total_size_bytes || 0) / 1024 / 1024).toFixed(2)} MB</span></div>
           </div>`;
         }
         return `<div class="card">
@@ -1097,25 +1294,40 @@ async function loadCloud() {
           </div>
           <div class="meta-row">
             <span style="direction:ltr;font-size:10px;">${esc(o.filename)}</span>
-            <span>📦 ${(o.size_bytes / 1024 / 1024).toFixed(2)} MB</span>${o.user_exists ? '' : '<span style="color:#ef4444;">مستخدم محذوف</span>'}
+            <span>📦 ${((o.size_bytes || 0) / 1024 / 1024).toFixed(2)} MB</span>
+            ${o.user_exists ? '' : '<span style="color:#ef4444;">مستخدم محذوف</span>'}
           </div>
         </div>`;
       }).join("")}</div>`;
     }
+    setLastUpdate();
   } catch (e) {
     container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
   }
 }
 
+/* ============ User Modal ============ */
 async function openUserModal(phone) {
   $("userModal").classList.add("active");
   $("userModalTitle").textContent = "جاري التحميل...";
   $("userModalPhone").textContent = "";
   $("userModalMeta").innerHTML = "";
+  $("customListenHint").textContent = "-1 = بلا حدود. اتركه فاضي للإبقاء على الحالي";
+  $("customCloudHint").textContent = "اتركه فاضي للإبقاء على الحالي";
+
   try {
     const d = await apiFetch("/user/" + encodeURIComponent(phone));
     currentEditingUser = d.user;
-    if (!Object.keys(allPlans).length) await loadPlans();
+
+    if (!Object.keys(allPlans).length) {
+      try {
+        await loadPlans();
+      } catch (e) {
+        $("userModalTitle").textContent = "خطأ في تحميل الباقات";
+        $("userModalPhone").textContent = e.message;
+        return;
+      }
+    }
     renderUserModal(d.user);
   } catch (e) {
     $("userModalTitle").textContent = "خطأ";
@@ -1124,21 +1336,30 @@ async function openUserModal(phone) {
 }
 
 async function loadPlans() {
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort(), 8000);
   try {
-    const r = await fetch(SERVER_URL + "/get-plans");
+    const r = await fetch(SERVER_URL + "/get-plans", { signal: ctrl.signal });
     const d = await r.json();
-    if (r.ok && d.success) allPlans = d.plans || {};
-  } catch (e) {}
+    if (!r.ok || !d.success) throw new Error(d.error || "فشل تحميل الباقات");
+    allPlans = d.plans || {};
+  } catch (e) {
+    if (e.name === "AbortError") throw new Error("انتهت مهلة تحميل الباقات");
+    throw e;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function renderUserModal(u) {
   $("userModalTitle").textContent = u.username || "مستخدم";
   $("userModalPhone").textContent = "📱 " + u.phone;
+
   const meta = [];
   if (u.created_at) meta.push(`🗓️ ${esc(u.created_at)}`);
   if (u.last_login) meta.push(`🔐 ${esc(u.last_login)}`);
   if (u.cloud_storage && u.cloud_storage.files_count) {
-    meta.push(`☁️ ${u.cloud_storage.files_count} ملف (${u.cloud_storage.used_mb} MB)`);
+    meta.push(`☁️ ${u.cloud_storage.files_count} ملف (${u.cloud_storage.used_mb || 0} MB)`);
   }
   $("userModalMeta").innerHTML = meta.map(p => `<span>${p}</span>`).join("");
 
@@ -1149,54 +1370,79 @@ function renderUserModal(u) {
   $("downloadsInput").value = u.daily_downloads || 0;
   $("listensInput").value = u.monthly_listens || 0;
   $("renewalDateInput").value = u.renewal_date || "";
+
+  // نعرض القيم الحالية كـ placeholder
+  const curListen = u.listens_limit ?? u.plan_listens_limit;
   $("customListenInput").value = "";
+  $("customListenInput").placeholder = curListen === -1 ? "الحالي: بلا حدود (-1)" : `الحالي: ${curListen ?? "—"}`;
+
+  const curCloud = u.cloud_storage_mb;
   $("customCloudInput").value = "";
+  $("customCloudInput").placeholder = curCloud != null ? `الحالي: ${curCloud} MB` : "غير محدد";
 }
 
 $("saveUserBtn").addEventListener("click", async () => {
   if (!currentEditingUser) return;
   const btn = $("saveUserBtn");
-  btn.textContent = "جاري الحفظ...";
-  btn.disabled = true;
+  busy(btn, true, "جاري الحفظ...");
   try {
     const phone = encodeURIComponent(currentEditingUser.phone);
     const newPlan = $("newPlanSelect").value;
+
     if (newPlan !== currentEditingUser.plan_id) {
-      await apiFetch(`/user/${phone}/set-plan`, { method: "POST", body: JSON.stringify({ plan: newPlan }) });
+      await apiFetch(`/user/${phone}/set-plan`, {
+        method: "POST",
+        body: JSON.stringify({ plan: newPlan })
+      });
     }
 
     const body = {
       daily_downloads: parseInt($("downloadsInput").value) || 0,
       monthly_listens: parseInt($("listensInput").value) || 0
     };
-    const dateVal = $("renewalDateInput").value || "";
-    if (dateVal !== (currentEditingUser.renewal_date || "")) body.renewal_date = dateVal;
+
+    const dateVal = $("renewalDateInput").value.trim();
+    if (dateVal !== (currentEditingUser.renewal_date || "")) {
+      body.renewal_date = dateVal;
+    }
 
     const customListen = $("customListenInput").value.trim();
-    if (customListen !== "") body.listens_limit = parseInt(customListen);
+    if (customListen !== "") {
+      const v = parseInt(customListen);
+      if (isNaN(v)) throw new Error("حد الاستماع لازم يكون رقم");
+      body.listens_limit = v;
+    }
 
     const customCloud = $("customCloudInput").value.trim();
-    if (customCloud !== "") body.cloud_storage_mb = parseInt(customCloud);
+    if (customCloud !== "") {
+      const v = parseInt(customCloud);
+      if (isNaN(v) || v < 0) throw new Error("مساحة السحابة لازم تكون رقم موجب");
+      body.cloud_storage_mb = v;
+    }
 
-    await apiFetch(`/user/${phone}/set-counters`, { method: "POST", body: JSON.stringify(body) });
+    await apiFetch(`/user/${phone}/set-counters`, {
+      method: "POST",
+      body: JSON.stringify(body)
+    });
+
     showToast("✅ تم الحفظ");
     closeUserModal();
     loadUsers();
   } catch (e) {
     showToast("❌ " + e.message, "err");
   } finally {
-    btn.textContent = "💾 حفظ";
-    btn.disabled = false;
+    busy(btn, false);
   }
 });
 
 $("deleteUserBtn").addEventListener("click", async () => {
   if (!currentEditingUser) return;
   const u = currentEditingUser;
-  if (!confirm(`حذف "${u.username || u.phone}"؟`)) return;
+  const ok = await askConfirm("حذف مستخدم", `هل تريد حذف "${u.username || u.phone}" نهائياً؟ لا يمكن التراجع.`);
+  if (!ok) return;
+
   const btn = $("deleteUserBtn");
-  btn.textContent = "جاري الحذف...";
-  btn.disabled = true;
+  busy(btn, true, "جاري الحذف...");
   try {
     await apiFetch(`/user/${encodeURIComponent(u.phone)}`, { method: "DELETE" });
     showToast("✅ تم الحذف");
@@ -1205,8 +1451,7 @@ $("deleteUserBtn").addEventListener("click", async () => {
   } catch (e) {
     showToast("❌ " + e.message, "err");
   } finally {
-    btn.textContent = "🗑️ حذف";
-    btn.disabled = false;
+    busy(btn, false);
   }
 });
 
@@ -1214,23 +1459,44 @@ function closeUserModal() {
   $("userModal").classList.remove("active");
   currentEditingUser = null;
 }
-$("userModal").addEventListener("click", e => { if (e.target.id === "userModal") closeUserModal(); });
 
+document.querySelectorAll('[data-close="userModal"]').forEach(b => {
+  b.addEventListener("click", closeUserModal);
+});
+$("userModal").addEventListener("click", e => {
+  if (e.target.id === "userModal") closeUserModal();
+});
+
+// Escape يغلق أي مودال مفتوح
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if ($("userModal").classList.contains("active")) closeUserModal();
+  if ($("confirmModal").classList.contains("active")) {
+    $("confirmModal").classList.remove("active");
+    if (confirmResolver) { confirmResolver(false); confirmResolver = null; }
+  }
+});
+
+/* ============ Auto Refresh ============ */
 function startRefresh() {
   stopRefresh();
   refreshTimer = setInterval(() => {
     if (document.hidden || !adminToken) return;
     const activeTab = document.querySelector(".tab.active").dataset.tab;
     if (activeTab === "overview") loadOverview();
-    else if (activeTab === "users") loadUsers();
-  }, 30000);
+    else if (activeTab === "users") {
+      // refresh خفيف: نجيب الإحصائيات بس مش القائمة
+      apiFetch("/admin/dashboard-summary").then(updateSecurityBadge).catch(() => {});
+    }
+  }, REFRESH_MS);
 }
 function stopRefresh() {
   if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
 }
 
+/* ============ Boot ============ */
 function startDashboard() {
-  loadPlans();
+  loadPlans().catch(() => {});
   loadOverview();
   startRefresh();
 }
