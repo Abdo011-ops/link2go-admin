@@ -382,7 +382,6 @@ body{
     </div>
     <button id="loginBtn" class="btn-primary">تسجيل الدخول</button>
     <div id="loginMsg" class="login-msg"></div>
-    <p style="margin-top:18px;font-size:11px;color:var(--muted-2);text-align:center;">افتراضي: admin / admin123</p>
   </div>
 </div>
 
@@ -434,7 +433,6 @@ body{
       </button>
     </div>
 
-    <!-- Users Panel -->
     <div class="panel active" id="panel-users">
       <div class="stats" id="usersStats"></div>
       <div class="search-bar">
@@ -444,12 +442,10 @@ body{
       <div class="list" id="usersList"></div>
     </div>
 
-    <!-- Plans Panel -->
     <div class="panel" id="panel-plans">
       <div class="plans-grid" id="plansGrid"></div>
     </div>
 
-    <!-- History Panel -->
     <div class="panel" id="panel-history">
       <div class="sub-tabs" id="historyFilters">
         <button class="sub-tab active" data-filter="all">الكل</button>
@@ -461,13 +457,11 @@ body{
       <div class="list" id="historyList"></div>
     </div>
 
-    <!-- Security Panel -->
     <div class="panel" id="panel-security">
       <div class="stats" id="securityStats"></div>
       <div class="list" id="securityList"></div>
     </div>
 
-    <!-- Cloud Panel -->
     <div class="panel" id="panel-cloud">
       <div class="stats" id="cloudStats"></div>
       <div class="list" id="cloudList"></div>
@@ -476,7 +470,6 @@ body{
   </div>
 </div>
 
-<!-- Modal -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -489,487 +482,91 @@ body{
 </div>
 
 <script>
-/* ============ Storage Layer ============ */
-const DB = {
-  get(k, d){ try{ const v = localStorage.getItem('l2g_'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem('l2g_'+k, JSON.stringify(v)); }catch(e){} }
-};
-
-/* ============ Seed Data ============ */
-function seed(){
-  if(!DB.get('users')){
-    DB.set('users', [
-      {id:1, name:'أحمد محمود', phone:'+201012345678', plan:'monthly', status:'active', usage:42, joined:'2025-01-12', expires:'2026-02-12'},
-      {id:2, name:'سارة علي', phone:'+201198765432', plan:'weekly', status:'active', usage:78, joined:'2025-03-04', expires:'2026-01-20'},
-      {id:3, name:'محمد حسن', phone:'+201155556666', plan:'free', status:'active', usage:95, joined:'2025-06-18', expires:'-'},
-      {id:4, name:'نورا إبراهيم', phone:'+201022223333', plan:'monthly', status:'cancelled', usage:12, joined:'2024-11-02', expires:'2025-12-02'},
-      {id:5, name:'خالد يوسف', phone:'+201099998888', plan:'weekly', status:'active', usage:60, joined:'2025-08-09', expires:'2026-01-25'},
-      {id:6, name:'مريم سعيد', phone:'+201077771111', plan:'free', status:'pending', usage:0, joined:'2025-10-01', expires:'-'}
-    ]);
-  }
-  if(!DB.get('history')){
-    DB.set('history', [
-      {id:1, user:'أحمد محمود', url:'https://youtube.com/watch?v=abc', type:'stream', status:'success', size:'128 MB', date:'2026-01-15 14:22'},
-      {id:2, user:'سارة علي', url:'https://instagram.com/reel/xyz', type:'download', status:'success', size:'45 MB', date:'2026-01-15 13:10'},
-      {id:3, user:'محمد حسن', url:'https://tiktok.com/@user/video/123', type:'stream', status:'failed', size:'-', date:'2026-01-15 12:45'},
-      {id:4, user:'نورا إبراهيم', url:'https://twitter.com/user/status/1', type:'download', status:'success', size:'22 MB', date:'2026-01-15 11:30'},
-      {id:5, user:'خالد يوسف', url:'https://facebook.com/watch?v=999', type:'stream', status:'quota', size:'-', date:'2026-01-15 10:05'},
-      {id:6, user:'أحمد محمود', url:'https://youtube.com/watch?v=def', type:'download', status:'success', size:'310 MB', date:'2026-01-14 20:15'},
-      {id:7, user:'سارة علي', url:'https://vimeo.com/123456', type:'stream', status:'failed', size:'-', date:'2026-01-14 19:40'},
-      {id:8, user:'مريم سعيد', url:'https://youtube.com/watch?v=ghi', type:'download', status:'success', size:'89 MB', date:'2026-01-14 17:22'}
-    ]);
-  }
-  if(!DB.get('security')){
-    DB.set('security', [
-      {id:1, type:'محاولة دخول فاشلة', user:'admin', ip:'185.220.101.45', severity:'high', date:'2026-01-15 14:30', status:'blocked'},
-      {id:2, type:'تسجيل دخول ناجح', user:'admin', ip:'156.200.10.22', severity:'low', date:'2026-01-15 10:00', status:'ok'},
-      {id:3, type:'محاولة حظر IP', user:'system', ip:'45.155.205.233', severity:'critical', date:'2026-01-15 09:12', status:'blocked'},
-      {id:4, type:'تغيير كلمة مرور', user:'admin', ip:'156.200.10.22', severity:'medium', date:'2026-01-14 22:15', status:'ok'},
-      {id:5, type:'محاولة دخول فاشلة', user:'root', ip:'91.240.118.172', severity:'high', date:'2026-01-14 18:45', status:'blocked'},
-      {id:6, type:'تنبيه: استخدام API', user:'system', ip:'-', severity:'medium', date:'2026-01-14 16:20', status:'ok'}
-    ]);
-  }
-  if(!DB.get('cloud')){
-    DB.set('cloud', [
-      {id:1, name:'تخزين الملفات', provider:'AWS S3', region:'eu-west-1', used:'450 GB', total:'1000 GB', status:'active'},
-      {id:2, name:'الكاش (CDN)', provider:'Cloudflare', region:'Global', used:'120 GB', total:'500 GB', status:'active'},
-      {id:3, name:'نسخ احتياطي', provider:'Backblaze B2', region:'us-east-1', used:'780 GB', total:'1000 GB', status:'warning'},
-      {id:4, name:'معالجة الفيديو', provider:'Cloudinary', region:'Global', used:'15 GB', total:'100 GB', status:'active'}
-    ]);
-  }
-}
-
-/* ============ Toast ============ */
-let toastTimer;
-function toast(msg, type='ok'){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> t.classList.remove('show'), 3000);
-}
-
-/* ============ Login ============ */
-const AUTH = {user:'admin', pass:'admin123'};
-function isLoggedIn(){ return DB.get('session', false) === true; }
-
-function doLogin(){
-  const u = document.getElementById('usernameInput').value.trim();
-  const p = document.getElementById('passwordInput').value;
-  const btn = document.getElementById('loginBtn');
-  const msg = document.getElementById('loginMsg');
-
-  msg.className = 'login-msg';
-  if(!u || !p){ msg.className='login-msg show err'; msg.textContent='اكتب اسم المستخدم وكلمة المرور'; return; }
-
-  btn.disabled = true; btn.textContent = 'جاري التحقق...';
-  setTimeout(()=>{
-    if(u === AUTH.user && p === AUTH.pass){
-      DB.set('session', true);
-      showMain();
-      toast('مرحباً بك 👋');
-    } else {
-      msg.className = 'login-msg show err';
-      msg.textContent = 'بيانات الدخول غير صحيحة';
-      btn.disabled = false; btn.textContent = 'تسجيل الدخول';
-    }
-  }, 500);
-}
-
-function doLogout(){
-  DB.set('session', false);
-  document.getElementById('mainPanel').classList.remove('show');
-  document.getElementById('loginScreen').classList.remove('hidden');
-  document.getElementById('passwordInput').value = '';
-  toast('تم تسجيل الخروج');
-}
-
-function showMain(){
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('mainPanel').classList.add('show');
-  document.getElementById('welcomeText').textContent = 'مرحباً، ' + AUTH.user;
-  renderAll();
-}
-
-/* ============ Tabs ============ */
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    const target = document.getElementById('panel-'+tab.dataset.tab);
-    if(target) target.classList.add('active');
-    renderAll();
-  });
-});
-
-/* ============ Renderers ============ */
-function renderAll(){
-  renderUsers();
-  renderPlans();
-  renderHistory();
-  renderSecurity();
-  renderCloud();
-}
-
-/* Users */
-let userFilter = 'all';
-function renderUsers(){
-  const users = DB.get('users', []);
-  const search = (document.getElementById('usersSearch')?.value || '').toLowerCase();
-
-  const stats = document.getElementById('usersStats');
-  if(stats){
-    const total = users.length;
-    const monthly = users.filter(u=>u.plan==='monthly').length;
-    const weekly = users.filter(u=>u.plan==='weekly').length;
-    const free = users.filter(u=>u.plan==='free').length;
-    stats.innerHTML = `
-      <div class="stat"><div class="stat-icon">👥</div><div class="stat-label">إجمالي المستخدمين</div><div class="stat-value">${total}</div></div>
-      <div class="stat gold"><div class="stat-icon">💎</div><div class="stat-label">باقة شهرية</div><div class="stat-value">${monthly}</div></div>
-      <div class="stat blue"><div class="stat-icon">📅</div><div class="stat-label">باقة أسبوعية</div><div class="stat-value">${weekly}</div></div>
-      <div class="stat green"><div class="stat-icon">🆓</div><div class="stat-label">باقة مجانية</div><div class="stat-value">${free}</div></div>
-    `;
-  }
-
-  const list = document.getElementById('usersList');
-  if(!list) return;
-
-  const filtered = users.filter(u =>
-    u.name.toLowerCase().includes(search) || u.phone.includes(search)
-  );
-
-  if(!filtered.length){
-    list.innerHTML = '<div class="empty">لا توجد نتائج مطابقة</div>';
-    return;
-  }
-
-  const planLabel = {free:'مجاني', weekly:'أسبوعي', monthly:'شهري'};
-  const statusLabel = {active:'نشط', cancelled:'ملغي', pending:'معلق'};
-
-  list.innerHTML = filtered.map(u=>`
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="card-title">${esc(u.name)}</div>
-          <div class="card-phone">${esc(u.phone)}</div>
-        </div>
-        <div class="badges">
-          <span class="badge ${u.plan}">${planLabel[u.plan]||u.plan}</span>
-          <span class="badge ${u.status==='active'?'success':u.status==='pending'?'pending':'cancelled'}">${statusLabel[u.status]||u.status}</span>
-        </div>
-      </div>
-      <div class="meta-row">
-        <span>📊 الاستخدام: ${u.usage}%</span>
-        <span>📅 انضم: ${u.joined}</span>
-        <span>⏳ ينتهي: ${u.expires}</span>
-      </div>
-      <div class="card-actions">
-        <button class="card-btn primary" onclick="editUser(${u.id})">✏️ تعديل</button>
-        <button class="card-btn danger" onclick="deleteUser(${u.id})">🗑️ حذف</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-/* Plans */
-function renderPlans(){
-  const grid = document.getElementById('plansGrid');
-  if(!grid) return;
-  const plans = [
-    {name:'المجاني', icon:'🆓', cls:'free', price:'0', label:'للأبد', desc:'جرّب الخدمة بدون أي التزام', featured:false,
-     features:['بث مباشر بجودة 720p','5 تحميلات يومياً','إعلانات','دعم أساسي'],
-     platforms:['يوتيوب','إنستجرام','تيك توك']},
-    {name:'الأسبوعي', icon:'⚡', cls:'weekly', price:'29', label:'ج.م / أسبوع', desc:'للمستخدمين المتوسطين', featured:false,
-     features:['بث بجودة 1080p','تحميل غير محدود','بدون إعلانات','دعم أولوية','كاش أسرع'],
-     platforms:['يوتيوب','إنستجرام','تيك توك','فيسبوك','تويتر']},
-    {name:'الشهري', icon:'👑', cls:'monthly', price:'99', label:'ج.م / شهر', desc:'أفضل قيمة للمستخدم الدائم', featured:true,
-     features:['بث بجودة 4K','تحميل غير محدود','بدون إعلانات','دعم مخصص 24/7','كاش فوري','معالجة فيديو متقدمة','حماية من الحظر'],
-     platforms:['كل المنصات']}
+/* ===== Login logic only ===== */
+(function(){
+  var USERS = [
+    { username: 'admin', password: 'admin123' }
   ];
 
-  grid.innerHTML = plans.map(p=>`
-    <div class="plan-card ${p.featured?'featured':''}">
-      <div class="plan-head">
-        <div class="plan-icon ${p.cls}">${p.icon}</div>
-        <div class="plan-price"><span class="amount">${p.price}</span><span class="label">${p.label}</span></div>
-      </div>
-      <div class="plan-name">${p.name}</div>
-      <div class="plan-desc">${p.desc}</div>
-      <ul class="plan-features">${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
-      <div class="plan-platforms">
-        <div class="plan-platforms-label">المنصات المدعومة</div>
-        <div class="plan-platforms-list">
-          ${p.platforms.map(pl=>`<span class="platform-chip ${pl==='كل المنصات'?'all':''}">${pl}</span>`).join('')}
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
+  var loginScreen = document.getElementById('loginScreen');
+  var mainPanel   = document.getElementById('mainPanel');
+  var userInput   = document.getElementById('usernameInput');
+  var passInput   = document.getElementById('passwordInput');
+  var loginBtn    = document.getElementById('loginBtn');
+  var loginMsg    = document.getElementById('loginMsg');
+  var welcomeText = document.getElementById('welcomeText');
+  var logoutBtn   = document.getElementById('logoutBtn');
 
-/* History */
-let historyFilter = 'all';
-document.getElementById('historyFilters')?.addEventListener('click', e=>{
-  const btn = e.target.closest('.sub-tab');
-  if(!btn) return;
-  document.querySelectorAll('#historyFilters .sub-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  historyFilter = btn.dataset.filter;
-  renderHistory();
+  function showMsg(text){
+    loginMsg.textContent = text;
+    loginMsg.className = 'login-msg show err';
+  }
+  function clearMsg(){
+    loginMsg.textContent = '';
+    loginMsg.className = 'login-msg';
+  }
+  function showMain(username){
+    loginScreen.classList.add('hidden');
+    mainPanel.classList.add('show');
+    if (welcomeText) welcomeText.textContent = 'مرحباً، ' + username;
+  }
+  function showLogin(){
+    loginScreen.classList.remove('hidden');
+    mainPanel.classList.remove('show');
+    passInput.value = '';
+    clearMsg();
+  }
+  function doLogin(){
+    clearMsg();
+    var u = userInput.value.trim();
+    var p = passInput.value;
+
+    if (!u || !p){ showMsg('اكتب اسم المستخدم وكلمة المرور'); return; }
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'جاري التحقق...';
+
+    setTimeout(function(){
+      var found = null;
+      for (var i = 0; i < USERS.length; i++){
+        if (USERS[i].username === u && USERS[i].password === p){ found = USERS[i]; break; }
+      }
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'تسجيل الدخول';
+
+      if (found){
+        try { sessionStorage.setItem('l2g_user', found.username); } catch(e){}
+        showMain(found.username);
+      } else {
+        showMsg('بيانات الدخول غير صحيحة');
+      }
+    }, 400);
+  }
+  function doLogout(){
+    try { sessionStorage.removeItem('l2g_user'); } catch(e){}
+    showLogin();
+  }
+
+  loginBtn.addEventListener('click', doLogin);
+  passInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
+  userInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') passInput.focus(); });
+  if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+
+  var saved = null;
+  try { saved = sessionStorage.getItem('l2g_user'); } catch(e){}
+  if (saved) showMain(saved);
+})();
+
+/* ===== Tabs ===== */
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+    tab.classList.add('active');
+    var target = document.getElementById('panel-' + tab.dataset.tab);
+    if (target) target.classList.add('active');
+  });
 });
-
-function renderHistory(){
-  const list = document.getElementById('historyList');
-  if(!list) return;
-  let items = DB.get('history', []);
-
-  if(historyFilter !== 'all'){
-    if(historyFilter === 'success' || historyFilter === 'failed'){
-      items = items.filter(i=> i.status === historyFilter);
-    } else {
-      items = items.filter(i=> i.type === historyFilter);
-    }
-  }
-
-  if(!items.length){ list.innerHTML = '<div class="empty">لا توجد سجلات</div>'; return; }
-
-  const typeLabel = {stream:'بث مباشر', download:'تحميل'};
-  const statusLabel = {success:'ناجح', failed:'فاشل', quota:'تجاوز الحد'};
-
-  list.innerHTML = items.map(i=>`
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="card-title">${esc(i.user)}</div>
-          <div class="card-phone" style="font-size:11px;direction:ltr;text-align:right;opacity:.7;">${esc(i.url)}</div>
-        </div>
-        <div class="badges">
-          <span class="badge ${i.type==='stream'?'stream':'download'}">${typeLabel[i.type]||i.type}</span>
-          <span class="badge ${i.status==='success'?'success':i.status==='failed'?'failed':'quota'}">${statusLabel[i.status]||i.status}</span>
-        </div>
-      </div>
-      <div class="meta-row">
-        <span>📦 ${i.size}</span>
-        <span>🕐 ${i.date}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-/* Security */
-function renderSecurity(){
-  const items = DB.get('security', []);
-  const stats = document.getElementById('securityStats');
-  if(stats){
-    const critical = items.filter(i=>i.severity==='critical').length;
-    const high = items.filter(i=>i.severity==='high').length;
-    const medium = items.filter(i=>i.severity==='medium').length;
-    const low = items.filter(i=>i.severity==='low').length;
-    stats.innerHTML = `
-      <div class="stat red"><div class="stat-icon">🚨</div><div class="stat-label">حرج</div><div class="stat-value">${critical}</div></div>
-      <div class="stat gold"><div class="stat-icon">⚠️</div><div class="stat-label">عالي</div><div class="stat-value">${high}</div></div>
-      <div class="stat blue"><div class="stat-icon">ℹ️</div><div class="stat-label">متوسط</div><div class="stat-value">${medium}</div></div>
-      <div class="stat green"><div class="stat-icon">✅</div><div class="stat-label">منخفض</div><div class="stat-value">${low}</div></div>
-    `;
-    const badge = document.getElementById('securityBadge');
-    if(badge){
-      const alerts = critical + high;
-      if(alerts > 0){ badge.style.display='inline-block'; badge.textContent = alerts; }
-      else badge.style.display='none';
-    }
-  }
-
-  const list = document.getElementById('securityList');
-  if(!list) return;
-  if(!items.length){ list.innerHTML = '<div class="empty">لا توجد تنبيهات أمنية</div>'; return; }
-
-  const sevLabel = {critical:'حرج', high:'عالي', medium:'متوسط', low:'منخفض'};
-  list.innerHTML = items.map(i=>`
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="card-title">${esc(i.type)}</div>
-          <div class="card-phone" style="font-size:11px;text-align:right;opacity:.7;">👤 ${esc(i.user)} • 🌐 ${esc(i.ip)}</div>
-        </div>
-        <div class="badges">
-          <span class="badge ${i.severity}">${sevLabel[i.severity]||i.severity}</span>
-          <span class="badge ${i.status==='blocked'?'failed':'success'}">${i.status==='blocked'?'محظور':'سليم'}</span>
-        </div>
-      </div>
-      <div class="meta-row"><span>🕐 ${i.date}</span></div>
-    </div>
-  `).join('');
-}
-
-/* Cloud */
-function renderCloud(){
-  const items = DB.get('cloud', []);
-  const stats = document.getElementById('cloudStats');
-  if(stats){
-    let used = 0, total = 0;
-    items.forEach(i=>{
-      used += parseFloat(i.used) || 0;
-      total += parseFloat(i.total) || 0;
-    });
-    const pct = total ? Math.round(used/total*100) : 0;
-    stats.innerHTML = `
-      <div class="stat"><div class="stat-icon">☁️</div><div class="stat-label">إجمالي المساحة المستخدمة</div><div class="stat-value">${used} GB</div></div>
-      <div class="stat blue"><div class="stat-icon">💾</div><div class="stat-label">إجمالي المساحة الكلية</div><div class="stat-value">${total} GB</div></div>
-      <div class="stat ${pct>75?'red':'green'}"><div class="stat-icon">📊</div><div class="stat-label">نسبة الاستخدام</div><div class="stat-value">${pct}%</div></div>
-      <div class="stat gold"><div class="stat-icon">🔗</div><div class="stat-label">عدد المزودين</div><div class="stat-value">${items.length}</div></div>
-    `;
-  }
-
-  const list = document.getElementById('cloudList');
-  if(!list) return;
-  if(!items.length){ list.innerHTML = '<div class="empty">لا توجد خدمات سحابية</div>'; return; }
-
-  list.innerHTML = items.map(i=>{
-    const used = parseFloat(i.used)||0;
-    const total = parseFloat(i.total)||1;
-    const pct = Math.round(used/total*100);
-    return `
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="card-title">${esc(i.name)}</div>
-          <div class="card-phone" style="font-size:11px;text-align:right;opacity:.7;">${esc(i.provider)} • ${esc(i.region)}</div>
-        </div>
-        <div class="badges">
-          <span class="badge ${i.status==='warning'?'quota':'cache'}">${i.status==='warning'?'تحذير':'نشط'}</span>
-        </div>
-      </div>
-      <div class="meta-row"><span>📦 ${i.used} / ${i.total}</span><span>📊 ${pct}%</span></div>
-    </div>
-  `}).join('');
-}
-
-/* ============ Modal ============ */
-function openModal(title, bodyHtml, actionsHtml){
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalBody').innerHTML = bodyHtml;
-  document.getElementById('modalActions').innerHTML = actionsHtml;
-  document.getElementById('modal').classList.add('active');
-}
-function closeModal(){
-  document.getElementById('modal').classList.remove('active');
-}
-document.getElementById('modal')?.addEventListener('click', e=>{
-  if(e.target.id === 'modal') closeModal();
-});
-
-/* ============ User CRUD ============ */
-function addUser(){
-  openModal('إضافة مستخدم جديد', `
-    <div class="field"><label>الاسم</label><input id="mName" type="text" placeholder="اسم المستخدم"></div>
-    <div class="field"><label>رقم الهاتف</label><input id="mPhone" type="text" placeholder="+20..." dir="ltr"></div>
-    <div class="field-row">
-      <div class="field"><label>الباقة</label>
-        <select id="mPlan">
-          <option value="free">مجاني</option>
-          <option value="weekly">أسبوعي</option>
-          <option value="monthly">شهري</option>
-        </select>
-      </div>
-      <div class="field"><label>الحالة</label>
-        <select id="mStatus">
-          <option value="active">نشط</option>
-          <option value="pending">معلق</option>
-          <option value="cancelled">ملغي</option>
-        </select>
-      </div>
-    </div>
-  `, `
-    <button class="btn primary" onclick="saveUser()">حفظ</button>
-    <button class="btn danger" onclick="closeModal()">إلغاء</button>
-  `);
-}
-
-function editUser(id){
-  const u = DB.get('users', []).find(x=>x.id===id);
-  if(!u) return;
-  openModal('تعديل المستخدم', `
-    <div class="field"><label>الاسم</label><input id="mName" type="text" value="${esc(u.name)}"></div>
-    <div class="field"><label>رقم الهاتف</label><input id="mPhone" type="text" value="${esc(u.phone)}" dir="ltr"></div>
-    <div class="field-row">
-      <div class="field"><label>الباقة</label>
-        <select id="mPlan">
-          <option value="free" ${u.plan==='free'?'selected':''}>مجاني</option>
-          <option value="weekly" ${u.plan==='weekly'?'selected':''}>أسبوعي</option>
-          <option value="monthly" ${u.plan==='monthly'?'selected':''}>شهري</option>
-        </select>
-      </div>
-      <div class="field"><label>الحالة</label>
-        <select id="mStatus">
-          <option value="active" ${u.status==='active'?'selected':''}>نشط</option>
-          <option value="pending" ${u.status==='pending'?'selected':''}>معلق</option>
-          <option value="cancelled" ${u.status==='cancelled'?'selected':''}>ملغي</option>
-        </select>
-      </div>
-    </div>
-    <div class="field"><label>نسبة الاستخدام (%)</label><input id="mUsage" type="number" min="0" max="100" value="${u.usage}"></div>
-  `, `
-    <button class="btn primary" onclick="saveUser(${id})">حفظ التعديلات</button>
-    <button class="btn danger" onclick="closeModal()">إلغاء</button>
-  `);
-}
-
-function saveUser(id){
-  const name = document.getElementById('mName').value.trim();
-  const phone = document.getElementById('mPhone').value.trim();
-  const plan = document.getElementById('mPlan').value;
-  const status = document.getElementById('mStatus').value;
-  const usageEl = document.getElementById('mUsage');
-  const usage = usageEl ? parseInt(usageEl.value)||0 : 0;
-
-  if(!name || !phone){ toast('الاسم والهاتف مطلوبان', 'err'); return; }
-
-  let users = DB.get('users', []);
-  if(id){
-    users = users.map(u => u.id===id ? {...u, name, phone, plan, status, usage} : u);
-    toast('تم تعديل المستخدم ✅');
-  } else {
-    const newId = users.length ? Math.max(...users.map(u=>u.id))+1 : 1;
-    users.push({id:newId, name, phone, plan, status, usage, joined:new Date().toISOString().slice(0,10), expires:'-'});
-    toast('تمت إضافة المستخدم ✅');
-  }
-  DB.set('users', users);
-  closeModal();
-  renderUsers();
-}
-
-function deleteUser(id){
-  const u = DB.get('users', []).find(x=>x.id===id);
-  if(!u) return;
-  openModal('تأكيد الحذف', `<p style="font-size:13.5px;color:var(--muted);line-height:1.7;">هل أنت متأكد من حذف <strong style="color:var(--text);">${esc(u.name)}</strong>؟ لا يمكن التراجع عن هذه العملية.</p>`, `
-    <button class="btn danger" onclick="confirmDeleteUser(${id})">نعم، احذف</button>
-    <button class="btn primary" onclick="closeModal()">إلغاء</button>
-  `);
-}
-
-function confirmDeleteUser(id){
-  let users = DB.get('users', []);
-  users = users.filter(u=>u.id!==id);
-  DB.set('users', users);
-  closeModal();
-  renderUsers();
-  toast('تم حذف المستخدم', 'ok');
-}
-
-/* ============ Utils ============ */
-function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-/* ============ Init ============ */
-document.getElementById('loginBtn').addEventListener('click', doLogin);
-document.getElementById('passwordInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-document.getElementById('usernameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-document.getElementById('logoutBtn').addEventListener('click', doLogout);
-document.getElementById('refreshBtn').addEventListener('click', ()=>{ renderAll(); toast('تم تحديث البيانات'); });
-document.getElementById('addUserBtn')?.addEventListener('click', addUser);
-document.getElementById('usersSearch')?.addEventListener('input', renderUsers);
-
-seed();
-if(isLoggedIn()) showMain();
 </script>
 </body>
 </html>
