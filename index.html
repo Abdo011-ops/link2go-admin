@@ -228,6 +228,8 @@ body{
 .badge.medium{background:rgba(245,158,11,.2);color:#fcd34d;}
 .badge.high{background:rgba(239,68,68,.25);color:#fca5a5;}
 .badge.critical{background:rgba(239,68,68,.4);color:#fff;animation:pulse-red 1.5s infinite;}
+.badge.rate{background:rgba(245,158,11,.25);color:#fcd34d;}
+.badge.ip{background:rgba(168,85,247,.2);color:#d8b4fe;direction:ltr;}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 0 0 6px rgba(239,68,68,0);}}
 
 .meta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:12px;border-top:1px dashed rgba(168,132,255,.12);font-size:11.5px;color:var(--muted);font-weight:600;}
@@ -372,6 +374,23 @@ body{
 .compare-table .col-featured strong{color:#fbbf24;}
 .compare-table .yes{color:#34d399;}
 .compare-table .no{color:#f87171;}
+
+/* Rate-limit ban cards */
+.rate-ban-card { border-color: rgba(245,158,11,.35) !important; }
+.rate-ban-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg,#f59e0b,#fbbf24) !important; opacity: 1 !important; }
+.rate-ban-card .attempts-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 100px;
+  background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35);
+  color: #fcd34d; font-size: 11px; font-weight: 800;
+}
+.rate-ban-card .countdown-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 100px;
+  background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35);
+  color: #fca5a5; font-size: 11px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Modal */
 .modal{position:fixed;inset:0;z-index:2000;background:rgba(5,4,10,.85);backdrop-filter:blur(15px);display:none;align-items:center;justify-content:center;padding:20px;}
@@ -553,10 +572,11 @@ body{
     </div>
 
     <div class="panel" id="panel-security">
-      <div class="sub-tabs">
+      <div class="sub-tabs" id="securitySubTabs">
         <button class="sub-tab active" data-stype="stats">📊 الإحصائيات</button>
         <button class="sub-tab" data-stype="otps">🔐 OTPs النشطة</button>
         <button class="sub-tab" data-stype="bans">🚫 IPs المحظورة</button>
+        <button class="sub-tab" data-stype="rate">🚦 حظر 429</button>
         <button class="sub-tab" data-stype="events">⚠️ الأحداث</button>
       </div>
       <div id="securityContent"><div class="loading">جاري التحميل...</div></div>
@@ -571,7 +591,6 @@ body{
       <div id="cloudContent"><div class="loading">جاري التحميل...</div></div>
     </div>
 
-    <!-- ===== Plans ===== -->
     <div class="panel" id="panel-plans">
       <div class="search-bar" style="margin-bottom:18px;">
         <div style="flex:1;display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);font-size:12.5px;color:var(--muted);font-weight:600;">
@@ -907,7 +926,9 @@ async function loadOverview() {
 
 function updateSecurityBadge(d) {
   const sec = d.security || {};
-  const total = (sec.failed_logins || 0) + (sec.active_bans || 0);
+  const total = (sec.failed_logins || 0)
+    + (sec.active_bans || 0)
+    + (sec.rate_limit_bans || 0);
   const badge = $("securityBadge");
   if (total > 0) {
     badge.style.display = "inline-block";
@@ -930,7 +951,8 @@ function renderOverview(d) {
       <div class="stat gold"><div class="stat-icon">👑</div><div class="stat-label">VIP</div><div class="stat-value">${(users.by_plan||{}).monthly || 0}</div></div>
       <div class="stat blue"><div class="stat-icon">📥</div><div class="stat-label">ملفات مؤقتة</div><div class="stat-value">${temp.count || 0}</div></div>
       <div class="stat"><div class="stat-icon">☁️</div><div class="stat-label">السحابة</div><div class="stat-value">${cloud.total_files || 0}</div></div>
-      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة</div><div class="stat-value">${sec.active_bans || 0}</div></div>
+      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة (أمان)</div><div class="stat-value">${sec.active_bans || 0}</div></div>
+      <div class="stat gold"><div class="stat-icon">🚦</div><div class="stat-label">محظورين 429</div><div class="stat-value">${sec.rate_limit_bans || 0}</div></div>
       <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTPs نشطة</div><div class="stat-value">${otp.active || 0}</div></div>
     </div>
     <div class="overview-grid">
@@ -952,7 +974,8 @@ function renderOverview(d) {
       <div class="overview-section">
         <h3>🛡️ الأمان</h3>
         <div class="overview-row"><span class="label">محاولات فاشلة</span><span class="value" style="color:#f87171;">${sec.failed_logins || 0}</span></div>
-        <div class="overview-row"><span class="label">IPs محظورة</span><span class="value" style="color:#f87171;">${sec.active_bans || 0}</span></div>
+        <div class="overview-row"><span class="label">IPs محظورة (أمان)</span><span class="value" style="color:#f87171;">${sec.active_bans || 0}</span></div>
+        <div class="overview-row"><span class="label">محظورين 429 (Rate Limit)</span><span class="value" style="color:#fbbf24;">${sec.rate_limit_bans || 0}</span></div>
         <div class="overview-row"><span class="label">أحداث أمنية</span><span class="value">${sec.total_events || 0}</span></div>
       </div>
       <div class="overview-section">
@@ -1179,9 +1202,12 @@ async function loadSecurity() {
       renderActiveOtps(d);
     } else if (currentSecurityType === "bans") {
       let d;
-      try { d = await apiFetch("/admin/security-bans"); }
+      try { d = await apiFetch("/admin/security-bans?type=all"); }
       catch (_) { d = await apiFetch("/admin/security-stats"); }
       renderBans(d);
+    } else if (currentSecurityType === "rate") {
+      const d = await apiFetch("/admin/security-bans?type=rate_limit");
+      renderRateLimitBans(d);
     } else if (currentSecurityType === "events") {
       const d = await apiFetch("/admin/security-log?limit=100");
       renderSecurityEvents(d);
@@ -1194,7 +1220,7 @@ async function loadSecurity() {
 
 function renderSecurityStats(d) {
   const s = d.stats || {};
-  const totalIssues = (s.failed_logins_24h || 0) + (s.active_bans || 0);
+  const totalIssues = (s.failed_logins_24h || 0) + (s.active_bans || 0) + (s.rate_limit_bans || 0);
   const badge = $("securityBadge");
   if (totalIssues > 0) {
     badge.style.display = "inline-block";
@@ -1206,7 +1232,8 @@ function renderSecurityStats(d) {
     <div class="stats">
       <div class="stat red"><div class="stat-icon">🚨</div><div class="stat-label">محاولات دخول فاشلة (24س)</div><div class="stat-value">${s.failed_logins_24h || 0}</div></div>
       <div class="stat green"><div class="stat-icon">✅</div><div class="stat-label">دخول ناجح (24س)</div><div class="stat-value">${s.success_logins_24h || 0}</div></div>
-      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة</div><div class="stat-value">${s.active_bans || 0}</div></div>
+      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة (أمان)</div><div class="stat-value">${s.active_bans || 0}</div></div>
+      <div class="stat gold"><div class="stat-icon">🚦</div><div class="stat-label">محظورين 429</div><div class="stat-value">${s.rate_limit_bans || 0}</div></div>
       <div class="stat"><div class="stat-icon">⚠️</div><div class="stat-label">أحداث خطيرة</div><div class="stat-value">${s.high_severity_events || 0}</div></div>
       <div class="stat"><div class="stat-icon">🕵️</div><div class="stat-label">هجمات سكانر</div><div class="stat-value">${s.scanner_attacks || 0}</div></div>
       <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTP Brute Force</div><div class="stat-value">${s.otp_bruteforce_attempts || 0}</div></div>
@@ -1217,6 +1244,7 @@ function renderSecurityStats(d) {
       <div class="overview-row"><span class="label">محاولات دخول أدمن فاشلة</span><span class="value">${s.admin_login_failures || 0}</span></div>
       <div class="overview-row"><span class="label">أحداث متوسطة الخطورة</span><span class="value">${s.medium_severity_events || 0}</span></div>
       <div class="overview-row"><span class="label">إجمالي الأحداث الأمنية</span><span class="value">${s.total_security_events || 0}</span></div>
+      <div class="overview-row"><span class="label">محظورين 429 (Rate Limit)</span><span class="value" style="color:#fbbf24;">${s.rate_limit_bans || 0}</span></div>
     </div>`;
 }
 
@@ -1247,34 +1275,111 @@ function renderActiveOtps(d) {
 }
 
 function renderBans(d) {
-  const bans = d.active_bans || (d.stats && d.stats.active_bans) || d.bans || [];
+  const bans = d.bans || d.active_bans || (d.stats && d.stats.active_bans_list) || [];
   const list = Array.isArray(bans) ? bans : [];
   if (!list.length) {
     $("securityContent").innerHTML = `<div class="empty">✅ مفيش IPs محظورة حالياً</div>`;
     return;
   }
-  $("securityContent").innerHTML = `<div class="list">${list.map(b => `
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;">🚫 ${esc(b.ip)}</div>
-          <div class="card-phone">⏱️ متبقي: ${Math.max(0, Math.floor((b.remaining_seconds || 0) / 60))} دقيقة</div>
+  $("securityContent").innerHTML = `<div class="list">${list.map(b => {
+    const isRate = b.ban_type === "rate_limit" || b.type === "rate_limit";
+    return `
+      <div class="card ${isRate ? 'rate-ban-card' : ''}">
+        <div class="card-head">
+          <div style="flex:1;">
+            <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;">🚫 ${esc(b.ip)}</div>
+            <div class="badges" style="margin-top:6px;">
+              ${isRate
+                ? `<span class="badge rate">🚦 429 Rate Limit</span>`
+                : `<span class="badge failed">⛔ حظر أمني</span>`}
+            </div>
+            <div class="card-phone" style="margin-top:6px;">⏱️ متبقي: ${Math.max(0, Math.floor((b.remaining_seconds || 0) / 60))} دقيقة</div>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn danger"
+              data-action="${isRate ? 'unban-rate' : 'unban'}"
+              data-ip="${esc(b.ip)}">✅ فك الحظر</button>
+          </div>
         </div>
-        <div class="card-actions">
-          <button class="card-btn danger" data-action="unban" data-ip="${esc(b.ip)}">✅ إلغاء الحظر</button>
+        <div class="meta-row">
+          <span>🕐 محظور لحد ${esc(b.banned_until || '—')}</span>
+          ${b.attempts ? `<span>📊 ${b.attempts} محاولة</span>` : ""}
         </div>
-      </div>
-      <div class="meta-row"><span>🕐 محظور لحد ${esc(b.banned_until || '—')}</span></div>
-    </div>`).join("")}</div>`;
+      </div>`;
+  }).join("")}</div>`;
 }
 
-async function unbanIp(ip, btn) {
-  const ok = await askConfirm("إلغاء حظر", `هل تريد إلغاء حظر الـ IP: ${ip}؟`);
+/* ---------- 429 Rate-Limit Bans ---------- */
+function renderRateLimitBans(d) {
+  const list = d.bans || d.rate_limit_bans || d.active_bans || [];
+  const arr = Array.isArray(list) ? list : [];
+
+  if (!arr.length) {
+    $("securityContent").innerHTML = `
+      <div class="overview-section" style="text-align:center;padding:40px 20px;">
+        <div style="font-size:44px;margin-bottom:12px;">✅</div>
+        <h3 style="justify-content:center;color:#34d399;">مفيش مستخدمين محظورين من 429</h3>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:8px;">كل الطلبات شغالة تمام</p>
+      </div>`;
+    return;
+  }
+
+  const totalAttempts = arr.reduce((s,b) => s + (b.attempts || b.request_count || 0), 0);
+
+  const cards = arr.map(b => {
+    const remaining = Math.max(0, Math.floor(b.remaining_seconds || 0));
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    const attempts = b.attempts || b.request_count || 0;
+    const ip = b.ip || "—";
+    const lastUrl = b.last_url || b.last_request_url || "";
+    const lastAttempt = b.last_attempt_at || b.banned_at || b.timestamp || "";
+    const isPermanent = remaining <= 0 && b.permanent;
+
+    return `
+      <div class="card rate-ban-card" data-ip="${esc(ip)}">
+        <div class="card-head">
+          <div style="flex:1;min-width:0;">
+            <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;font-size:14px;">🚫 ${esc(ip)}</div>
+            <div class="badges" style="margin-top:8px;">
+              <span class="badge rate">🚦 429 Rate Limit</span>
+              ${isPermanent ? `<span class="badge critical">حظر دائم</span>` : ""}
+            </div>
+          </div>
+          <div class="card-actions" style="flex-direction:column;align-items:stretch;">
+            <button class="card-btn danger" data-action="unban-rate" data-ip="${esc(ip)}">✅ فك الحظر</button>
+          </div>
+        </div>
+        <div class="meta-row" style="flex-direction:column;gap:8px;align-items:flex-start;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="attempts-pill">📊 ${attempts} طلب</span>
+            <span class="countdown-pill">⏱️ ${mins > 0 ? mins + 'د ' : ''}${secs}ث متبقي</span>
+          </div>
+          ${lastAttempt ? `<span>🕐 آخر محاولة: ${esc(lastAttempt)}</span>` : ""}
+          ${lastUrl ? `<span style="direction:ltr;font-size:10.5px;color:#c4b5fd;word-break:break-all;">🔗 ${esc(lastUrl.slice(0,90))}</span>` : ""}
+        </div>
+      </div>`;
+  }).join("");
+
+  $("securityContent").innerHTML = `
+    <div class="stats" style="margin-bottom:16px;">
+      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة (429)</div><div class="stat-value">${arr.length}</div></div>
+      <div class="stat gold"><div class="stat-icon">📊</div><div class="stat-label">إجمالي الطلبات</div><div class="stat-value">${totalAttempts}</div></div>
+    </div>
+    <div class="list">${cards}</div>`;
+}
+
+/* ---------- فك الحظر (يدعم النوعين) ---------- */
+async function unbanIp(ip, btn, banType) {
+  const typeLabel = banType === "rate_limit" ? "حظر 429" : "الحظر";
+  const ok = await askConfirm("فك الحظر", `هل تريد فك ${typeLabel} عن الـ IP: ${ip}؟`);
   if (!ok) return;
   busy(btn, true, "جاري...");
   try {
-    await apiFetch("/admin/unban-ip", { method: "POST", body: JSON.stringify({ ip }) });
-    showToast("✅ تم إلغاء الحظر");
+    const body = { ip };
+    if (banType) body.ban_type = banType;
+    await apiFetch("/admin/unban-ip", { method: "POST", body: JSON.stringify(body) });
+    showToast("✅ تم فك الحظر");
     loadSecurity();
   } catch (e) {
     showToast("❌ " + e.message, "err");
@@ -1282,7 +1387,13 @@ async function unbanIp(ip, btn) {
   }
 }
 
+/* ---------- حدث أزرار الأمان ---------- */
 $("securityContent").addEventListener("click", e => {
+  const rateBtn = e.target.closest('[data-action="unban-rate"]');
+  if (rateBtn) {
+    unbanIp(rateBtn.dataset.ip, rateBtn, "rate_limit");
+    return;
+  }
   const btn = e.target.closest('[data-action="unban"]');
   if (!btn) return;
   unbanIp(btn.dataset.ip, btn);
@@ -1406,7 +1517,6 @@ async function loadCloud() {
    PLANS TAB
    ============================================================ */
 
-// تطبيع بيانات الباقة — تدور على أي اسم حقل محتمل
 function normalizePlan(planId, raw) {
   const r = raw || {};
   const pick = (...keys) => {
@@ -1422,8 +1532,6 @@ function normalizePlan(planId, raw) {
   const listens = pick("listens_per_month", "monthly_listens_limit", "listens_limit", "listen_limit", "listens");
   const cloudMb = pick("cloud_storage_mb", "cloud_mb", "storage_mb", "cloud_storage", "cloud_limit");
   const description = pick("description", "desc", "tagline", "subtitle");
-
-  // ميزات إضافية لو موجودة
   const features = Array.isArray(r.features) ? r.features : [];
 
   return {
@@ -1465,7 +1573,6 @@ async function loadPlansTab(forceRefresh = false) {
   }
   container.innerHTML = `<div class="loading">جاري تحميل الباقات...</div>`;
   try {
-    // نجيب الباقات + المستخدمين (لو مش محملين) لحساب عدد المستخدمين في كل باقة
     const tasks = [
       fetch(SERVER_URL + "/get-plans").then(async r => {
         const d = await r.json();
@@ -1486,7 +1593,7 @@ async function loadPlansTab(forceRefresh = false) {
     for (const [id, p] of Object.entries(rawPlans)) {
       normalized[id] = normalizePlan(id, p);
     }
-    allPlans = rawPlans; // للمودال
+    allPlans = rawPlans;
     plansCache = normalized;
     renderPlans(normalized);
     setLastUpdate();
@@ -1507,7 +1614,6 @@ function renderPlans(plans) {
     return;
   }
 
-  // كروت التسعير
   const cards = ids.map(id => {
     const p = plans[id];
     const meta = PLAN_META[id] || { icon: "💳", subtitle: "", color: "free", ribbon: null };
@@ -1557,7 +1663,6 @@ function renderPlans(plans) {
       </div>`;
   }).join("");
 
-  // جدول مقارنة
   const compareRows = [
     { label: "السعر", get: p => p.price == null ? "—" : (p.price === 0 ? "مجاناً" : `${p.price} ج.م`) },
     { label: "المدة", get: p => p.durationDays == null ? "—" : `${p.durationDays} يوم` },
@@ -1589,7 +1694,6 @@ function renderPlans(plans) {
 
   container.innerHTML = `<div class="plans-grid">${cards}</div>${compareHtml}`;
 
-  // ربط الأزرار
   container.querySelectorAll("[data-detail]").forEach(btn => {
     btn.addEventListener("click", () => openPlanDetail(btn.dataset.detail));
   });
@@ -1759,7 +1863,7 @@ $("saveUserBtn").addEventListener("click", async () => {
     showToast("✅ تم الحفظ");
     closeUserModal();
     loadUsers();
-    plansCache = null; // نجبر الباقات تتحدث
+    plansCache = null;
   } catch (e) {
     showToast("❌ " + e.message, "err");
   } finally {
