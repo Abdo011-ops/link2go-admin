@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -5,1946 +6,881 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Link2Go — لوحة التحكم</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#08070d;--bg-2:#0d0c15;
-  --surface:rgba(22,20,35,.72);
-  --surface-2:rgba(30,27,48,.85);
-  --border:rgba(168,132,255,.14);
-  --border-2:rgba(168,132,255,.28);
-  --text:#f5f3ff;--muted:#a09db8;--muted-2:#6b6885;
-  --accent:#a855f7;--accent-2:#7c3aed;--accent-3:#c084fc;
-  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;
-  --glow:0 0 40px rgba(168,85,247,.3);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-body{
-  font-family:'Cairo',system-ui,sans-serif;
+
+:root {
+  --bg: #08070d;
+  --bg-2: #0d0c15;
+  --surface: rgba(22,20,35,.72);
+  --surface-2: rgba(30,27,48,.85);
+  --border: rgba(168,132,255,.14);
+  --border-2: rgba(168,132,255,.28);
+  --text: #f5f3ff;
+  --muted: #a09db8;
+  --muted-2: #6b6885;
+  --accent: #a855f7;
+  --accent-2: #7c3aed;
+  --accent-3: #c084fc;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --glow: 0 0 40px rgba(168,85,247,.3);
+}
+
+body {
+  font-family: 'Cairo', system-ui, sans-serif;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(168,85,247,.18),transparent),
-    radial-gradient(ellipse 60% 40% at 80% 100%,rgba(124,58,237,.12),transparent),
-    linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
-  background-attachment:fixed;color:var(--text);
-  min-height:100vh;overflow-x:hidden;
+    radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      rgba(168,85,247,.18),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 100%,
+      rgba(124,58,237,.12),
+      transparent
+    ),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.toast{
-  position:fixed;top:24px;left:50%;transform:translate(-50%,-120%);
-  padding:13px 24px;border-radius:13px;
-  background:rgba(22,20,35,.97);border:1px solid var(--border-2);
-  backdrop-filter:blur(20px);font-size:13px;font-weight:700;
-  z-index:9999;transition:transform .4s cubic-bezier(.16,1,.3,1);
-  box-shadow:0 20px 60px rgba(0,0,0,.5);max-width:90vw;
-  display:flex;align-items:center;gap:10px;pointer-events:none;
-}
-.toast.show{transform:translate(-50%,0);}
-.toast.ok{border-color:rgba(16,185,129,.4);color:#6ee7b7;}
-.toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5;}
-@media(max-width:600px){
-  .toast{top:auto;bottom:20px;transform:translate(-50%,140%);}
-  .toast.show{transform:translate(-50%,0);}
-}
-
-#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1;}
-#loginScreen.hidden{display:none;}
-.login-card{
-  width:100%;max-width:400px;
-  background:linear-gradient(145deg,rgba(30,27,48,.9),rgba(20,18,32,.95));
-  border:1px solid var(--border-2);border-radius:24px;padding:42px 32px;
-  position:relative;overflow:hidden;
-  box-shadow:0 30px 90px rgba(0,0,0,.7),var(--glow);
-  animation:cardIn .6s cubic-bezier(.16,1,.3,1);
-}
-@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-.login-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
-  background-size:200% 100%;animation:shine 3s linear infinite;
-}
-@keyframes shine{to{background-position:200% center;}}
-.login-logo{
-  width:72px;height:72px;border-radius:20px;margin:0 auto 20px;
-  display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  box-shadow:0 15px 40px rgba(168,85,247,.5);font-size:32px;
-}
-.login-card h2{font-size:24px;font-weight:800;text-align:center;margin-bottom:6px;
-  background:linear-gradient(135deg,#fff,var(--accent-3));
-  -webkit-background-clip:text;background-clip:text;color:transparent;}
-.login-card p{text-align:center;color:var(--muted);font-size:13px;margin-bottom:28px;}
-
-.input-group{margin-bottom:16px;text-align:right;}
-.input-group label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
-.input-group input{
-  width:100%;padding:14px 16px;border-radius:12px;
-  background:rgba(10,9,16,.6);border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:.25s;
-}
-.input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
-
-.btn-primary{
-  width:100%;padding:14px;border-radius:13px;border:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#fff;font-family:inherit;font-size:15px;font-weight:800;
-  cursor:pointer;transition:.25s;
-  box-shadow:0 12px 35px rgba(168,85,247,.35);margin-top:8px;
-}
-.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 17px 45px rgba(168,85,247,.5);}
-.btn-primary:disabled{opacity:.6;cursor:wait;}
-
-.login-msg{display:none;margin-top:14px;padding:11px 14px;border-radius:11px;font-size:12.5px;text-align:center;font-weight:600;}
-.login-msg.show{display:block;}
-.login-msg.err{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
-
-#mainPanel{display:none;position:relative;z-index:1;}
-#mainPanel.show{display:block;}
-.wrap{width:min(1240px,94%);margin:0 auto;padding:28px 0 80px;}
-
-.app-header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:20px 0 24px;border-bottom:1px solid var(--border);
-  margin-bottom:28px;flex-wrap:wrap;gap:14px;
-}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;}
-.brand-icon{
-  width:44px;height:44px;border-radius:13px;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  display:grid;place-items:center;
-  box-shadow:0 10px 30px rgba(168,85,247,.4);font-size:22px;
-}
-.brand-text strong{display:block;font-size:17px;font-weight:900;}
-.brand-text span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;}
-.brand-text .last-update{font-size:10.5px;color:var(--muted-2);margin-top:2px;}
-
-.header-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.icon-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:10px 16px;border-radius:11px;
-  background:var(--surface);border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;
-  cursor:pointer;transition:.25s;text-decoration:none;
-}
-.icon-btn:hover:not(:disabled){background:var(--surface-2);border-color:var(--border-2);transform:translateY(-1px);}
-.icon-btn:disabled{opacity:.5;cursor:wait;}
-.icon-btn.danger:hover{border-color:rgba(239,68,68,.5);color:#fca5a5;}
-.icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-
-.tabs{
-  display:flex;gap:6px;margin-bottom:24px;
-  background:var(--surface);padding:6px;border-radius:16px;
-  border:1px solid var(--border);
-  width:fit-content;max-width:100%;overflow-x:auto;
-}
-.tabs::-webkit-scrollbar{display:none;}
-.tab{
-  padding:11px 20px;border-radius:11px;border:0;
-  background:transparent;color:var(--muted);
-  font-family:inherit;font-size:13.5px;font-weight:700;
-  cursor:pointer;transition:.25s;
-  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
-}
-.tab:hover{color:var(--text);}
-.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.4);}
-.tab svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-.tab .badge-mini{
-  font-size:10px;padding:2px 7px;border-radius:100px;
-  background:rgba(255,255,255,.15);font-weight:800;
-}
-.tab.active .badge-mini{background:rgba(255,255,255,.3);}
-
-.panel{display:none;}
-.panel.active{display:block;animation:panelIn .4s cubic-bezier(.16,1,.3,1);}
-@keyframes panelIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
-.stat{
-  background:linear-gradient(145deg,rgba(30,27,48,.7),rgba(20,18,32,.85));
-  border:1px solid var(--border);border-radius:16px;padding:20px;
-  position:relative;overflow:hidden;transition:.3s;
-}
-.stat:hover{border-color:var(--border-2);transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,.4);}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-3));opacity:.6;}
-.stat.blue::before{background:linear-gradient(90deg,#3b82f6,#60a5fa);}
-.stat.green::before{background:linear-gradient(90deg,#10b981,#34d399);}
-.stat.gold::before{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
-.stat.red::before{background:linear-gradient(90deg,#ef4444,#f87171);}
-.stat-icon{width:38px;height:38px;border-radius:11px;background:rgba(168,85,247,.15);display:grid;place-items:center;margin-bottom:12px;font-size:18px;}
-.stat.blue .stat-icon{background:rgba(59,130,246,.15);}
-.stat.green .stat-icon{background:rgba(16,185,129,.15);}
-.stat.gold .stat-icon{background:rgba(245,158,11,.15);}
-.stat.red .stat-icon{background:rgba(239,68,68,.15);}
-.stat-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
-.stat-value{font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1;}
-.stat.blue .stat-value{color:#60a5fa;}
-.stat.green .stat-value{color:#34d399;}
-.stat.gold .stat-value{color:#fbbf24;}
-.stat.red .stat-value{color:#f87171;}
-
-.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-.search-bar input{
-  flex:1;min-width:220px;padding:13px 18px;border-radius:12px;
-  background:var(--surface);border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.25s;
-}
-.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
-.search-bar button{
-  padding:13px 22px;border-radius:12px;border:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#fff;font-family:inherit;font-size:13px;font-weight:800;
-  cursor:pointer;transition:.25s;box-shadow:0 10px 30px rgba(168,85,247,.3);
-}
-.search-bar button:hover:not(:disabled){transform:translateY(-2px);}
-.search-bar button:disabled{opacity:.6;cursor:wait;}
-
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
-.card{
-  background:linear-gradient(145deg,rgba(30,27,48,.65),rgba(20,18,32,.85));
-  border:1px solid var(--border);border-radius:16px;padding:18px;
-  transition:.3s;position:relative;overflow:hidden;
-}
-.card:hover{border-color:var(--border-2);transform:translateY(-3px);box-shadow:0 25px 60px rgba(0,0,0,.5);}
-.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-.card-title{font-size:15px;font-weight:800;margin-bottom:4px;word-break:break-word;}
-.card-phone{font-size:12.5px;color:var(--accent-3);direction:ltr;text-align:right;font-weight:600;}
-
-.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
-.badge{
-  display:inline-flex;align-items:center;gap:4px;padding:4px 10px;
-  border-radius:100px;font-size:10.5px;font-weight:800;
-}
-.badge.free{background:rgba(148,163,184,.15);color:#cbd5e1;}
-.badge.weekly{background:rgba(59,130,246,.2);color:#93c5fd;}
-.badge.monthly{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;}
-.badge.success{background:rgba(16,185,129,.18);color:#6ee7b7;}
-.badge.failed{background:rgba(239,68,68,.18);color:#fca5a5;}
-.badge.quota{background:rgba(245,158,11,.18);color:#fcd34d;}
-.badge.cancelled{background:rgba(239,68,68,.15);color:#fca5a5;}
-.badge.pending{background:rgba(245,158,11,.15);color:#fcd34d;}
-.badge.stream{background:rgba(168,85,247,.2);color:#d8b4fe;}
-.badge.download{background:rgba(59,130,246,.2);color:#93c5fd;}
-.badge.video{background:rgba(59,130,246,.15);color:#93c5fd;}
-.badge.cache{background:rgba(16,185,129,.2);color:#6ee7b7;}
-.badge.low{background:rgba(59,130,246,.2);color:#93c5fd;}
-.badge.medium{background:rgba(245,158,11,.2);color:#fcd34d;}
-.badge.high{background:rgba(239,68,68,.25);color:#fca5a5;}
-.badge.critical{background:rgba(239,68,68,.4);color:#fff;animation:pulse-red 1.5s infinite;}
-.badge.rate{background:rgba(245,158,11,.25);color:#fcd34d;}
-.badge.ip{background:rgba(168,85,247,.2);color:#d8b4fe;direction:ltr;}
-@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 0 0 6px rgba(239,68,68,0);}}
-
-.meta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:12px;border-top:1px dashed rgba(168,132,255,.12);font-size:11.5px;color:var(--muted);font-weight:600;}
-.meta-row span{display:inline-flex;align-items:center;gap:5px;}
-
-.card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
-.card-btn{
-  padding:8px 14px;border-radius:9px;
-  background:rgba(168,85,247,.1);border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:12px;font-weight:700;
-  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;text-decoration:none;
-}
-.card-btn:hover:not(:disabled){background:var(--surface-2);border-color:var(--border-2);}
-.card-btn:disabled{opacity:.5;cursor:wait;}
-.card-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;color:#fff;box-shadow:0 8px 25px rgba(168,85,247,.35);}
-.card-btn.primary:hover:not(:disabled){box-shadow:0 12px 35px rgba(168,85,247,.5);}
-.card-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
-.card-btn.danger:hover:not(:disabled){background:rgba(239,68,68,.25);color:#fff;}
-.card-btn.success{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#6ee7b7;}
-.card-btn.success:hover:not(:disabled){background:rgba(16,185,129,.25);color:#fff;}
-.card-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;}
-
-.empty,.loading{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px;font-weight:600;}
-.loading::before{content:'';display:block;width:36px;height:36px;margin:0 auto 16px;border:3px solid rgba(168,85,247,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-.sub-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
-.sub-tab{padding:8px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;}
-.sub-tab:hover{color:var(--text);border-color:var(--border-2);}
-.sub-tab.active{background:rgba(168,85,247,.15);border-color:rgba(168,132,255,.4);color:var(--accent-3);}
-
-.overview-section{
-  background:linear-gradient(145deg,rgba(30,27,48,.6),rgba(20,18,32,.85));
-  border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;
-}
-.overview-section h3{font-size:15px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--accent-3);}
-.overview-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed rgba(168,132,255,.1);font-size:13px;}
-.overview-row:last-child{border-bottom:0;}
-.overview-row .label{color:var(--muted);font-weight:600;}
-.overview-row .value{font-weight:800;color:#fff;}
-.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
-
-/* ===== Plans (Pricing) ===== */
-.plans-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:18px;margin-bottom:26px;
-}
-.plan-card{
-  background:linear-gradient(155deg,rgba(30,27,48,.75),rgba(20,18,32,.92));
-  border:1px solid var(--border);border-radius:22px;padding:26px 22px;
-  position:relative;overflow:hidden;transition:.35s;
-  display:flex;flex-direction:column;
-}
-.plan-card:hover{transform:translateY(-5px);border-color:var(--border-2);box-shadow:0 30px 70px rgba(0,0,0,.55);}
-.plan-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
-  background-size:200% 100%;animation:shine 3s linear infinite;
-}
-.plan-card.featured{
-  border-color:rgba(251,191,36,.55);
-  box-shadow:0 0 0 1px rgba(251,191,36,.15),0 25px 70px rgba(245,158,11,.18);
-  transform:scale(1.02);
-}
-.plan-card.featured::before{background:linear-gradient(90deg,transparent,#f59e0b,#fbbf24,transparent);background-size:200% 100%;}
-.plan-card.featured:hover{transform:scale(1.02) translateY(-5px);}
-.plan-ribbon{
-  position:absolute;top:14px;left:-32px;transform:rotate(-45deg);
-  background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1206;
-  padding:5px 40px;font-size:10.5px;font-weight:900;letter-spacing:.5px;
-  box-shadow:0 6px 20px rgba(245,158,11,.4);
-}
-.plan-icon{
-  width:52px;height:52px;border-radius:15px;display:grid;place-items:center;
-  font-size:24px;margin-bottom:14px;
-  background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);
-}
-.plan-card.free .plan-icon{background:rgba(148,163,184,.15);border-color:rgba(148,163,184,.3);}
-.plan-card.weekly .plan-icon{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);}
-.plan-card.monthly .plan-icon{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35);}
-.plan-name{font-size:18px;font-weight:900;margin-bottom:4px;}
-.plan-subtitle{font-size:11.5px;color:var(--muted);margin-bottom:18px;font-weight:600;}
-.plan-price{display:flex;align-items:baseline;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
-.plan-price .amount{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;
-  background:linear-gradient(135deg,#fff,var(--accent-3));
-  -webkit-background-clip:text;background-clip:text;color:transparent;}
-.plan-card.monthly .plan-price .amount{
-  background:linear-gradient(135deg,#fff,#fbbf24);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.plan-price .currency{font-size:14px;font-weight:700;color:var(--muted);}
-.plan-price .period{font-size:12px;color:var(--muted-2);font-weight:600;}
-.plan-users{
-  display:inline-flex;align-items:center;gap:6px;
-  margin-top:6px;margin-bottom:18px;padding:6px 12px;
-  border-radius:100px;font-size:11.5px;font-weight:800;
-  background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);
-  color:var(--accent-3);width:fit-content;
-}
-.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:20px;flex:1;}
-.plan-features li{
-  display:flex;align-items:flex-start;gap:9px;
-  font-size:12.5px;font-weight:600;color:var(--text);line-height:1.5;
-}
-.plan-features li .tick{
-  flex-shrink:0;width:18px;height:18px;border-radius:50%;
-  display:grid;place-items:center;font-size:10px;font-weight:900;
-  background:rgba(16,185,129,.18);color:#6ee7b7;margin-top:1px;
-}
-.plan-features li.muted{color:var(--muted);}
-.plan-features li.muted .tick{background:rgba(148,163,184,.15);color:#cbd5e1;}
-.plan-cta{
-  width:100%;padding:12px;border-radius:12px;border:0;
-  font-family:inherit;font-size:13px;font-weight:900;cursor:pointer;transition:.25s;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;
-  box-shadow:0 10px 30px rgba(168,85,247,.3);
-}
-.plan-cta:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(168,85,247,.5);}
-.plan-card.monthly .plan-cta{
-  background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1206;
-  box-shadow:0 10px 30px rgba(245,158,11,.4);
-}
-.plan-card.monthly .plan-cta:hover{box-shadow:0 14px 38px rgba(245,158,11,.6);}
-
-/* Compare table */
-.compare-wrap{
-  background:linear-gradient(145deg,rgba(30,27,48,.6),rgba(20,18,32,.85));
-  border:1px solid var(--border);border-radius:18px;padding:22px;overflow-x:auto;
-}
-.compare-wrap h3{font-size:15px;font-weight:800;margin-bottom:16px;color:var(--accent-3);display:flex;align-items:center;gap:8px;}
-.compare-table{width:100%;border-collapse:collapse;min-width:520px;}
-.compare-table th,.compare-table td{
-  padding:12px 14px;text-align:right;font-size:12.5px;font-weight:700;
-  border-bottom:1px dashed rgba(168,132,255,.12);
-}
-.compare-table th{color:var(--muted);font-weight:700;font-size:12px;background:rgba(168,85,247,.05);}
-.compare-table th:first-child{text-align:right;}
-.compare-table tr:last-child td{border-bottom:0;}
-.compare-table td:first-child{color:var(--muted);font-weight:600;}
-.compare-table td{color:#fff;}
-.compare-table .col-featured{background:rgba(245,158,11,.06);color:#fcd34d;}
-.compare-table .col-featured strong{color:#fbbf24;}
-.compare-table .yes{color:#34d399;}
-.compare-table .no{color:#f87171;}
-
-/* Rate-limit ban cards */
-.rate-ban-card { border-color: rgba(245,158,11,.35) !important; }
-.rate-ban-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg,#f59e0b,#fbbf24) !important; opacity: 1 !important; }
-.rate-ban-card .attempts-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px; border-radius: 100px;
-  background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35);
-  color: #fcd34d; font-size: 11px; font-weight: 800;
-}
-.rate-ban-card .countdown-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px; border-radius: 100px;
-  background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35);
-  color: #fca5a5; font-size: 11px; font-weight: 800;
-  font-variant-numeric: tabular-nums;
+/* إشعارات النظام */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  padding: 13px 24px;
+  border-radius: 13px;
+  background: rgba(22,20,35,.97);
+  border: 1px solid var(--border-2);
+  backdrop-filter: blur(20px);
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 9999;
+  transition: transform .4s cubic-bezier(.16,1,.3,1);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  max-width: 90vw;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
 }
 
-/* Modal */
-.modal{position:fixed;inset:0;z-index:2000;background:rgba(5,4,10,.85);backdrop-filter:blur(15px);display:none;align-items:center;justify-content:center;padding:20px;}
-.modal.active{display:flex;animation:fadeIn .3s;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.modal-content{
-  width:100%;max-width:540px;
-  background:linear-gradient(145deg,rgba(30,27,48,.98),rgba(20,18,32,.99));
-  border:1px solid var(--border-2);border-radius:22px;padding:28px;
-  max-height:92vh;overflow-y:auto;position:relative;
-  box-shadow:0 40px 100px rgba(0,0,0,.8),var(--glow);
-  animation:modalIn .45s cubic-bezier(.16,1,.3,1);
+.toast.show {
+  transform: translate(-50%, 0);
 }
-@keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.modal-content::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);background-size:200% 100%;animation:shine 3s linear infinite;}
-.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;}
-.modal-header h3{font-size:18px;font-weight:900;background:linear-gradient(135deg,#fff,var(--accent-3));-webkit-background-clip:text;background-clip:text;color:transparent;}
-.close-btn{width:34px;height:34px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5;cursor:pointer;transition:.2s;display:grid;place-items:center;flex-shrink:0;font-size:18px;}
-.close-btn:hover{background:rgba(239,68,68,.25);color:#fff;transform:rotate(90deg);}
 
-.field{margin-bottom:14px;text-align:right;}
-.field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
-.field .hint{font-size:10.5px;color:var(--muted-2);margin-top:4px;font-weight:500;}
-.field input,.field select,.field textarea{width:100%;padding:12px 14px;border-radius:11px;background:rgba(10,9,16,.7);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.25s;}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(168,85,247,.12);}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-
-.modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
-.btn{padding:12px 20px;border-radius:12px;border:0;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
-.btn:disabled{opacity:.6;cursor:wait;}
-.btn.primary{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 10px 30px rgba(168,85,247,.35);}
-.btn.primary:hover:not(:disabled){transform:translateY(-2px);}
-.btn.danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
-.btn.danger:hover:not(:disabled){background:rgba(239,68,68,.25);color:#fff;}
-.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
-.btn.ghost:hover:not(:disabled){border-color:var(--border-2);color:var(--text);}
-
-#confirmModal .modal-content{max-width:420px;}
-#confirmModal .confirm-text{font-size:13.5px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
-
-#planDetailModal .modal-content{max-width:600px;}
-.plan-detail-hero{
-  text-align:center;padding:18px 0 22px;margin-bottom:18px;
-  border-bottom:1px dashed rgba(168,132,255,.15);
+.toast.ok {
+  border-color: rgba(16,185,129,.4);
+  color: #6ee7b7;
 }
-.plan-detail-hero .icon{font-size:40px;margin-bottom:10px;}
-.plan-detail-hero h2{font-size:22px;font-weight:900;margin-bottom:4px;}
-.plan-detail-hero .sub{font-size:12px;color:var(--muted);font-weight:600;}
-.plan-detail-price{
-  display:flex;justify-content:center;align-items:baseline;gap:6px;margin-top:14px;
-}
-.plan-detail-price .amount{font-size:36px;font-weight:900;letter-spacing:-1px;
-  background:linear-gradient(135deg,#fff,var(--accent-3));
-  -webkit-background-clip:text;background-clip:text;color:transparent;}
-.plan-detail-price .currency{font-size:14px;color:var(--muted);font-weight:700;}
-.plan-detail-price .period{font-size:12px;color:var(--muted-2);font-weight:600;}
 
-@media(max-width:700px){
-  .wrap{padding:20px 0 60px;}
-  .app-header{padding:14px 0 18px;}
-  .brand-text strong{font-size:15px;}
-  .stats{grid-template-columns:repeat(2,1fr);}
-  .stat{padding:16px;}
-  .stat-value{font-size:20px;}
-  .list{grid-template-columns:1fr;}
-  .tab{padding:9px 14px;font-size:12.5px;}
-  .modal-content{padding:22px;}
-  .field-row{grid-template-columns:1fr;}
-  .icon-btn{padding:9px 12px;font-size:11.5px;}
-  .icon-btn span{display:none;}
-  .plan-card.featured{transform:none;}
-  .plan-card.featured:hover{transform:translateY(-5px);}
+.toast.err {
+  border-color: rgba(239,68,68,.4);
+  color: #fca5a5;
+}
+
+@media (max-width: 600px) {
+  .toast {
+    top: auto;
+    bottom: 20px;
+    transform: translate(-50%, 140%);
+  }
+
+  .toast.show {
+    transform: translate(-50%, 0);
+  }
+}
+
+/* شاشة تسجيل الدخول */
+#loginScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+#loginScreen.hidden {
+  display: none;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(
+    145deg,
+    rgba(30,27,48,.9),
+    rgba(20,18,32,.95)
+  );
+  border: 1px solid var(--border-2);
+  border-radius: 24px;
+  padding: 42px 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0,0,0,.7), var(--glow);
+  animation: cardIn .6s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent),
+    var(--accent-3),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.login-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-2)
+  );
+  box-shadow: 0 15px 40px rgba(168,85,247,.5);
+  font-size: 32px;
+}
+
+.login-card h2 {
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #fff, var(--accent-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.login-card p {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.input-group {
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(10,9,16,.6);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: .25s;
+}
+
+.input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(168,85,247,.12);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 13px;
+  border: 0;
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-2)
+  );
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .25s;
+  box-shadow: 0 12px 35px rgba(168,85,247,.35);
+  margin-top: 8px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 17px 45px rgba(168,85,247,.5);
+}
+
+.btn-primary:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.login-msg {
+  display: none;
+  margin-top: 14px;
+  padding: 11px 14px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.login-msg.show {
+  display: block;
+}
+
+.login-msg.err {
+  background: rgba(239,68,68,.1);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,.25);
+}
+
+/* اللوحة الرئيسية */
+#mainPanel {
+  display: none;
+  position: relative;
+  z-index: 1;
+}
+
+#mainPanel.show {
+  display: block;
+}
+
+.wrap {
+  width: min(1240px, 94%);
+  margin: 0 auto;
+  padding: 28px 0 80px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-2)
+  );
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 30px rgba(168,85,247,.4);
+  font-size: 22px;
+}
+
+.brand-text strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.brand-text span {
+  display: block;
+  color: var(--muted);
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+
+.brand-text .last-update {
+  font-size: 10.5px;
+  color: var(--muted-2);
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 11px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .25s;
+  text-decoration: none;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border-2);
+  transform: translateY(-1px);
+}
+
+.icon-btn:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.icon-btn.danger:hover {
+  border-color: rgba(239,68,68,.5);
+  color: #fca5a5;
+}
+
+.icon-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* تبويبات لوحة التحكم */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  padding: 11px 20px;
+  border-radius: 11px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-2)
+  );
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(168,85,247,.4);
+}
+
+.tab svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tab .badge-mini {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: rgba(255,255,255,.15);
+  font-weight: 800;
+}
+
+.tab.active .badge-mini {
+  background: rgba(255,255,255,.3);
+}
+
+.panel {
+  display: none;
+}
+
+.panel.active {
+  display: block;
+  animation: panelIn .4s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* بطاقات الإحصائيات */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  background: linear-gradient(
+    145deg,
+    rgba(30,27,48,.7),
+    rgba(20,18,32,.85)
+  );
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: .3s;
+}
+
+.stat:hover {
+  border-color: var(--border-2);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 50px rgba(0,0,0,.4);
+}
+
+.stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    var(--accent-3)
+  );
+  opacity: .6;
+}
+
+.stat.blue::before {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.stat.green::before {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.stat.gold::before {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.stat.red::before {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(168,85,247,.15);
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.stat.blue .stat-icon {
+  background: rgba(59,130,246,.15);
+}
+
+.stat.green .stat-icon {
+  background: rgba(16,185,129,.15);
+}
+
+.stat.gold .stat-icon {
+  background: rgba(245,158,11,.15);
+}
+
+.stat.red .stat-icon {
+  background: rgba(239,68,68,.15);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -.5px;
+  line-height: 1;
+}
+
+.stat.blue .stat-value { color: #60a5fa; }
+.stat.green .stat-value { color: #34d399; }
+.stat.gold .stat-value { color: #fbbf24; }
+.stat.red .stat-value { color: #f87171; }
+
+/* البحث */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 220px;
+  padding: 13px 18px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: .25s;
+}
+
+.search-bar input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(168,85,247,.12);
+}
+
+.search-bar button {
+  padding: 13px 22px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-2)
+  );
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .25s;
+  box-shadow: 0 10px 30px rgba(168,85,247,.3);
+}
+
+.search-bar button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.search-bar button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+/* بطاقات البيانات */
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: linear-gradient(
+    145deg,
+    rgba(30,27,48,.65),
+    rgba(20,18,32,.85)
+  );
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  transition: .3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--border-2);
+  transform: translateY(-3px);
+  box-shadow: 0 25px 60px rgba(0,0,0,.5);
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.card-phone {
+  font-size: 12.5px;
+  color: var(--accent-3);
+  direction: ltr;
+  text-align: right;
+  font-weight: 600;
+}
+
+.badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.badge.free { background: rgba(148,163,184,.15); color: #cbd5e1; }
+.badge.weekly { background: rgba(59,130,246,.2); color: #93c5fd; }
+.badge.monthly { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #000; }
+.badge.success { background: rgba(16,185,129,.18); color: #6ee7b7; }
+.badge.failed { background: rgba(239,68,68,.18); color: #fca5a5; }
+.badge.quota { background: rgba(245,158,11,.18); color: #fcd34d; }
+.badge.cancelled { background: rgba(239,68,68,.15); color: #fca5a5; }
+.badge.pending { background: rgba(245,158,11,.15); color: #fcd34d; }
+.badge.stream { background: rgba(168,85,247,.2); color: #d8b4fe; }
+.badge.download { background: rgba(59,130,246,.2); color: #93c5fd; }
+.badge.video { background: rgba(59,130,246,.15); color: #93c5fd; }
+.badge.cache { background: rgba(16,185,129,.2); color: #6ee7b7; }
+.badge.low { background: rgba(59,130,246,.2); color: #93c5fd; }
+.badge.medium { background: rgba(245,158,11,.2); color: #fcd34d; }
+.badge.high { background: rgba(239,68,68,.25); color: #fca5a5; }
+.badge.critical {
+  background: rgba(239,68,68,.4);
+  color: #fff;
+  animation: pulse-red 1.5s infinite;
+}
+.badge.rate { background: rgba(245,158,11,.25); color: #fcd34d; }
+.badge.ip {
+  background: rgba(168,85,247,.2);
+  color: #d8b4fe;
+  direction: ltr;
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239,68,68,.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(239,68,68,0);
+  }
+}
+
+.meta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(168,132,255,.12);
+  font-size: 11.5px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.meta-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.card-btn {
+  padding: 8px 14px;
+  border-radius: 9px;
+  background: rgba(168,85,247,.1);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.card-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border-2);
+}
+
+.card-btn:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.card-btn.primary {
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-2)
+  );
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 25px rgba(168,85,247,.35);
+}
+
+.card-btn.primary:hover:not(:disabled) {
+  box-shadow: 0 12px 35px rgba(168,85,247,.5);
+}
+
+.card-btn.danger {
+  background: rgba(239,68,68,.1);
+  border-color: rgba(239,68,68,.3);
+  color: #fca5a5;
+}
+
+.card-btn.danger:hover:not(:disabled) {
+  background: rgba(239,68,68,.25);
+  color: #fff;
+}
+
+.card-btn.success {
+  background: rgba(16,185,129,.1);
+  border-color: rgba(16,185,129,.3);
+  color: #6ee7b7;
+}
+
+.card-btn.success:hover:not(:disabled) {
+  background: rgba(16,185,129,.25);
+  color: #fff;
+}
+
+.card-btn svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.4;
+}
+
+.empty,
+.loading {
+  grid-column: 1 / -1;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.loading::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 16px;
+  border: 3px solid rgba(168,85,247,.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
 </head>
 <body>
-
-<div id="toast" class="toast"></div>
-
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">🔐</div>
-    <h2>لوحة التحكم</h2>
-    <p>سجّل دخولك للوصول إلى لوحة الأدمن</p>
-    <div class="input-group">
-      <label>اسم المستخدم</label>
-      <input id="usernameInput" type="text" placeholder="Username" autocomplete="username">
-    </div>
-    <div class="input-group">
-      <label>كلمة المرور</label>
-      <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password">
-    </div>
-    <button id="loginBtn" class="btn-primary">تسجيل الدخول</button>
-    <div id="loginMsg" class="login-msg"></div>
-  </div>
-</div>
-
-<div id="mainPanel">
-  <div class="wrap">
-
-    <header class="app-header">
-      <div class="brand">
-        <div class="brand-icon">⚡</div>
-        <div class="brand-text">
-          <strong>Link2Go Admin</strong>
-          <span id="welcomeText">مرحباً</span>
-          <div class="last-update" id="lastUpdateText"></div>
-        </div>
-      </div>
-      <div class="header-actions">
-        <button id="refreshBtn" class="icon-btn">
-          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          <span>تحديث</span>
-        </button>
-        <button id="logoutBtn" class="icon-btn danger">
-          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          <span>خروج</span>
-        </button>
-      </div>
-    </header>
-
-    <div class="tabs">
-      <button class="tab active" data-tab="overview">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        نظرة عامة
-      </button>
-      <button class="tab" data-tab="users">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        المستخدمون
-      </button>
-      <button class="tab" data-tab="history">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        السجلات
-      </button>
-      <button class="tab" data-tab="security">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        الأمان
-        <span class="badge-mini" id="securityBadge" style="display:none;">0</span>
-      </button>
-      <button class="tab" data-tab="cloud">
-        <svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-        السحابة
-      </button>
-      <button class="tab" data-tab="plans">
-        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        الباقات
-      </button>
-    </div>
-
-    <div class="panel active" id="panel-overview">
-      <div id="overviewContent"><div class="loading">جاري التحميل...</div></div>
-    </div>
-
-    <div class="panel" id="panel-users">
-      <div class="stats">
-        <div class="stat green"><div class="stat-icon">👥</div><div class="stat-label">إجمالي المستخدمين</div><div class="stat-value" id="statTotal">0</div></div>
-        <div class="stat blue"><div class="stat-icon">💙</div><div class="stat-label">الباقة المجانية</div><div class="stat-value" id="statFree">0</div></div>
-        <div class="stat"><div class="stat-icon">💜</div><div class="stat-label">الباقة الأسبوعية</div><div class="stat-value" id="statWeekly">0</div></div>
-        <div class="stat gold"><div class="stat-icon">👑</div><div class="stat-label">الباقة الشهرية VIP</div><div class="stat-value" id="statMonthly">0</div></div>
-      </div>
-      <div class="search-bar">
-        <input id="userSearch" type="text" placeholder="🔍 ابحث بالاسم أو رقم الهاتف...">
-        <button id="refreshUsersBtn">تحديث</button>
-      </div>
-      <div id="usersList" class="list"><div class="loading">جاري التحميل...</div></div>
-    </div>
-
-    <div class="panel" id="panel-history">
-      <div class="sub-tabs">
-        <button class="sub-tab active" data-htype="links">📥 الروابط</button>
-        <button class="sub-tab" data-htype="otp">🔐 OTP</button>
-        <button class="sub-tab" data-htype="login">🔑 تسجيل الدخول</button>
-      </div>
-      <div class="search-bar">
-        <input id="historySearch" type="text" placeholder="🔍 ابحث في السجل...">
-        <button id="refreshHistoryBtn">تحديث</button>
-      </div>
-      <div id="historyList" class="list"><div class="loading">جاري التحميل...</div></div>
-    </div>
-
-    <div class="panel" id="panel-security">
-      <div class="sub-tabs" id="securitySubTabs">
-        <button class="sub-tab active" data-stype="stats">📊 الإحصائيات</button>
-        <button class="sub-tab" data-stype="otps">🔐 OTPs النشطة</button>
-        <button class="sub-tab" data-stype="bans">🚫 IPs المحظورة</button>
-        <button class="sub-tab" data-stype="rate">🚦 حظر 429</button>
-        <button class="sub-tab" data-stype="events">⚠️ الأحداث</button>
-      </div>
-      <div id="securityContent"><div class="loading">جاري التحميل...</div></div>
-    </div>
-
-    <div class="panel" id="panel-cloud">
-      <div class="sub-tabs">
-        <button class="sub-tab active" data-ctype="stats">📊 الإحصائيات</button>
-        <button class="sub-tab" data-ctype="files">📁 الملفات</button>
-        <button class="sub-tab" data-ctype="orphans">⚠️ اليتيمة</button>
-      </div>
-      <div id="cloudContent"><div class="loading">جاري التحميل...</div></div>
-    </div>
-
-    <div class="panel" id="panel-plans">
-      <div class="search-bar" style="margin-bottom:18px;">
-        <div style="flex:1;display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);font-size:12.5px;color:var(--muted);font-weight:600;">
-          💡 اضغط على أي باقة لعرض تفاصيلها الكاملة
-        </div>
-        <button id="refreshPlansBtn">تحديث</button>
-      </div>
-      <div id="plansContent"><div class="loading">جاري التحميل...</div></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- User Edit Modal -->
-<div id="userModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="userModalTitle">تعديل المستخدم</h3>
-      <button class="close-btn" data-close="userModal">✕</button>
-    </div>
-    <div id="userModalPhone" class="card-phone" style="margin-bottom:10px;"></div>
-    <div id="userModalMeta" class="meta-row" style="margin-bottom:16px;"></div>
-    <div class="field">
-      <label>الباقة</label>
-      <select id="newPlanSelect"></select>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>التحميلات (اليوم)</label>
-        <input type="number" id="downloadsInput" min="0">
-      </div>
-      <div class="field">
-        <label>الاستماعات (الشهر)</label>
-        <input type="number" id="listensInput" min="0">
-      </div>
-    </div>
-    <div class="field">
-      <label>ميعاد التجديد (YYYY-MM-DD)</label>
-      <input type="text" id="renewalDateInput" placeholder="2026-12-31">
-    </div>
-    <div class="field">
-      <label>حد استماع مخصص</label>
-      <input type="number" id="customListenInput">
-      <div class="hint" id="customListenHint">-1 = بلا حدود. اتركه فاضي للإبقاء على الحالي</div>
-    </div>
-    <div class="field">
-      <label>مساحة السحابة المخصصة (MB)</label>
-      <input type="number" id="customCloudInput">
-      <div class="hint" id="customCloudHint">اتركه فاضي للإبقاء على الحالي</div>
-    </div>
-    <div class="modal-actions">
-      <button id="saveUserBtn" class="btn primary">💾 حفظ</button>
-      <button id="deleteUserBtn" class="btn danger">🗑️ حذف</button>
-    </div>
-  </div>
-</div>
-
-<!-- Plan Detail Modal -->
-<div id="planDetailModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>تفاصيل الباقة</h3>
-      <button class="close-btn" data-close="planDetailModal">✕</button>
-    </div>
-    <div id="planDetailContent"></div>
-  </div>
-</div>
-
-<!-- Confirm Modal -->
-<div id="confirmModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="confirmTitle">تأكيد</h3>
-      <button class="close-btn" data-close="confirmModal">✕</button>
-    </div>
-    <div class="confirm-text" id="confirmText"></div>
-    <div class="modal-actions">
-      <button id="confirmOkBtn" class="btn primary">تأكيد</button>
-      <button class="btn ghost" data-close="confirmModal">إلغاء</button>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ============ Config ============ */
-const SERVER_URL = "https://link2go-proxy.vercel.app";
-const TOKEN_KEY = "link2go_admin_token";
-const USERNAME_KEY = "link2go_admin_username";
-const REFRESH_MS = 30000;
-const DEBOUNCE_MS = 250;
-const MAX_RENDER = 300;
-
-/* ============ State ============ */
-let adminToken = localStorage.getItem(TOKEN_KEY) || "";
-let adminUsername = localStorage.getItem(USERNAME_KEY) || "";
-let allUsers = [], allPlans = {}, currentEditingUser = null;
-let currentHistoryType = "links";
-let currentSecurityType = "stats";
-let currentCloudType = "stats";
-let allHistory = { links: [], otp: [], login: [] };
-let refreshTimer = null;
-let plansCache = null;
-let usersPerPlan = { free: 0, weekly: 0, monthly: 0 };
-
-/* ============ Helpers ============ */
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? "")
-  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-
-function safeUrl(u) {
-  const s = String(u || "");
-  if (!s) return "#";
-  if (/^\s*(javascript|data|vbscript):/i.test(s)) return "#";
-  return s;
-}
-
-function todayStr() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function debounce(fn, ms) {
-  let t = null;
-  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-}
-
-let toastTimer = null;
-function showToast(text, type = "ok") {
-  const t = $("toast");
-  t.textContent = text;
-  t.className = "toast show " + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = "toast"; }, 3500);
-}
-
-function setLastUpdate() {
-  const d = new Date();
-  $("lastUpdateText").textContent = "آخر تحديث: " +
-    d.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-}
-
-function busy(btn, isBusy, labelBusy) {
-  if (!btn) return;
-  if (isBusy) {
-    btn.dataset._label = btn.textContent;
-    if (labelBusy) btn.textContent = labelBusy;
-    btn.disabled = true;
-  } else {
-    if (btn.dataset._label) btn.textContent = btn.dataset._label;
-    btn.disabled = false;
-  }
-}
-
-/* ============ Confirm Modal ============ */
-let confirmResolver = null;
-function askConfirm(title, text) {
-  return new Promise(resolve => {
-    confirmResolver = resolve;
-    $("confirmTitle").textContent = title;
-    $("confirmText").textContent = text;
-    $("confirmModal").classList.add("active");
-  });
-}
-$("confirmOkBtn").addEventListener("click", () => {
-  $("confirmModal").classList.remove("active");
-  if (confirmResolver) { confirmResolver(true); confirmResolver = null; }
-});
-document.querySelectorAll('[data-close="confirmModal"]').forEach(b => {
-  b.addEventListener("click", () => {
-    $("confirmModal").classList.remove("active");
-    if (confirmResolver) { confirmResolver(false); confirmResolver = null; }
-  });
-});
-
-/* ============ Session ============ */
-function clearSession() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USERNAME_KEY);
-  adminToken = ""; adminUsername = "";
-}
-function showLoginScreen() {
-  $("loginScreen").classList.remove("hidden");
-  $("loginScreen").style.display = "";
-  $("mainPanel").classList.remove("show");
-}
-function hideLoginScreen() {
-  $("loginScreen").style.display = "none";
-  $("mainPanel").classList.add("show");
-}
-function forceLogout() { stopRefresh(); clearSession(); showLoginScreen(); }
-
-/* ============ API ============ */
-async function apiFetch(path, options = {}) {
-  const r = await fetch(SERVER_URL + path, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + adminToken,
-      ...(options.headers || {})
-    }
-  });
-  let d = {};
-  try { d = await r.json(); } catch (_) {}
-  if (r.status === 401) { forceLogout(); throw new Error(d.error || "انتهت الجلسة"); }
-  if (r.status === 429) throw new Error(d.error || "طلبات كتير، استنى شوية");
-  if (!r.ok || !d.success) throw new Error(d.error || `فشل (${r.status})`);
-  return d;
-}
-
-/* ============ Login ============ */
-async function doLogin() {
-  const username = $("usernameInput").value.trim();
-  const password = $("passwordInput").value;
-  const loginMsg = $("loginMsg");
-  loginMsg.className = "login-msg";
-  if (!username || !password) {
-    loginMsg.textContent = "اكتب اسم المستخدم وكلمة المرور";
-    loginMsg.className = "login-msg show err";
-    return;
-  }
-  const btn = $("loginBtn");
-  busy(btn, true, "جاري التحقق...");
-  try {
-    const r = await fetch(SERVER_URL + "/admin-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
-    let d = {};
-    try { d = await r.json(); } catch (_) {}
-    if (!r.ok || !d.success) throw new Error(d.error || "فشل تسجيل الدخول");
-    adminToken = d.token;
-    adminUsername = d.username;
-    localStorage.setItem(TOKEN_KEY, adminToken);
-    localStorage.setItem(USERNAME_KEY, adminUsername);
-    $("passwordInput").value = "";
-    hideLoginScreen();
-    $("welcomeText").textContent = "مرحباً " + adminUsername;
-    startDashboard();
-  } catch (e) {
-    loginMsg.textContent = e.message;
-    loginMsg.className = "login-msg show err";
-  } finally {
-    busy(btn, false);
-  }
-}
-
-$("loginBtn").addEventListener("click", doLogin);
-$("passwordInput").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-$("usernameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("passwordInput").focus(); });
-
-$("logoutBtn").addEventListener("click", async () => {
-  const ok = await askConfirm("تسجيل الخروج", "هل تريد تسجيل الخروج من لوحة التحكم؟");
-  if (!ok) return;
-  try {
-    await fetch(SERVER_URL + "/admin-logout", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + adminToken }
-    });
-  } catch (_) {}
-  stopRefresh(); clearSession(); location.reload();
-});
-
-async function checkAuth() {
-  if (!adminToken) return false;
-  try {
-    let r = await fetch(SERVER_URL + "/admin-verify", {
-      method: "GET",
-      headers: { "Authorization": "Bearer " + adminToken }
-    });
-    if (r.status === 405 || r.status === 404) {
-      r = await fetch(SERVER_URL + "/admin-verify", {
-        method: "POST",
-        headers: { "Authorization": "Bearer " + adminToken, "Content-Type": "application/json" },
-        body: "{}"
-      });
-    }
-    if (!r.ok) { clearSession(); return false; }
-    const d = await r.json();
-    if (!d.success) { clearSession(); return false; }
-    adminUsername = d.username || adminUsername;
-    return true;
-  } catch (_) { return false; }
-}
-
-/* ============ Tabs ============ */
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-    tab.classList.add("active");
-    $("panel-" + tab.dataset.tab).classList.add("active");
-    const t = tab.dataset.tab;
-    if (t === "overview") loadOverview();
-    if (t === "users") loadUsers();
-    if (t === "history") loadHistory();
-    if (t === "security") loadSecurity();
-    if (t === "cloud") loadCloud();
-    if (t === "plans") loadPlansTab();
-  });
-});
-
-document.querySelectorAll(".sub-tab").forEach(st => {
-  st.addEventListener("click", () => {
-    const parent = st.parentElement;
-    parent.querySelectorAll(".sub-tab").forEach(x => x.classList.remove("active"));
-    st.classList.add("active");
-    if (st.dataset.htype) {
-      currentHistoryType = st.dataset.htype;
-      $("historySearch").value = "";
-      renderHistory();
-    }
-    if (st.dataset.stype) { currentSecurityType = st.dataset.stype; loadSecurity(); }
-    if (st.dataset.ctype) { currentCloudType = st.dataset.ctype; loadCloud(); }
-  });
-});
-
-/* ============ Overview ============ */
-async function loadOverview() {
-  try {
-    const d = await apiFetch("/admin/dashboard-summary");
-    renderOverview(d);
-    updateSecurityBadge(d);
-    setLastUpdate();
-  } catch (e) {
-    $("overviewContent").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-function updateSecurityBadge(d) {
-  const sec = d.security || {};
-  const total = (sec.failed_logins || 0)
-    + (sec.active_bans || 0)
-    + (sec.rate_limit_bans || 0);
-  const badge = $("securityBadge");
-  if (total > 0) {
-    badge.style.display = "inline-block";
-    badge.textContent = total > 99 ? "99+" : total;
-  } else {
-    badge.style.display = "none";
-  }
-}
-
-function renderOverview(d) {
-  const users = d.users || {};
-  const temp = d.temp_files || {};
-  const cloud = d.cloud || {};
-  const otp = d.otp || {};
-  const sec = d.security || {};
-  const proxy = d.proxy || {};
-  $("overviewContent").innerHTML = `
-    <div class="stats">
-      <div class="stat green"><div class="stat-icon">👥</div><div class="stat-label">المستخدمون</div><div class="stat-value">${users.total || 0}</div></div>
-      <div class="stat gold"><div class="stat-icon">👑</div><div class="stat-label">VIP</div><div class="stat-value">${(users.by_plan||{}).monthly || 0}</div></div>
-      <div class="stat blue"><div class="stat-icon">📥</div><div class="stat-label">ملفات مؤقتة</div><div class="stat-value">${temp.count || 0}</div></div>
-      <div class="stat"><div class="stat-icon">☁️</div><div class="stat-label">السحابة</div><div class="stat-value">${cloud.total_files || 0}</div></div>
-      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة (أمان)</div><div class="stat-value">${sec.active_bans || 0}</div></div>
-      <div class="stat gold"><div class="stat-icon">🚦</div><div class="stat-label">محظورين 429</div><div class="stat-value">${sec.rate_limit_bans || 0}</div></div>
-      <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTPs نشطة</div><div class="stat-value">${otp.active || 0}</div></div>
-    </div>
-    <div class="overview-grid">
-      <div class="overview-section">
-        <h3>👥 المستخدمون</h3>
-        <div class="overview-row"><span class="label">إجمالي</span><span class="value">${users.total || 0}</span></div>
-        <div class="overview-row"><span class="label">Free</span><span class="value">${(users.by_plan||{}).free || 0}</span></div>
-        <div class="overview-row"><span class="label">Weekly</span><span class="value">${(users.by_plan||{}).weekly || 0}</span></div>
-        <div class="overview-row"><span class="label">Monthly</span><span class="value">${(users.by_plan||{}).monthly || 0}</span></div>
-        <div class="overview-row"><span class="label">منتهية</span><span class="value" style="color:#f59e0b;">${users.expired || 0}</span></div>
-        <div class="overview-row"><span class="label">ملغية</span><span class="value" style="color:#ef4444;">${users.cancelled || 0}</span></div>
-      </div>
-      <div class="overview-section">
-        <h3>☁️ السحابة</h3>
-        <div class="overview-row"><span class="label">مستخدمون عندهم سحابة</span><span class="value">${cloud.total_users_with_cloud || 0}</span></div>
-        <div class="overview-row"><span class="label">إجمالي الملفات</span><span class="value">${cloud.total_files || 0}</span></div>
-        <div class="overview-row"><span class="label">الحجم الكلي</span><span class="value">${cloud.total_cloud_size_mb || 0} MB</span></div>
-      </div>
-      <div class="overview-section">
-        <h3>🛡️ الأمان</h3>
-        <div class="overview-row"><span class="label">محاولات فاشلة</span><span class="value" style="color:#f87171;">${sec.failed_logins || 0}</span></div>
-        <div class="overview-row"><span class="label">IPs محظورة (أمان)</span><span class="value" style="color:#f87171;">${sec.active_bans || 0}</span></div>
-        <div class="overview-row"><span class="label">محظورين 429 (Rate Limit)</span><span class="value" style="color:#fbbf24;">${sec.rate_limit_bans || 0}</span></div>
-        <div class="overview-row"><span class="label">أحداث أمنية</span><span class="value">${sec.total_events || 0}</span></div>
-      </div>
-      <div class="overview-section">
-        <h3>🌐 البروكسي</h3>
-        <div class="overview-row"><span class="label">متاح</span><span class="value">${proxy.available ? "✅" : "❌"}</span></div>
-        <div class="overview-row"><span class="label">مفعّل حالياً</span><span class="value">${proxy.active ? "🟢" : "⚪"}</span></div>
-        <div class="overview-row"><span class="label">مرات تفعيل</span><span class="value">${proxy.block_count || 0}</span></div>
-      </div>
-    </div>`;
-}
-
-/* ============ Users ============ */
-const isExpired = u => u.plan_id !== "free" && u.renewal_date && u.renewal_date < todayStr();
-const effPlan = u => isExpired(u) ? "free" : u.plan_id;
-
-async function loadUsers() {
-  try {
-    const d = await apiFetch("/users-list");
-    allUsers = d.users || [];
-    renderUsers(filterUsers());
-    updateStats();
-    setLastUpdate();
-  } catch (e) {
-    $("usersList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-const STAT_MAP = { free: "statFree", weekly: "statWeekly", monthly: "statMonthly" };
-function updateStats() {
-  $("statTotal").textContent = allUsers.length;
-  const counts = { free: 0, weekly: 0, monthly: 0 };
-  for (const u of allUsers) {
-    const p = effPlan(u);
-    if (counts[p] != null) counts[p]++;
-  }
-  for (const [plan, id] of Object.entries(STAT_MAP)) {
-    $(id).textContent = counts[plan] || 0;
-  }
-  usersPerPlan = counts;
-}
-
-function filterUsers() {
-  const q = $("userSearch").value.trim().toLowerCase();
-  if (!q) return allUsers;
-  return allUsers.filter(u =>
-    (u.username || "").toLowerCase().includes(q) || (u.phone || "").includes(q)
-  );
-}
-
-function renderUsers(users) {
-  const container = $("usersList");
-  if (!users.length) { container.innerHTML = `<div class="empty">📭 مفيش مستخدمين مطابقين</div>`; return; }
-  const frag = document.createDocumentFragment();
-  users.slice(0, MAX_RENDER).forEach(u => {
-    const plan = effPlan(u);
-    const lim = u.limit ?? u.plan_limit ?? 0;
-    const lis = u.listens_limit ?? u.plan_listens_limit ?? 0;
-    const cls = plan === "monthly" ? "monthly" : plan === "weekly" ? "weekly" : "free";
-    const cloud = u.cloud_storage || {};
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML = `
-      <div class="card-head">
-        <div style="flex:1;min-width:0;">
-          <div class="card-title">${esc(u.username || "بدون اسم")}</div>
-          <div class="card-phone">📱 ${esc(u.phone)}</div>
-          <div class="badges">
-            <span class="badge ${cls}">${esc(u.plan_name || plan)}</span>
-            ${isExpired(u) ? `<span class="badge cancelled">منتهية</span>` : ""}
-            ${u.is_cancelled ? `<span class="badge cancelled">ملغي</span>` : ""}
-            ${u.upgrade_requested ? `<span class="badge pending">طلب ترقية</span>` : ""}
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="card-btn primary" data-action="edit" data-phone="${esc(u.phone)}">✏️ تعديل</button>
-        </div>
-      </div>
-      <div class="meta-row">
-        <span>📥 ${u.daily_downloads || 0} / ${lim === -1 ? "∞" : lim}</span>
-        <span>🎧 ${u.monthly_listens || 0} / ${lis === -1 ? "∞" : lis}</span>
-        ${u.renewal_date ? `<span>📅 ${esc(u.renewal_date)}</span>` : ""}
-        ${cloud.files_count ? `<span>☁️ ${cloud.files_count} ملف (${cloud.used_mb || 0} MB)</span>` : ""}
-      </div>`;
-    frag.appendChild(el);
-  });
-  container.innerHTML = "";
-  container.appendChild(frag);
-  if (users.length > MAX_RENDER) {
-    const note = document.createElement("div");
-    note.className = "empty";
-    note.style.gridColumn = "1/-1";
-    note.textContent = `تم عرض أول ${MAX_RENDER} من ${users.length} — استخدم البحث لتضييق النتائج`;
-    container.appendChild(note);
-  }
-}
-
-$("usersList").addEventListener("click", e => {
-  const btn = e.target.closest('[data-action="edit"]');
-  if (!btn) return;
-  openUserModal(btn.dataset.phone);
-});
-
-$("userSearch").addEventListener("input", debounce(() => renderUsers(filterUsers()), DEBOUNCE_MS));
-
-$("refreshUsersBtn").addEventListener("click", async () => {
-  const b = $("refreshUsersBtn");
-  busy(b, true, "جاري التحديث...");
-  try { await loadUsers(); } finally { busy(b, false); }
-});
-
-$("refreshBtn").addEventListener("click", async () => {
-  const b = $("refreshBtn");
-  busy(b, true);
-  try {
-    const activeTab = document.querySelector(".tab.active").dataset.tab;
-    if (activeTab === "overview") await loadOverview();
-    else if (activeTab === "users") await loadUsers();
-    else if (activeTab === "history") await loadHistory();
-    else if (activeTab === "security") await loadSecurity();
-    else if (activeTab === "cloud") await loadCloud();
-    else if (activeTab === "plans") await loadPlansTab(true);
-  } finally { busy(b, false); }
-});
-
-/* ============ History ============ */
-async function loadHistory() {
-  $("historyList").innerHTML = `<div class="loading">جاري التحميل...</div>`;
-  try {
-    const d = await apiFetch("/history?type=all&limit=500");
-    allHistory = Object.assign({ links: [], otp: [], login: [] }, d.data || {});
-    renderHistory();
-    setLastUpdate();
-  } catch (e) {
-    $("historyList").innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-const LOGIN_ACTIONS = {
-  admin_login: "🔑 دخول أدمن", otp_login: "📱 دخول مستخدم",
-  signup: "🆕 تسجيل", logout: "🚪 خروج"
-};
-const ADMIN_ACTIONS = {
-  set_plan: "تغيير باقة", delete_user: "حذف مستخدم",
-  set_counters: "تعديل عدادات", set_listen_limit: "تعديل حد",
-  clear_history: "مسح سجل", delete_file: "حذف ملف", unban_ip: "إلغاء حظر"
-};
-
-function renderHistory(list) {
-  const container = $("historyList");
-  const src = list || allHistory[currentHistoryType] || [];
-  if (!src.length) { container.innerHTML = `<div class="empty">📭 مفيش سجل</div>`; return; }
-  const t = currentHistoryType;
-  const frag = document.createDocumentFragment();
-  src.slice(0, MAX_RENDER).forEach(item => {
-    const ok = item.status === "success";
-    const st = ok ? ["success", "نجح"]
-      : item.status === "quota" ? ["quota", "حد أقصى"]
-      : ["failed", "فشل"];
-    let title = "", phone = "", badges = "", lines = "";
-    if (t === "links") {
-      title = esc(item.username || "مجهول");
-      phone = item.phone || "—";
-      badges = `<span class="badge ${item.action === "stream" ? "stream" : "download"}">${item.action === "stream" ? "🎧 استماع" : "⬇️ تحميل"}</span>`;
-      lines += `<span style="word-break:break-all;direction:ltr;color:#c4b5fd;font-size:10.5px;">${esc((item.url || "").slice(0, 80))}</span>`;
-      if (item.error === "cache") badges += `<span class="badge cache">⚡ كاش</span>`;
-      else if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
-    } else if (t === "otp") {
-      title = "📱 " + esc(item.phone || "—");
-      badges = `<span class="badge video">${item.action === "send" ? "📤 إرسال" : "✅ تحقق"}</span>`;
-      if (item.otp_code) lines += `<span style="color:#fbbf24;font-weight:800;direction:ltr;">🔢 الكود: ${esc(item.otp_code)}</span>`;
-      if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
-    } else {
-      const raw = String(item.action || "");
-      const base = raw.split(":")[0];
-      const isAdmin = raw.includes(":") && ADMIN_ACTIONS[base];
-      title = esc(item.username || "—");
-      phone = item.phone || "—";
-      badges = `<span class="badge free">${isAdmin ? "🛠️ " + ADMIN_ACTIONS[base] : (LOGIN_ACTIONS[raw] || esc(raw))}</span>`;
-      if (isAdmin) lines += `<span style="direction:ltr;color:#c4b5fd;font-size:10.5px;">${esc(raw.slice(base.length + 1))}</span>`;
-      if (item.error) lines += `<span style="color:#fca5a5;">⚠️ ${esc(item.error)}</span>`;
-    }
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML = `
-      <div class="card-head"><div style="flex:1;min-width:0;">
-        <div class="card-title">${title}</div>
-        ${phone ? `<div class="card-phone">📱 ${esc(phone)}</div>` : ""}
-        <div class="badges">${badges}<span class="badge ${st[0]}">${st[1]}</span></div>
-      </div></div>
-      <div class="meta-row" style="flex-direction:column;gap:5px;">
-        ${lines}
-        <span>🕐 ${esc(item.timestamp || "—")}${item.ip ? " · 🌐 " + esc(item.ip) : ""}</span>
-      </div>`;
-    frag.appendChild(el);
-  });
-  container.innerHTML = "";
-  container.appendChild(frag);
-}
-
-$("refreshHistoryBtn").addEventListener("click", async () => {
-  const b = $("refreshHistoryBtn");
-  busy(b, true, "جاري التحديث...");
-  try { await loadHistory(); } finally { busy(b, false); }
-});
-
-$("historySearch").addEventListener("input", debounce(e => {
-  const q = e.target.value.trim().toLowerCase();
-  const list = allHistory[currentHistoryType] || [];
-  if (!q) { renderHistory(list); return; }
-  const filtered = list.filter(i => JSON.stringify(i).toLowerCase().includes(q));
-  renderHistory(filtered);
-}, DEBOUNCE_MS));
-
-/* ============ Security ============ */
-async function loadSecurity() {
-  const container = $("securityContent");
-  container.innerHTML = `<div class="loading">جاري التحميل...</div>`;
-  try {
-    if (currentSecurityType === "stats") {
-      const d = await apiFetch("/admin/security-stats");
-      renderSecurityStats(d);
-    } else if (currentSecurityType === "otps") {
-      const d = await apiFetch("/admin/otp-active");
-      renderActiveOtps(d);
-    } else if (currentSecurityType === "bans") {
-      let d;
-      try { d = await apiFetch("/admin/security-bans?type=all"); }
-      catch (_) { d = await apiFetch("/admin/security-stats"); }
-      renderBans(d);
-    } else if (currentSecurityType === "rate") {
-      const d = await apiFetch("/admin/security-bans?type=rate_limit");
-      renderRateLimitBans(d);
-    } else if (currentSecurityType === "events") {
-      const d = await apiFetch("/admin/security-log?limit=100");
-      renderSecurityEvents(d);
-    }
-    setLastUpdate();
-  } catch (e) {
-    container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-function renderSecurityStats(d) {
-  const s = d.stats || {};
-  const totalIssues = (s.failed_logins_24h || 0) + (s.active_bans || 0) + (s.rate_limit_bans || 0);
-  const badge = $("securityBadge");
-  if (totalIssues > 0) {
-    badge.style.display = "inline-block";
-    badge.textContent = totalIssues > 99 ? "99+" : totalIssues;
-  } else {
-    badge.style.display = "none";
-  }
-  $("securityContent").innerHTML = `
-    <div class="stats">
-      <div class="stat red"><div class="stat-icon">🚨</div><div class="stat-label">محاولات دخول فاشلة (24س)</div><div class="stat-value">${s.failed_logins_24h || 0}</div></div>
-      <div class="stat green"><div class="stat-icon">✅</div><div class="stat-label">دخول ناجح (24س)</div><div class="stat-value">${s.success_logins_24h || 0}</div></div>
-      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة (أمان)</div><div class="stat-value">${s.active_bans || 0}</div></div>
-      <div class="stat gold"><div class="stat-icon">🚦</div><div class="stat-label">محظورين 429</div><div class="stat-value">${s.rate_limit_bans || 0}</div></div>
-      <div class="stat"><div class="stat-icon">⚠️</div><div class="stat-label">أحداث خطيرة</div><div class="stat-value">${s.high_severity_events || 0}</div></div>
-      <div class="stat"><div class="stat-icon">🕵️</div><div class="stat-label">هجمات سكانر</div><div class="stat-value">${s.scanner_attacks || 0}</div></div>
-      <div class="stat"><div class="stat-icon">🔐</div><div class="stat-label">OTP Brute Force</div><div class="stat-value">${s.otp_bruteforce_attempts || 0}</div></div>
-    </div>
-    <div class="overview-section">
-      <h3>📈 ملخص</h3>
-      <div class="overview-row"><span class="label">إجمالي محاولات الدخول الفاشلة</span><span class="value">${s.total_failed_logins || 0}</span></div>
-      <div class="overview-row"><span class="label">محاولات دخول أدمن فاشلة</span><span class="value">${s.admin_login_failures || 0}</span></div>
-      <div class="overview-row"><span class="label">أحداث متوسطة الخطورة</span><span class="value">${s.medium_severity_events || 0}</span></div>
-      <div class="overview-row"><span class="label">إجمالي الأحداث الأمنية</span><span class="value">${s.total_security_events || 0}</span></div>
-      <div class="overview-row"><span class="label">محظورين 429 (Rate Limit)</span><span class="value" style="color:#fbbf24;">${s.rate_limit_bans || 0}</span></div>
-    </div>`;
-}
-
-function renderActiveOtps(d) {
-  const otps = d.active_otps || [];
-  if (!otps.length) {
-    $("securityContent").innerHTML = `<div class="empty">✅ مفيش OTPs نشطة حالياً</div>`;
-    return;
-  }
-  $("securityContent").innerHTML = `<div class="list">${otps.map(o => `
-    <div class="card">
-      <div class="card-head">
-        <div style="flex:1;">
-          <div class="card-title">📱 ${esc(o.phone)}</div>
-          <div class="card-phone">🌐 ${esc(o.ip || "—")}</div>
-        </div>
-        <div style="text-align:center;background:rgba(251,191,36,.15);padding:10px 14px;border-radius:12px;border:1px solid rgba(251,191,36,.3);">
-          <div style="font-size:10px;color:#fbbf24;font-weight:700;">الكود</div>
-          <div style="font-size:20px;font-weight:900;color:#fbbf24;letter-spacing:3px;direction:ltr;">${esc(o.otp_code || '—')}</div>
-        </div>
-      </div>
-      <div class="meta-row">
-        <span>🕐 اتسجل من ${o.sent_at_ago ?? '—'} ثانية</span>
-        <span>⏳ متبقي ${o.expires_in ?? '—'} ثانية</span>
-        <span>⚠️ محاولات: ${o.attempts ?? 0}</span>
-      </div>
-    </div>`).join("")}</div>`;
-}
-
-function renderBans(d) {
-  const bans = d.bans || d.active_bans || (d.stats && d.stats.active_bans_list) || [];
-  const list = Array.isArray(bans) ? bans : [];
-  if (!list.length) {
-    $("securityContent").innerHTML = `<div class="empty">✅ مفيش IPs محظورة حالياً</div>`;
-    return;
-  }
-  $("securityContent").innerHTML = `<div class="list">${list.map(b => {
-    const isRate = b.ban_type === "rate_limit" || b.type === "rate_limit";
-    return `
-      <div class="card ${isRate ? 'rate-ban-card' : ''}">
-        <div class="card-head">
-          <div style="flex:1;">
-            <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;">🚫 ${esc(b.ip)}</div>
-            <div class="badges" style="margin-top:6px;">
-              ${isRate
-                ? `<span class="badge rate">🚦 429 Rate Limit</span>`
-                : `<span class="badge failed">⛔ حظر أمني</span>`}
-            </div>
-            <div class="card-phone" style="margin-top:6px;">⏱️ متبقي: ${Math.max(0, Math.floor((b.remaining_seconds || 0) / 60))} دقيقة</div>
-          </div>
-          <div class="card-actions">
-            <button class="card-btn danger"
-              data-action="${isRate ? 'unban-rate' : 'unban'}"
-              data-ip="${esc(b.ip)}">✅ فك الحظر</button>
-          </div>
-        </div>
-        <div class="meta-row">
-          <span>🕐 محظور لحد ${esc(b.banned_until || '—')}</span>
-          ${b.attempts ? `<span>📊 ${b.attempts} محاولة</span>` : ""}
-        </div>
-      </div>`;
-  }).join("")}</div>`;
-}
-
-/* ---------- 429 Rate-Limit Bans ---------- */
-function renderRateLimitBans(d) {
-  const list = d.bans || d.rate_limit_bans || d.active_bans || [];
-  const arr = Array.isArray(list) ? list : [];
-
-  if (!arr.length) {
-    $("securityContent").innerHTML = `
-      <div class="overview-section" style="text-align:center;padding:40px 20px;">
-        <div style="font-size:44px;margin-bottom:12px;">✅</div>
-        <h3 style="justify-content:center;color:#34d399;">مفيش مستخدمين محظورين من 429</h3>
-        <p style="color:var(--muted);font-size:12.5px;margin-top:8px;">كل الطلبات شغالة تمام</p>
-      </div>`;
-    return;
-  }
-
-  const totalAttempts = arr.reduce((s,b) => s + (b.attempts || b.request_count || 0), 0);
-
-  const cards = arr.map(b => {
-    const remaining = Math.max(0, Math.floor(b.remaining_seconds || 0));
-    const mins = Math.floor(remaining / 60);
-    const secs = remaining % 60;
-    const attempts = b.attempts || b.request_count || 0;
-    const ip = b.ip || "—";
-    const lastUrl = b.last_url || b.last_request_url || "";
-    const lastAttempt = b.last_attempt_at || b.banned_at || b.timestamp || "";
-    const isPermanent = remaining <= 0 && b.permanent;
-
-    return `
-      <div class="card rate-ban-card" data-ip="${esc(ip)}">
-        <div class="card-head">
-          <div style="flex:1;min-width:0;">
-            <div class="card-title" style="direction:ltr;text-align:right;font-family:monospace;font-size:14px;">🚫 ${esc(ip)}</div>
-            <div class="badges" style="margin-top:8px;">
-              <span class="badge rate">🚦 429 Rate Limit</span>
-              ${isPermanent ? `<span class="badge critical">حظر دائم</span>` : ""}
-            </div>
-          </div>
-          <div class="card-actions" style="flex-direction:column;align-items:stretch;">
-            <button class="card-btn danger" data-action="unban-rate" data-ip="${esc(ip)}">✅ فك الحظر</button>
-          </div>
-        </div>
-        <div class="meta-row" style="flex-direction:column;gap:8px;align-items:flex-start;">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <span class="attempts-pill">📊 ${attempts} طلب</span>
-            <span class="countdown-pill">⏱️ ${mins > 0 ? mins + 'د ' : ''}${secs}ث متبقي</span>
-          </div>
-          ${lastAttempt ? `<span>🕐 آخر محاولة: ${esc(lastAttempt)}</span>` : ""}
-          ${lastUrl ? `<span style="direction:ltr;font-size:10.5px;color:#c4b5fd;word-break:break-all;">🔗 ${esc(lastUrl.slice(0,90))}</span>` : ""}
-        </div>
-      </div>`;
-  }).join("");
-
-  $("securityContent").innerHTML = `
-    <div class="stats" style="margin-bottom:16px;">
-      <div class="stat red"><div class="stat-icon">🚫</div><div class="stat-label">IPs محظورة (429)</div><div class="stat-value">${arr.length}</div></div>
-      <div class="stat gold"><div class="stat-icon">📊</div><div class="stat-label">إجمالي الطلبات</div><div class="stat-value">${totalAttempts}</div></div>
-    </div>
-    <div class="list">${cards}</div>`;
-}
-
-/* ---------- فك الحظر (يدعم النوعين) ---------- */
-async function unbanIp(ip, btn, banType) {
-  const typeLabel = banType === "rate_limit" ? "حظر 429" : "الحظر";
-  const ok = await askConfirm("فك الحظر", `هل تريد فك ${typeLabel} عن الـ IP: ${ip}؟`);
-  if (!ok) return;
-  busy(btn, true, "جاري...");
-  try {
-    const body = { ip };
-    if (banType) body.ban_type = banType;
-    await apiFetch("/admin/unban-ip", { method: "POST", body: JSON.stringify(body) });
-    showToast("✅ تم فك الحظر");
-    loadSecurity();
-  } catch (e) {
-    showToast("❌ " + e.message, "err");
-    busy(btn, false);
-  }
-}
-
-/* ---------- حدث أزرار الأمان ---------- */
-$("securityContent").addEventListener("click", e => {
-  const rateBtn = e.target.closest('[data-action="unban-rate"]');
-  if (rateBtn) {
-    unbanIp(rateBtn.dataset.ip, rateBtn, "rate_limit");
-    return;
-  }
-  const btn = e.target.closest('[data-action="unban"]');
-  if (!btn) return;
-  unbanIp(btn.dataset.ip, btn);
-});
-
-const EVT_NAMES = {
-  ip_banned: "🚫 IP محظور",
-  scanner_detected: "🕵️ سكانر",
-  otp_bruteforce: "🔐 OTP Brute Force",
-  failed_admin_login: "🔑 محاولة دخول أدمن فاشلة",
-  url_too_long: "📏 URL طويل جداً",
-};
-const SEV_LABELS = { critical: "حرج", high: "خطير", medium: "متوسط", low: "منخفض" };
-
-function renderSecurityEvents(d) {
-  const events = d.events || [];
-  if (!events.length) {
-    $("securityContent").innerHTML = `<div class="empty">📭 مفيش أحداث أمنية</div>`;
-    return;
-  }
-  const frag = document.createDocumentFragment();
-  events.slice(0, MAX_RENDER).forEach(e => {
-    const el = document.createElement("div");
-    el.className = "card";
-    const sev = e.severity || "low";
-    el.innerHTML = `
-      <div class="card-head">
-        <div>
-          <div class="card-title">${EVT_NAMES[e.event_type] || esc(e.event_type)}</div>
-          ${e.ip ? `<div class="card-phone">🌐 ${esc(e.ip)}</div>` : ""}
-          <div class="badges"><span class="badge ${sev}">${SEV_LABELS[sev] || sev}</span></div>
-        </div>
-      </div>
-      ${e.details ? `<div class="meta-row"><span style="direction:ltr;">${esc(e.details)}</span></div>` : ""}
-      <div class="meta-row"><span>🕐 ${esc(e.timestamp || "—")}</span></div>`;
-    frag.appendChild(el);
-  });
-  const container = $("securityContent");
-  container.innerHTML = "";
-  const wrap = document.createElement("div");
-  wrap.className = "list";
-  wrap.appendChild(frag);
-  container.appendChild(wrap);
-}
-
-/* ============ Cloud ============ */
-async function loadCloud() {
-  const container = $("cloudContent");
-  container.innerHTML = `<div class="loading">جاري التحميل...</div>`;
-  try {
-    if (currentCloudType === "stats") {
-      const d = await apiFetch("/admin/cloud-overview");
-      const s = d.stats || {};
-      container.innerHTML = `
-        <div class="stats">
-          <div class="stat"><div class="stat-icon">👥</div><div class="stat-label">مستخدمون لديهم سحابة</div><div class="stat-value">${s.total_users_with_cloud || 0}</div></div>
-          <div class="stat blue"><div class="stat-icon">📁</div><div class="stat-label">إجمالي الملفات</div><div class="stat-value">${s.total_files || 0}</div></div>
-          <div class="stat green"><div class="stat-icon">💾</div><div class="stat-label">الحجم الكلي</div><div class="stat-value" style="font-size:18px;">${s.total_cloud_size_mb || 0} MB</div></div>
-        </div>`;
-    } else if (currentCloudType === "files") {
-      const d = await apiFetch("/admin/cloud-files?limit=200");
-      const files = d.files || [];
-      if (!files.length) { container.innerHTML = `<div class="empty">📭 مفيش ملفات سحابية</div>`; return; }
-      container.innerHTML = `<div class="list">${files.map(f => `
-        <div class="card">
-          <div class="card-head">
-            <div style="flex:1;min-width:0;">
-              <div class="card-title">${esc(f.title)}</div>
-              <div class="card-phone">📱 ${esc(f.phone)}</div>
-            </div>
-            <span class="badge free">${esc(f.ext || '—')}</span>
-          </div>
-          <div class="meta-row">
-            <span>📦 ${f.size_mb || 0} MB</span>
-            <span>🕐 ${esc((f.created_at || '').split(' ')[0])}</span>
-          </div>
-          <div class="card-actions">
-            <a class="card-btn primary" href="${safeUrl(SERVER_URL + (f.inline_url || ''))}" target="_blank" rel="noopener noreferrer">▶️ فتح</a>
-            <a class="card-btn" href="${safeUrl(SERVER_URL + (f.download_url || ''))}" rel="noopener noreferrer">⬇️ تحميل</a>
-          </div>
-        </div>`).join("")}</div>`;
-    } else if (currentCloudType === "orphans") {
-      const d = await apiFetch("/admin/cloud-orphans");
-      const orphans = d.orphans || [];
-      if (!orphans.length) { container.innerHTML = `<div class="empty">✅ مفيش ملفات يتيمة</div>`; return; }
-      container.innerHTML = `<div class="list">${orphans.map(o => {
-        if (o.type === "deleted_user_has_files") {
-          return `<div class="card" style="border-color:rgba(239,68,68,.3);">
-            <div class="card-head">
-              <div>
-                <div class="card-title">🗑️ مستخدم محذوف عنده ملفات</div>
-                <div class="card-phone">📱 ${esc(o.phone)}</div>
-              </div>
-              <span class="badge failed">${o.files_count} ملف</span>
-            </div>
-            <div class="meta-row"><span>💾 ${((o.total_size_bytes || 0) / 1024 / 1024).toFixed(2)} MB</span></div>
-          </div>`;
-        }
-        return `<div class="card">
-          <div class="card-head">
-            <div>
-              <div class="card-title">⚠️ ملف مش مسجل</div>
-              <div class="card-phone">📱 ${esc(o.phone)}</div>
-            </div>
-          </div>
-          <div class="meta-row">
-            <span style="direction:ltr;font-size:10px;">${esc(o.filename)}</span>
-            <span>📦 ${((o.size_bytes || 0) / 1024 / 1024).toFixed(2)} MB</span>
-            ${o.user_exists ? '' : '<span style="color:#ef4444;">مستخدم محذوف</span>'}
-          </div>
-        </div>`;
-      }).join("")}</div>`;
-    }
-    setLastUpdate();
-  } catch (e) {
-    container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-/* ============================================================
-   PLANS TAB
-   ============================================================ */
-
-function normalizePlan(planId, raw) {
-  const r = raw || {};
-  const pick = (...keys) => {
-    for (const k of keys) {
-      if (r[k] !== undefined && r[k] !== null && r[k] !== "") return r[k];
-    }
-    return undefined;
-  };
-
-  const price = pick("price", "price_egp", "price_monthly", "cost", "amount");
-  const durationDays = pick("duration_days", "duration", "days", "period_days");
-  const downloads = pick("downloads_per_day", "daily_downloads_limit", "download_limit", "limit", "daily_limit", "downloads");
-  const listens = pick("listens_per_month", "monthly_listens_limit", "listens_limit", "listen_limit", "listens");
-  const cloudMb = pick("cloud_storage_mb", "cloud_mb", "storage_mb", "cloud_storage", "cloud_limit");
-  const description = pick("description", "desc", "tagline", "subtitle");
-  const features = Array.isArray(r.features) ? r.features : [];
-
-  return {
-    id: planId,
-    name: r.name || planId,
-    price: price != null ? Number(price) : null,
-    durationDays: durationDays != null ? Number(durationDays) : null,
-    downloads: downloads != null ? Number(downloads) : null,
-    listens: listens != null ? Number(listens) : null,
-    cloudMb: cloudMb != null ? Number(cloudMb) : null,
-    description: description || "",
-    features: features,
-    raw: r,
-  };
-}
-
-const PLAN_META = {
-  free: { icon: "🎁", subtitle: "بداية مجانية", color: "free", ribbon: null },
-  weekly: { icon: "⚡", subtitle: "أسبوع كامل", color: "weekly", ribbon: null },
-  monthly: { icon: "👑", subtitle: "الأفضل قيمة", color: "monthly", ribbon: "الأكثر طلباً" },
-};
-
-function planPeriodLabel(p) {
-  const d = p.durationDays;
-  if (d == null) return "";
-  if (d <= 1) return "/ يوم";
-  if (d === 7) return "/ أسبوع";
-  if (d === 14) return "/ أسبوعين";
-  if (d >= 28 && d <= 31) return "/ شهر";
-  if (d >= 360 && d <= 366) return "/ سنة";
-  return `/ ${d} يوم`;
-}
-
-async function loadPlansTab(forceRefresh = false) {
-  const container = $("plansContent");
-  if (!forceRefresh && plansCache) {
-    renderPlans(plansCache);
-    return;
-  }
-  container.innerHTML = `<div class="loading">جاري تحميل الباقات...</div>`;
-  try {
-    const tasks = [
-      fetch(SERVER_URL + "/get-plans").then(async r => {
-        const d = await r.json();
-        if (!r.ok || !d.success) throw new Error(d.error || "فشل تحميل الباقات");
-        return d;
-      })
-    ];
-    if (!allUsers.length) {
-      tasks.push(apiFetch("/users-list").then(d => {
-        allUsers = d.users || [];
-        updateStats();
-        return d;
-      }).catch(() => null));
-    }
-    const [plansResp] = await Promise.all(tasks);
-    const rawPlans = plansResp.plans || {};
-    const normalized = {};
-    for (const [id, p] of Object.entries(rawPlans)) {
-      normalized[id] = normalizePlan(id, p);
-    }
-    allPlans = rawPlans;
-    plansCache = normalized;
-    renderPlans(normalized);
-    setLastUpdate();
-  } catch (e) {
-    container.innerHTML = `<div class="empty">❌ ${esc(e.message)}</div>`;
-  }
-}
-
-function renderPlans(plans) {
-  const container = $("plansContent");
-  const order = ["free", "weekly", "monthly"];
-  const ids = order.filter(id => plans[id]).concat(
-    Object.keys(plans).filter(id => !order.includes(id))
-  );
-
-  if (!ids.length) {
-    container.innerHTML = `<div class="empty">📭 مفيش باقات متاحة</div>`;
-    return;
-  }
-
-  const cards = ids.map(id => {
-    const p = plans[id];
-    const meta = PLAN_META[id] || { icon: "💳", subtitle: "", color: "free", ribbon: null };
-    const featured = id === "monthly";
-    const usersCount = usersPerPlan[id] || 0;
-    const period = planPeriodLabel(p);
-    const priceText = p.price == null ? "—" : (p.price === 0 ? "مجاناً" : p.price);
-
-    const features = [];
-    if (p.downloads != null) {
-      features.push({ txt: `${p.downloads === -1 ? "تحميلات غير محدودة" : `${p.downloads} تحميل / يوم`}`, ok: true });
-    }
-    if (p.listens != null) {
-      features.push({ txt: `${p.listens === -1 ? "استماع غير محدود" : `${p.listens} استماع / شهر`}`, ok: true });
-    }
-    if (p.cloudMb != null) {
-      features.push({
-        txt: p.cloudMb === 0 ? "بدون سحابة" : p.cloudMb === -1 ? "سحابة غير محدودة" : `سحابة ${formatMb(p.cloudMb)}`,
-        ok: p.cloudMb !== 0
-      });
-    }
-    if (p.durationDays != null) {
-      features.push({ txt: `المدة: ${p.durationDays} يوم`, ok: true });
-    }
-    if (Array.isArray(p.features)) {
-      p.features.forEach(f => features.push({ txt: String(f), ok: true }));
-    }
-
-    return `
-      <div class="plan-card ${meta.color} ${featured ? "featured" : ""}" data-plan="${esc(id)}">
-        ${meta.ribbon ? `<div class="plan-ribbon">${esc(meta.ribbon)}</div>` : ""}
-        <div class="plan-icon">${meta.icon}</div>
-        <div class="plan-name">${esc(p.name)}</div>
-        <div class="plan-subtitle">${esc(p.description || meta.subtitle)}</div>
-        <div class="plan-price">
-          <span class="amount">${esc(priceText)}</span>
-          ${p.price != null && p.price > 0 ? `<span class="currency">ج.م</span>` : ""}
-          ${period ? `<span class="period">${esc(period)}</span>` : ""}
-        </div>
-        ${usersCount > 0 ? `<div class="plan-users">👥 ${usersCount} مستخدم حالي</div>` : `<div class="plan-users" style="opacity:.6;">👥 0 مستخدم</div>`}
-        <ul class="plan-features">
-          ${features.length
-            ? features.map(f => `<li class="${f.ok ? "" : "muted"}"><span class="tick">${f.ok ? "✓" : "×"}</span>${esc(f.txt)}</li>`).join("")
-            : `<li class="muted"><span class="tick">·</span>لا توجد بيانات تفصيلية</li>`}
-        </ul>
-        <button class="plan-cta" data-detail="${esc(id)}">عرض التفاصيل</button>
-      </div>`;
-  }).join("");
-
-  const compareRows = [
-    { label: "السعر", get: p => p.price == null ? "—" : (p.price === 0 ? "مجاناً" : `${p.price} ج.م`) },
-    { label: "المدة", get: p => p.durationDays == null ? "—" : `${p.durationDays} يوم` },
-    { label: "التحميلات / يوم", get: p => p.downloads == null ? "—" : (p.downloads === -1 ? "∞" : p.downloads) },
-    { label: "الاستماعات / شهر", get: p => p.listens == null ? "—" : (p.listens === -1 ? "∞" : p.listens) },
-    { label: "مساحة السحابة", get: p => p.cloudMb == null ? "—" : (p.cloudMb === 0 ? "بدون" : p.cloudMb === -1 ? "∞" : formatMb(p.cloudMb)) },
-    { label: "عدد المستخدمين", get: p => usersPerPlan[p.id] || 0 },
-  ];
-
-  const compareHtml = `
-    <div class="compare-wrap">
-      <h3>📊 مقارنة سريعة بين الباقات</h3>
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th>الميزة</th>
-            ${ids.map(id => `<th class="${id === "monthly" ? "col-featured" : ""}">${esc(plans[id].name)}</th>`).join("")}
-          </tr>
-        </thead>
-        <tbody>
-          ${compareRows.map(row => `
-            <tr>
-              <td>${esc(row.label)}</td>
-              ${ids.map(id => `<td class="${id === "monthly" ? "col-featured" : ""}">${esc(String(row.get(plans[id])))}</td>`).join("")}
-            </tr>`).join("")}
-        </tbody>
-      </table>
-    </div>`;
-
-  container.innerHTML = `<div class="plans-grid">${cards}</div>${compareHtml}`;
-
-  container.querySelectorAll("[data-detail]").forEach(btn => {
-    btn.addEventListener("click", () => openPlanDetail(btn.dataset.detail));
-  });
-}
-
-function formatMb(mb) {
-  if (mb == null) return "—";
-  if (mb >= 1024) return `${(mb / 1024).toFixed(mb % 1024 === 0 ? 0 : 1)} GB`;
-  return `${mb} MB`;
-}
-
-function openPlanDetail(planId) {
-  const p = plansCache && plansCache[planId];
-  if (!p) { showToast("❌ الباقة غير متاحة", "err"); return; }
-  const meta = PLAN_META[planId] || { icon: "💳", subtitle: "" };
-  const period = planPeriodLabel(p);
-  const usersCount = usersPerPlan[planId] || 0;
-
-  const rows = [
-    ["السعر", p.price == null ? "—" : (p.price === 0 ? "مجاناً" : `${p.price} ج.م`)],
-    ["المدة", p.durationDays == null ? "—" : `${p.durationDays} يوم`],
-    ["التحميلات اليومية", p.downloads == null ? "—" : (p.downloads === -1 ? "غير محدودة" : `${p.downloads}`)],
-    ["الاستماعات الشهرية", p.listens == null ? "—" : (p.listens === -1 ? "غير محدودة" : `${p.listens}`)],
-    ["مساحة السحابة", p.cloudMb == null ? "—" : (p.cloudMb === 0 ? "بدون" : p.cloudMb === -1 ? "غير محدودة" : formatMb(p.cloudMb))],
-    ["عدد المستخدمين الحاليين", `${usersCount}`],
-  ];
-
-  const extraFeatures = Array.isArray(p.features) && p.features.length
-    ? `<div class="overview-section" style="margin-top:14px;">
-         <h3>✨ ميزات إضافية</h3>
-         <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
-           ${p.features.map(f => `<li style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text);"><span style="width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:rgba(16,185,129,.18);color:#6ee7b7;font-size:10px;font-weight:900;">✓</span>${esc(String(f))}</li>`).join("")}
-         </ul>
-       </div>`
-    : "";
-
-  $("planDetailContent").innerHTML = `
-    <div class="plan-detail-hero">
-      <div class="icon">${meta.icon}</div>
-      <h2>${esc(p.name)}</h2>
-      <div class="sub">${esc(p.description || meta.subtitle || "")}</div>
-      <div class="plan-detail-price">
-        <span class="amount">${p.price == null ? "—" : (p.price === 0 ? "مجاناً" : p.price)}</span>
-        ${p.price != null && p.price > 0 ? `<span class="currency">ج.م</span>` : ""}
-        ${period ? `<span class="period">${esc(period)}</span>` : ""}
-      </div>
-    </div>
-    <div class="overview-section">
-      <h3>📋 التفاصيل</h3>
-      ${rows.map(([k, v]) => `<div class="overview-row"><span class="label">${esc(k)}</span><span class="value">${esc(String(v))}</span></div>`).join("")}
-    </div>
-    ${extraFeatures}
-  `;
-  $("planDetailModal").classList.add("active");
-}
-
-$("refreshPlansBtn").addEventListener("click", async () => {
-  const b = $("refreshPlansBtn");
-  busy(b, true, "جاري التحديث...");
-  try { await loadPlansTab(true); } finally { busy(b, false); }
-});
-
-document.querySelectorAll('[data-close="planDetailModal"]').forEach(b => {
-  b.addEventListener("click", () => $("planDetailModal").classList.remove("active"));
-});
-$("planDetailModal").addEventListener("click", e => {
-  if (e.target.id === "planDetailModal") $("planDetailModal").classList.remove("active");
-});
-
-/* ============ User Modal ============ */
-async function openUserModal(phone) {
-  $("userModal").classList.add("active");
-  $("userModalTitle").textContent = "جاري التحميل...";
-  $("userModalPhone").textContent = "";
-  $("userModalMeta").innerHTML = "";
-  $("customListenHint").textContent = "-1 = بلا حدود. اتركه فاضي للإبقاء على الحالي";
-  $("customCloudHint").textContent = "اتركه فاضي للإبقاء على الحالي";
-  try {
-    const d = await apiFetch("/user/" + encodeURIComponent(phone));
-    currentEditingUser = d.user;
-    if (!Object.keys(allPlans).length) {
-      try { await loadPlans(); }
-      catch (e) {
-        $("userModalTitle").textContent = "خطأ في تحميل الباقات";
-        $("userModalPhone").textContent = e.message;
-        return;
-      }
-    }
-    renderUserModal(d.user);
-  } catch (e) {
-    $("userModalTitle").textContent = "خطأ";
-    $("userModalPhone").textContent = e.message;
-  }
-}
-
-async function loadPlans() {
-  const ctrl = new AbortController();
-  const timeoutId = setTimeout(() => ctrl.abort(), 8000);
-  try {
-    const r = await fetch(SERVER_URL + "/get-plans", { signal: ctrl.signal });
-    const d = await r.json();
-    if (!r.ok || !d.success) throw new Error(d.error || "فشل تحميل الباقات");
-    allPlans = d.plans || {};
-  } catch (e) {
-    if (e.name === "AbortError") throw new Error("انتهت مهلة تحميل الباقات");
-    throw e;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-function renderUserModal(u) {
-  $("userModalTitle").textContent = u.username || "مستخدم";
-  $("userModalPhone").textContent = "📱 " + u.phone;
-  const meta = [];
-  if (u.created_at) meta.push(`🗓️ ${esc(u.created_at)}`);
-  if (u.last_login) meta.push(`🔐 ${esc(u.last_login)}`);
-  if (u.cloud_storage && u.cloud_storage.files_count) {
-    meta.push(`☁️ ${u.cloud_storage.files_count} ملف (${u.cloud_storage.used_mb || 0} MB)`);
-  }
-  $("userModalMeta").innerHTML = meta.map(p => `<span>${p}</span>`).join("");
-  $("newPlanSelect").innerHTML = Object.keys(allPlans).map(pid =>
-    `<option value="${esc(pid)}" ${pid === u.plan_id ? "selected" : ""}>${esc(allPlans[pid].name || pid)}</option>`
-  ).join("");
-  $("downloadsInput").value = u.daily_downloads || 0;
-  $("listensInput").value = u.monthly_listens || 0;
-  $("renewalDateInput").value = u.renewal_date || "";
-  const curListen = u.listens_limit ?? u.plan_listens_limit;
-  $("customListenInput").value = "";
-  $("customListenInput").placeholder = curListen === -1 ? "الحالي: بلا حدود (-1)" : `الحالي: ${curListen ?? "—"}`;
-  const curCloud = u.cloud_storage_mb;
-  $("customCloudInput").value = "";
-  $("customCloudInput").placeholder = curCloud != null ? `الحالي: ${curCloud} MB` : "غير محدد";
-}
-
-$("saveUserBtn").addEventListener("click", async () => {
-  if (!currentEditingUser) return;
-  const btn = $("saveUserBtn");
-  busy(btn, true, "جاري الحفظ...");
-  try {
-    const phone = encodeURIComponent(currentEditingUser.phone);
-    const newPlan = $("newPlanSelect").value;
-    if (newPlan !== currentEditingUser.plan_id) {
-      await apiFetch(`/user/${phone}/set-plan`, {
-        method: "POST", body: JSON.stringify({ plan: newPlan })
-      });
-    }
-    const body = {
-      daily_downloads: parseInt($("downloadsInput").value) || 0,
-      monthly_listens: parseInt($("listensInput").value) || 0
-    };
-    const dateVal = $("renewalDateInput").value.trim();
-    if (dateVal !== (currentEditingUser.renewal_date || "")) body.renewal_date = dateVal;
-    const customListen = $("customListenInput").value.trim();
-    if (customListen !== "") {
-      const v = parseInt(customListen);
-      if (isNaN(v)) throw new Error("حد الاستماع لازم يكون رقم");
-      body.listens_limit = v;
-    }
-    const customCloud = $("customCloudInput").value.trim();
-    if (customCloud !== "") {
-      const v = parseInt(customCloud);
-      if (isNaN(v) || v < 0) throw new Error("مساحة السحابة لازم تكون رقم موجب");
-      body.cloud_storage_mb = v;
-    }
-    await apiFetch(`/user/${phone}/set-counters`, { method: "POST", body: JSON.stringify(body) });
-    showToast("✅ تم الحفظ");
-    closeUserModal();
-    loadUsers();
-    plansCache = null;
-  } catch (e) {
-    showToast("❌ " + e.message, "err");
-  } finally {
-    busy(btn, false);
-  }
-});
-
-$("deleteUserBtn").addEventListener("click", async () => {
-  if (!currentEditingUser) return;
-  const u = currentEditingUser;
-  const ok = await askConfirm("حذف مستخدم", `هل تريد حذف "${u.username || u.phone}" نهائياً؟ لا يمكن التراجع.`);
-  if (!ok) return;
-  const btn = $("deleteUserBtn");
-  busy(btn, true, "جاري الحذف...");
-  try {
-    await apiFetch(`/user/${encodeURIComponent(u.phone)}`, { method: "DELETE" });
-    showToast("✅ تم الحذف");
-    closeUserModal();
-    loadUsers();
-    plansCache = null;
-  } catch (e) {
-    showToast("❌ " + e.message, "err");
-  } finally {
-    busy(btn, false);
-  }
-});
-
-function closeUserModal() {
-  $("userModal").classList.remove("active");
-  currentEditingUser = null;
-}
-document.querySelectorAll('[data-close="userModal"]').forEach(b => {
-  b.addEventListener("click", closeUserModal);
-});
-$("userModal").addEventListener("click", e => {
-  if (e.target.id === "userModal") closeUserModal();
-});
-
-document.addEventListener("keydown", e => {
-  if (e.key !== "Escape") return;
-  if ($("userModal").classList.contains("active")) closeUserModal();
-  if ($("planDetailModal").classList.contains("active")) $("planDetailModal").classList.remove("active");
-  if ($("confirmModal").classList.contains("active")) {
-    $("confirmModal").classList.remove("active");
-    if (confirmResolver) { confirmResolver(false); confirmResolver = null; }
-  }
-});
-
-/* ============ Auto Refresh ============ */
-function startRefresh() {
-  stopRefresh();
-  refreshTimer = setInterval(() => {
-    if (document.hidden || !adminToken) return;
-    const activeTab = document.querySelector(".tab.active").dataset.tab;
-    if (activeTab === "overview") loadOverview();
-    else if (activeTab === "users") {
-      apiFetch("/admin/dashboard-summary").then(updateSecurityBadge).catch(() => {});
-    }
-  }, REFRESH_MS);
-}
-function stopRefresh() {
-  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
-}
-
-/* ============ Boot ============ */
-function startDashboard() {
-  loadPlans().catch(() => {});
-  loadOverview();
-  startRefresh();
-}
-
-(async function init() {
-  if (await checkAuth()) {
-    hideLoginScreen();
-    $("welcomeText").textContent = "مرحباً " + adminUsername;
-    startDashboard();
-  } else {
-    showLoginScreen();
-  }
-})();
-</script>
-
-</body>
-</html>
